@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9740c53ad95a1794e976dcc190c0efef, type: 3}
+  m_Name: Bow3
+  m_EditorClassIdentifier: 
+  _presenter: {fileID: 5064101740289870143, guid: 5dbefe00d285ffc46b4fc52fd72976b8, type: 3}
+  _shotPower: 7
+  _cooldown: 2
+  _speedChangedAngle: 2
