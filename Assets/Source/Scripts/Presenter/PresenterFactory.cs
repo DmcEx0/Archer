@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Agava.YandexGames;
 using Archer.Model;
 using UnityEngine;
 
@@ -10,12 +11,7 @@ public class PresenterFactory : MonoBehaviour
 
     private readonly int _poolCount = 20;
 
-    private List<ObjectPool<Presenter>> _pools;
-
-    private void Awake()
-    {
-        _pools = new List<ObjectPool<Presenter>>();
-    }
+    private List<ObjectPool<Presenter>> _pools = new List<ObjectPool<Presenter>>();
 
     public Presenter CreatePlayer(Character player)
     {
@@ -39,6 +35,9 @@ public class PresenterFactory : MonoBehaviour
 
     public void CreatePoolOfPresenters(Presenter template)
     {
+        if (_pools.Contains(_pools.FirstOrDefault(p => p.FirstElement == template)))
+            return;
+
         ObjectPool<Presenter> pool = new ObjectPool<Presenter>(template, _poolCount, this.transform);
         _pools.Add(pool);
     }

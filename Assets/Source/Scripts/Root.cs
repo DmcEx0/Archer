@@ -1,20 +1,40 @@
 using Archer.Model;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Root : MonoBehaviour
 {
-    [SerializeField] private ItemsDataSO _itemsData;
+    [SerializeField] private EquipmentListSO _equipmentListData;
     [SerializeField] private PresenterFactory _factory;
-    [SerializeField] Transform _playerPosition;
-    [SerializeField] Transform _ememyPosition;
+    [SerializeField] private Transform _playerPosition;
+    [SerializeField] private Transform _mainEmemyPosition;
+    [SerializeField] private List<Transform> _enemiesSpawnPoints;
 
-    [SerializeField] private LineRenderer _lineRenderer;
+    [Space]
+    [SerializeField] private EndGameWindowView _loseGameWindow;
+    [SerializeField] private EndGameWindowView _winGameWindow;
 
     private PlayerSpawner _playerSpawner;
     private EnemySpawner _enemySpawner;
 
     private Health _playerHealth;
-    private Health _enemyHealth;
+
+    private GameSession _gameSession;
+
+    public void OnEnable()
+    {
+        _playerSpawner.CharacterDying += ShowLoseGameWindow;
+        _gameSession.AllEnemiesDying += ShowWinGameWindow;
+    }
+
+    private void OnDisable()
+    {
+        _playerSpawner.CharacterDying -= ShowLoseGameWindow;
+        _gameSession.AllEnemiesDying -= ShowWinGameWindow;
+
+        _playerSpawner.OnDisable();
+        _gameSession.OnDisable();
+    }
 
     private void Awake()
     {
@@ -22,33 +42,57 @@ public class Root : MonoBehaviour
         _enemySpawner = new EnemySpawner(_playerPosition.position, _factory);
 
         _playerHealth = new Health(200);
-        _enemyHealth = new Health(100);
+        _gameSession = new GameSession(_equipmentListData, _enemySpawner, _mainEmemyPosition, _enemiesSpawnPoints);
     }
 
     private void Start()
     {
-        ArrowConfigSO arrowConfig = Config.Instance.ArrowConfig;
-        WeaponConfigSO weaponConfig = Config.Instance.WeaponConfig;
-
-        int randomIndexWeaponConfig = Random.Range(0, _itemsData.WeaponsConfigs.Count);
-        int randomIndexArrowConfig = Random.Range(0, _itemsData.ArrowsConfigs.Count);
-
-        _playerSpawner.Spawn(_playerHealth, weaponConfig, arrowConfig, _playerPosition);
-        _factory.CreatePoolOfPresenters(arrowConfig.Presenter);
-
-        _enemySpawner.Spawn(_enemyHealth, _itemsData.WeaponsConfigs[randomIndexWeaponConfig], _itemsData.ArrowsConfigs[randomIndexArrowConfig], _ememyPosition);
-        _factory.CreatePoolOfPresenters(_itemsData.ArrowsConfigs[randomIndexArrowConfig].Presenter);
-
-        HealthBar playerHealthBar = _playerSpawner.CharacterTemplate.GetComponentInChildren<HealthBar>();
-        HealthBar enemyHealthBar = _enemySpawner.CharacterTemplate.GetComponentInChildren<HealthBar>();
-
-        playerHealthBar.Init(_playerHealth);
-        enemyHealthBar.Init(_enemyHealth);
+        Initialize();
     }
 
     private void Update()
     {
         _playerSpawner.Update(Time.deltaTime);
-        _enemySpawner.Update(Time.deltaTime);
+        _gameSession.Update(Time.deltaTime);
+    }
+
+    private void Initialize()
+    {
+        ArrowDataSO arrowData = Config.Instance.ArrowConfig;
+        WeaponDataSO weaponData = Config.Instance.WeaponConfig;
+
+        var playerTemplate = _playerSpawner.SpawnCharacter(_playerHealth, _playerPosition);
+        _playerSpawner.SpawnWeapon(playerTemplate, weaponData, arrowData);
+        _playerSpawner.InitWeapon();
+        _factory.CreatePoolOfPresenters(arrowData.Presenter);
+
+        HealthBarView playerHealthBar = _playerSpawner.CharacterTemplate.GetComponentInChildren<HealthBarView>();
+        playerHealthBar.Init(_playerHealth);
+
+        PowerShotBarView powerShotPresenter = _playerSpawner.CharacterTemplate.GetComponentInChildren<PowerShotBarView>();
+        powerShotPresenter.Init(_playerSpawner.InputRouter as PlayerInputRouter);
+
+        _gameSession.ActivateNextEnemy();
+    }
+
+    private void ShowLoseGameWindow()
+    {
+        _gameSession.OnDestroy();
+        _playerSpawner.OnDestroy();
+
+        _loseGameWindow.gameObject.SetActive(true);
+    }
+    private void ShowWinGameWindow(int coins)
+    {
+        _gameSession.OnDestroy();
+        _playerSpawner.OnDestroy();
+
+        AddScore(coins);
+        _winGameWindow.gameObject.SetActive(true);
+    }
+
+    private void AddScore(int coins)
+    {
+        PlayerData.Instance.Coins += coins;
     }
 }

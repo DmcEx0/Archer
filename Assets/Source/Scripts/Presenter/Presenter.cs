@@ -20,11 +20,11 @@ public class Presenter : MonoBehaviour
             _updatetable = (IUpdatetable) _model;
 
         _model.Rotated += OnRotated;
-        _model.ChangedPosition += OnChangePosition;
+        _model.ChangedPosition += OnChangedPosition;
         _model.Destroying += OnDestroying;
 
         OnRotated();
-        OnChangePosition();
+        OnChangedPosition();
     }
 
     public void DestroyCompose()
@@ -49,7 +49,7 @@ public class Presenter : MonoBehaviour
         transform.rotation = _model.Rotation;
     }
 
-    private void OnChangePosition()
+    private void OnChangedPosition()
     {
         transform.position = _model.Position;
     }
@@ -57,7 +57,7 @@ public class Presenter : MonoBehaviour
     private void OnDestroying()
     {
         _model.Rotated -= OnRotated;
-        _model.ChangedPosition -= OnChangePosition;
+        _model.ChangedPosition -= OnChangedPosition;
         _model.Destroying -= OnDestroying;
 
         DestroyCompose();

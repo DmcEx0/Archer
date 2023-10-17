@@ -13,6 +13,10 @@ MonoBehaviour:
   m_Name: Bow3
   m_EditorClassIdentifier: 
   _presenter: {fileID: 5064101740289870143, guid: 5dbefe00d285ffc46b4fc52fd72976b8, type: 3}
+  _name: Bow3
+  _icon: {fileID: 21300000, guid: 1bbd541fca61c2c48a1aaf91c474e4a5, type: 3}
+  _price: 70
+  _wasBought: 0
   _shotPower: 7
   _cooldown: 2
   _speedChangedAngle: 2

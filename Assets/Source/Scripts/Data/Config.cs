@@ -1,6 +1,6 @@
 public class Config
 {
-    public Config(WeaponConfigSO weaponConfig, ArrowConfigSO arrowConfig)
+    public Config(WeaponDataSO weaponConfig, ArrowDataSO arrowConfig)
     {
         WeaponConfig = weaponConfig;
         ArrowConfig = arrowConfig;
@@ -9,6 +9,6 @@ public class Config
     }
 
     public static Config Instance { get; private set; }
-    public WeaponConfigSO WeaponConfig {  get; private set; }
-    public ArrowConfigSO ArrowConfig { get; private set; }
+    public WeaponDataSO WeaponConfig {  get; private set; }
+    public ArrowDataSO ArrowConfig { get; private set; }
 }

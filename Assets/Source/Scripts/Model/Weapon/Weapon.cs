@@ -1,5 +1,6 @@
 using DG.Tweening;
 using System;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -7,7 +8,6 @@ namespace Archer.Model
 {
     public class Weapon : Transformable, IUpdatetable
     {
-
         private readonly float _cooldown;
         private readonly float _startedPowerOfShot;
         private readonly float _durationChangedAngle;
@@ -16,7 +16,6 @@ namespace Archer.Model
         private readonly float _maxAngle = 30;
 
         private Transform _transform; // модель не работает с трансформом
-
 
         private Tweener _tweener;
         private float _accumulatedTime;
@@ -91,11 +90,6 @@ namespace Archer.Model
             _tweener = _transform.DORotate(GetTargetDirection(_maxAngle), _durationChangedAngle)
                 .From(GetTargetDirection(_minAngle))
                 .SetLoops(-1, LoopType.Yoyo).SetEase(Ease.Linear);
-
-            //var currentAngle = Rotation.eulerAngles;
-
-            //Vector3 newPos = Vector3.MoveTowards(currentAngle, GetTargetDirection(_maxAngle), 0.07f);
-            //SetRotation(Quaternion.Euler(newPos));
         }
 
         private Vector3 GetTargetDirection(float angle) => new Vector3(angle, Rotation.eulerAngles.y, 0);

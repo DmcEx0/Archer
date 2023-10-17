@@ -2,22 +2,25 @@ using Archer.Model;
 using UnityEngine;
 using System;
 using static UnityEngine.InputSystem.InputAction;
+using UnityEngine.Events;
 
 public class PlayerInputRouter : IInputRouter
 {
-    private PlayerInput _input;
+    private readonly PlayerInput _input;
+
+    private readonly float _maxPower = 3f;
+    private readonly float _minPower = 1f;
 
     private Weapon _weapon;
 
-    private float _time = 1;
-
-    private float _maxPower = 3f;
-    private float _minPower = 1f;
+    private float _power = 1;
 
     public PlayerInputRouter()
     {
         _input = new PlayerInput();
     }
+
+    public event UnityAction<float, float> PowerChanged;
 
     public void OnEnable()
     {
@@ -57,20 +60,16 @@ public class PlayerInputRouter : IInputRouter
 
     public void Update(float deltaTime)
     {
-        if (_weapon == null)
-            return;
-
-        //float offset = 0.5f;
-
-        //_trajectoryRenderer.ShowTrajectory(_weapon.Position + -_weapon.Forward * offset, -_weapon.Forward * _time, deltaTime);
-
-        if (_input.Player.Shoot.inProgress)
+        if (_input.Player.Shoot.inProgress && _weapon.CanShoot)
         {
-            _time += deltaTime;
-            _time = Mathf.Clamp(_time, _minPower, _maxPower);
+            _power += deltaTime;
+            _power = Mathf.Clamp(_power, _minPower, _maxPower);
+            PowerChanged?.Invoke(_power, _maxPower);
             return;
         }
 
-        _time = 1;
+        _power = 1;
+        PowerChanged?.Invoke(_power, _maxPower);
+
     }
 }

@@ -1,19 +1,17 @@
 using Archer.AI;
 using Archer.Model;
 using System;
-using UnityEngine;
 
 public class EnemyInputRouter : IInputRouter
 {
     private EnemyAI _enemyAI;
+    private Weapon _weapon;
     private float _maxPower = 3f;
 
     public EnemyInputRouter(EnemyAI enemyAI)
     {
         _enemyAI = enemyAI;
     }
-
-    private Weapon _weapon;
 
     public IInputRouter BindWeapon(Weapon weapon)
     {
@@ -45,7 +43,7 @@ public class EnemyInputRouter : IInputRouter
             throw new InvalidOperationException();
 
 
-        if(weapon.CanShoot)
+        if (weapon.CanShoot)
             weapon.Shoot(power);
     }
 
