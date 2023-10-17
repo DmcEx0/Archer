@@ -41,7 +41,7 @@ public class EquipmentBigIconView : MonoBehaviour
 
         if (_equipmentData.WasBought == false)
         {
-            if(_equipmentData.TryBuy(PlayerData.Instance.Coins))
+            if(_equipmentData.TryBuy())
                 CloseWindow();
         }
     }

@@ -77,16 +77,10 @@ public class Root : MonoBehaviour
 
     private void ShowLoseGameWindow()
     {
-        _gameSession.OnDestroy();
-        _playerSpawner.OnDestroy();
-
         _loseGameWindow.gameObject.SetActive(true);
     }
     private void ShowWinGameWindow(int coins)
     {
-        _gameSession.OnDestroy();
-        _playerSpawner.OnDestroy();
-
         AddScore(coins);
         _winGameWindow.gameObject.SetActive(true);
     }

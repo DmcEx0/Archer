@@ -17,12 +17,12 @@ public class EquipmentDataSO : ScriptableObject
     public Sprite Icon => _icon;
     public bool WasBought => _wasBought;
 
-    public bool TryBuy(int coins)
+    public bool TryBuy()
     {
-        if (coins >= _price)
+        if (PlayerData.Instance.Coins >= _price)
         {
             _wasBought = true;
-            PlayerData.Instance.Coins -= coins;
+            PlayerData.Instance.Coins -= _price;
 
             return _wasBought;
         }

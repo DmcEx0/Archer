@@ -36,11 +36,6 @@ namespace Archer.Model
             _character.Died -= OnDying;
         }
 
-        public void OnDestroy()
-        {
-            WeaponDestroy();
-        }
-
         public void Update(float deltaTime)
         {
             _inputRouter.Update(deltaTime);
@@ -70,7 +65,6 @@ namespace Archer.Model
 
         public void InitWeapon()
         {
-            _weapon.Init(_weaponTemplate.transform);
             _inputRouter = GetInputRouter().BindWeapon(_weapon);
 
             _weapon.Shot += OnShot;
@@ -78,14 +72,9 @@ namespace Archer.Model
             _inputRouter.OnEnable();
         }
 
-        private void WeaponDestroy() //???????
-        {
-            _weapon.OnDestroy();
-        }
-
         private void OnDying()
         {
-            _weapon.OnDestroy();
+            _weapon.Destroy();
             _inputRouter.OnDisable();
 
             _weapon.Shot -= OnShot;

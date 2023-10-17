@@ -139,13 +139,13 @@ public class MeinMenuView : MonoBehaviour
     {
         if (equipmentData is WeaponDataSO)
         {
-            WeaponDataSO nextWeaponData = equipmentData as WeaponDataSO;
+            _currentWeaponData = equipmentData as WeaponDataSO;
 
-            if (nextWeaponData.WasBought)
+            if (_currentWeaponData.WasBought)
             {
-                WeaponChanged?.Invoke(nextWeaponData);
+                WeaponChanged?.Invoke(_currentWeaponData);
 
-                RenderEquimpemnt(nextWeaponData);
+                RenderEquimpemnt(_currentWeaponData);
 
                 _weaponScrollView.gameObject.SetActive(false);
             }
@@ -153,14 +153,13 @@ public class MeinMenuView : MonoBehaviour
 
         else if (equipmentData is ArrowDataSO)
         {
+            _currentArrowData = equipmentData as ArrowDataSO;
 
-            ArrowDataSO nextEquipmentData = equipmentData as ArrowDataSO;
-
-            if (nextEquipmentData.WasBought)
+            if (_currentArrowData.WasBought)
             {
-                ArrowChanged?.Invoke(nextEquipmentData);
+                ArrowChanged?.Invoke(_currentArrowData);
 
-                RenderEquimpemnt(nextEquipmentData);
+                RenderEquimpemnt(_currentArrowData);
 
                 _arrowScrollView.gameObject.SetActive(false);
             }

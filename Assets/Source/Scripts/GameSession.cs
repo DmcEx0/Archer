@@ -71,11 +71,6 @@ namespace Archer.Model
             _enemySpawner.Update(deltaTime);
         }
 
-        public void OnDestroy()
-        {
-            _enemySpawner.OnDestroy();
-        }
-
         public void OnDisable()
         {
             _enemySpawner.OnDisable();
