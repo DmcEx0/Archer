@@ -5,7 +5,7 @@ using UnityEngine;
 public class ObjectPool<T> where T : MonoBehaviour
 {
     private T _prefab;
-    private bool _isAutoExpand;
+    private bool _isAutoExpand = true;
     private Transform _container;
 
     private Queue<T> _pool;
@@ -20,22 +20,6 @@ public class ObjectPool<T> where T : MonoBehaviour
     }
 
     public T FirstElement {  get; private set; }
-
-    public bool HasFreeElement(out T element)
-    {
-        foreach (var elementInPool in _pool)
-        {
-            if (elementInPool.gameObject.activeInHierarchy == false)
-            {
-                element = elementInPool;
-                elementInPool.gameObject.SetActive(true);
-                return true;
-            }
-        }
-
-        element = null;
-        return false;
-    }
 
     public T GetFreeElement()
     {
@@ -54,6 +38,22 @@ public class ObjectPool<T> where T : MonoBehaviour
 
         for (int i = 0; i < count; i++)
             CreateObject();
+    }
+
+    private bool HasFreeElement(out T element)
+    {
+        foreach (var elementInPool in _pool)
+        {
+            if (elementInPool.isActiveAndEnabled == false)
+            {
+                element = elementInPool;
+                elementInPool.gameObject.SetActive(true);
+                return true;
+            }
+        }
+
+        element = null;
+        return false;
     }
 
     private T CreateObject(bool isActiveByDefault = false)

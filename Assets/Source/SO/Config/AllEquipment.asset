@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: AllEquipment
   m_EditorClassIdentifier: 
   _weaponsData:
+  - {fileID: 11400000, guid: 77fda47430d6dd844bfa3b9d090bc03d, type: 2}
   - {fileID: 11400000, guid: 5039f0119315cb04a8bdb35d609c6165, type: 2}
   - {fileID: 11400000, guid: 9336bcbeee69b184d94cef5e0d48d6ff, type: 2}
   - {fileID: 11400000, guid: feb57501338c7e34fa9e43611ba9daa0, type: 2}

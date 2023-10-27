@@ -19,13 +19,13 @@ namespace Archer.Model
         public event UnityAction ChangedPosition;
         public event UnityAction Destroying;
 
-        protected void SetRotation(Quaternion rotation)
+        public void Rotate(Quaternion rotation)
         {
             Rotation = rotation;
             Rotated?.Invoke();
         }
 
-        protected void SetPosition(Vector3 position)
+        public void MoveTo(Vector3 position)
         {
             Position = position;
             ChangedPosition?.Invoke();

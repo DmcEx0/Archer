@@ -45,7 +45,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0be98df876cf40145868885b962d919b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _shotPoint: {fileID: 3505811241234974450}
+  _arrowSlot: {fileID: 0}
+  _leftHandTarget: {fileID: 0}
+  _rightHandTarget: {fileID: 0}
+  _chestTarget: {fileID: 0}
 --- !u!1 &5435805734554661985
 GameObject:
   m_ObjectHideFlags: 0

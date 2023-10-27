@@ -2,5 +2,5 @@ using UnityEngine;
 
 public interface IGeneratable
 {
-    public Transform SpawnPoint { get; }
+    public Transform GeneratingPoint { get; }
 }

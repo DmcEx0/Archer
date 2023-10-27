@@ -3,7 +3,7 @@ using UnityEngine.Events;
 
 namespace Archer.Model
 {
-    public class Character : Transformable
+    public class Character : Transformable, IUpdatetable
     {
         private readonly Health _health;
 
@@ -11,6 +11,9 @@ namespace Archer.Model
         {
             _health = health;
             _health.Died += OnDied;
+
+            MoveTo(position);
+            Rotate(rotation);
         }
 
         public event UnityAction Died;
@@ -21,6 +24,12 @@ namespace Archer.Model
                 throw new System.ArgumentOutOfRangeException(nameof(damage));
 
             _health.TakeDamage(damage);
+        }
+
+        public void Update(float deltaTime)
+        {
+            MoveTo(Position);
+            Rotate(Rotation);
         }
 
         private void OnDied() 

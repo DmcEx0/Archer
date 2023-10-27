@@ -1,16 +1,19 @@
 using Archer.AI;
 using Archer.Model;
-using System;
+using UnityEngine;
 
 public class EnemyInputRouter : IInputRouter
 {
     private EnemyAI _enemyAI;
     private Weapon _weapon;
+    private AnimationController _animationController;
+
     private float _maxPower = 3f;
 
-    public EnemyInputRouter(EnemyAI enemyAI)
+    public EnemyInputRouter(EnemyAI enemyAI, AnimationController animationController)
     {
         _enemyAI = enemyAI;
+        _animationController = animationController;
     }
 
     public IInputRouter BindWeapon(Weapon weapon)
@@ -39,16 +42,19 @@ public class EnemyInputRouter : IInputRouter
 
     private void TryShoot(Weapon weapon, float power)
     {
-        if(weapon == null)
-            throw new InvalidOperationException();
-
+        if (weapon == null)
+            throw new System.NullReferenceException(nameof(weapon));
 
         if (weapon.CanShoot)
+        {
             weapon.Shoot(power);
+            _animationController.PlayShoot(weapon.Cooldown);
+            _enemyAI.SetTarget();
+        }
     }
 
     public void Update(float deltaTime)
     {
-        _enemyAI.TargetDetection(_weapon.Position, -_weapon.Forward);
+        _enemyAI.CheckTargetInDirection(_weapon.ArrowSpawnPosition, _weapon.Forward);
     }
 }

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6394561204216356273}
   - component: {fileID: 5574668472834135720}
   - component: {fileID: 5767097752522403702}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: arrow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -117,7 +117,7 @@ GameObject:
   - component: {fileID: 277512087104732491}
   - component: {fileID: 4624925583601960772}
   - component: {fileID: 1082476748764203617}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Arrow3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -159,8 +159,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.12294142, y: 0.092515774, z: 0.88710356}
-  m_Center: {x: -0.0002471879, y: 0.00326043, z: 0.39135128}
+  m_Size: {x: 0.09699319, y: 0.0806239, z: 0.22807634}
+  m_Center: {x: 0.0015219077, y: 0.009206366, z: 0.7269135}
 --- !u!54 &4624925583601960772
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -185,7 +185,7 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 0
   m_IsKinematic: 1
-  m_Interpolate: 1
+  m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
 --- !u!114 &1082476748764203617

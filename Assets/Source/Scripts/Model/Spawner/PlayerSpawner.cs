@@ -2,14 +2,30 @@ namespace Archer.Model
 {
     public class PlayerSpawner : CharactersSpawner
     {
+        private AnimationController _animationController;
+
         public PlayerSpawner(PresenterFactory factory) : base(factory)
         {
         }
 
-        protected override Presenter CreateCharacter(Character characterModel) => Factory.CreatePlayer(characterModel);
+        public override void Update(float deltaTime)
+        {
+            base.Update(deltaTime);
 
-        protected override Presenter CreateWeapon(WeaponPresenter weaponTemplate, Weapon weaponModel) => Factory.CreateWeapon(weaponTemplate, weaponModel);
+            EnabledIK(_animationController);
+        }
 
-        protected override IInputRouter GetInputRouter() => new PlayerInputRouter();
+        protected override Presenter CreateCharacter(Character characterModel)
+        {
+            Presenter playerTempalte = Factory.CreatePlayer(characterModel);
+
+            _animationController = playerTempalte.AnimationController;
+            
+            return playerTempalte;
+        }
+
+        protected override WeaponPresenter CreateWeapon(WeaponPresenter weaponTemplate, Weapon weaponModel) => Factory.CreateWeapon(weaponTemplate, weaponModel) as WeaponPresenter;
+
+        protected override IInputRouter GetInputRouter() => new PlayerInputRouter(_animationController);
     }
 }

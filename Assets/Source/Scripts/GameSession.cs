@@ -1,44 +1,103 @@
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
 
 namespace Archer.Model
 {
-    public class GameSession
+    public class GameSession : IUpdatetable
     {
         private const int _maxNumberOfEnemyOnScene = 3;
         private const int _minNumberOfEnemyOnScene = 1;
 
-        private readonly Queue<Presenter> _enemies;
-        private readonly Queue<WeaponDataSO> _enemyWeapons;
-        private readonly Queue<ArrowDataSO> _enemyArrow;
         private readonly int _numberOfEnemyOnScene;
 
         private readonly EnemySpawner _enemySpawner;
         private readonly Transform _mainEnemySpawnPoint;
         private readonly List<Transform> _enemySpawnPoints;
         private readonly EquipmentListSO _enemyEquipment;
+        private readonly Score _score;
 
-        private Score _score;
+        private Dictionary<Presenter, Character> _enemies;
+        private Queue<WeaponDataSO> _enemyWeapons;
+        private Queue<ArrowDataSO> _enemyArrow;
+
+        private float _deltaTime;
+        private float _speedTakenPosition = 5f;
+
+        private bool _isEnemyTakenPosition = false;
 
         public event UnityAction<int> AllEnemiesDying;
 
-        public GameSession(EquipmentListSO equipmentList ,EnemySpawner enemySpawner,Transform mainEnemySpawnPoint , List<Transform> enemySpawnPoins)
+        public GameSession(EquipmentListSO equipmentList ,EnemySpawner enemySpawner,Transform mainEnemySpawnPoint , List<Transform> enemySpawnPoins, Score score)
         {
             _enemyEquipment = equipmentList;
             _enemySpawner = enemySpawner;
             _enemySpawnPoints = enemySpawnPoins;
             _mainEnemySpawnPoint = mainEnemySpawnPoint;
-
-            _enemies = new Queue<Presenter>();
-            _enemyWeapons = new Queue<WeaponDataSO>();
-            _enemyArrow = new Queue<ArrowDataSO>();
-
-            _score = new Score();
+            _score = score;
 
             _numberOfEnemyOnScene = Random.Range(_minNumberOfEnemyOnScene, _maxNumberOfEnemyOnScene + 1);
 
+            Init();
+        }
+
+        public void Update(float deltaTime)
+        {
+            _deltaTime = deltaTime;
+
+            if (_isEnemyTakenPosition)
+            {
+                _enemySpawner.Update(deltaTime);
+            }
+        }
+
+        public void OnDisable()
+        {
+            _enemySpawner.OnDisable();
+            _enemySpawner.CharacterDying -= OnEnemyDying;
+        }
+
+        public void ActivateNextEnemy(KeyValuePair<Presenter, Character> nextEnemyTemplate)
+        {
+            nextEnemyTemplate.Value.Rotate(_mainEnemySpawnPoint.rotation);
+
+            _enemySpawner.ActivateEnemyAI(nextEnemyTemplate.Key.AnimationController, nextEnemyTemplate.Value.Position);
+            _enemySpawner.SpawnWeapon(nextEnemyTemplate.Key, _enemyWeapons.Dequeue(), _enemyArrow.Dequeue());
+
+            _enemySpawner.InitWeapon();
+        }
+
+        public async void WaitForEnemyTakenPosition()
+        {
+            if (_enemies.Count == 0)
+            {
+                AllEnemiesDying?.Invoke(_score.AmountCoins);
+                return;
+            }
+
+            KeyValuePair<Presenter, Character> currentEnemy = _enemies.First();
+
+            while (currentEnemy.Value.Position != _mainEnemySpawnPoint.position)
+            {
+                currentEnemy.Value.MoveTo(Vector3.MoveTowards(currentEnemy.Value.Position, _mainEnemySpawnPoint.position, _speedTakenPosition * _deltaTime));
+
+                await Task.Yield();
+            }
+
+            ActivateNextEnemy(currentEnemy);
+            _isEnemyTakenPosition = true;
+        }
+
+        private void Init()
+        {
+            _enemies = new();
+            _enemyWeapons = new();
+            _enemyArrow = new();
+
             SpawnEnemies();
+
             _enemySpawner.CharacterDying += OnEnemyDying;
         }
 
@@ -50,50 +109,25 @@ namespace Archer.Model
             for (int i = 0; i < _numberOfEnemyOnScene; i++)
             {
                 Health emenyHealth = new Health(Random.Range(20, 30));
-                Presenter currentEnemy = _enemySpawner.SpawnCharacter(emenyHealth, _enemySpawnPoints[i]);
-                HealthBarView enemyHealthBarView = currentEnemy.GetComponentInChildren<HealthBarView>();
+                KeyValuePair<Presenter, Character> currentEnemy = _enemySpawner.SpawnCharacter(emenyHealth, _enemySpawnPoints[i]);
+
+                HealthBarView enemyHealthBarView = currentEnemy.Key.GetComponentInChildren<HealthBarView>();
                 enemyHealthBarView.Init(emenyHealth);
-                _enemies.Enqueue(currentEnemy);
+                _enemies.Add(currentEnemy.Key, currentEnemy.Value);
                 
-                _enemyWeapons.Enqueue(_enemyEquipment.WeaponsData[Random.Range(0, _enemyEquipment.WeaponsData.Count)]);
+                _enemyWeapons.Enqueue(_enemyEquipment.WeaponsData[/*Random.Range(0, _enemyEquipment.WeaponsData.Count)*/0]);
                 _enemyArrow.Enqueue(_enemyEquipment.ArrowsData[Random.Range(0, _enemyEquipment.ArrowsData.Count)]);
             }
         }
 
         private void OnEnemyDying()
         {
-            _score.AddCoinsOnKill();
-            ActivateNextEnemy();
-        }
+            _enemies.Remove(_enemies.First().Key);
+            _score.AddCoinsOnKill(Config.Instance.CoinsForEnemy);
 
-        public void Update(float deltaTime)
-        {
-            _enemySpawner.Update(deltaTime);
-        }
+            _isEnemyTakenPosition = false;
 
-        public void OnDisable()
-        {
-            _enemySpawner.OnDisable();
-            _enemySpawner.CharacterDying -= OnEnemyDying;
-        }
-
-        public void ActivateNextEnemy()
-        {
-            if(_enemies.Count == 0)
-            {
-                AllEnemiesDying?.Invoke(_score.AmountCoins);
-                return;
-            }
-
-            Presenter currentEnemy = _enemies.Dequeue();
-
-            currentEnemy.transform.position = _mainEnemySpawnPoint.position;
-            currentEnemy.transform.rotation = _mainEnemySpawnPoint.rotation;
-
-            _enemySpawner.ActivateEnemyAI(currentEnemy.transform.position);
-            _enemySpawner.SpawnWeapon(currentEnemy ,_enemyWeapons.Dequeue(), _enemyArrow.Dequeue());
-
-            _enemySpawner.InitWeapon();
+            WaitForEnemyTakenPosition();
         }
     }
 }

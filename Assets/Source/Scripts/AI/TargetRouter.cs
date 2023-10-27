@@ -1,32 +1,59 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Archer.AI
 {
-    public class TargetRouter : MonoBehaviour
+    public class TargetRouter
     {
-        // пока ни на что не влияет. В разработке.
+        private List<Collider> _colliders;
 
-        [SerializeField] private List<Collider> _colliders;
-
-        public Collider Target => SetTarget();
-
-        private Collider SetTarget()
+        public TargetRouter()
         {
-            int random = Random.Range(0,2);
+            _colliders = new List<Collider>();
+        }
 
-            Debug.Log(random);
+        public Collider Target => SelectedTarget();
 
-            Collider result = random switch
+        public void TryAddColliderInList(Collider collider)
+        {
+            if (_colliders.Contains(collider))
+                return;
+
+            _colliders.Add(collider);
+        }
+
+        private Collider SelectedTarget()
+        {
+            int randomIndex = Random.Range(0,100);
+
+            foreach (Collider collider in _colliders)
             {
-                0 => _colliders[0],
-                1 => _colliders[1],
-                2 => null,
-                _ => null
-            };
+                if (randomIndex <= 50)       // вынести шанс в отдельный код
+                {
+                    if (collider.TryGetComponent(out PlayerPresenter playerPresenter))
+                        return collider;
+                }
 
-            return result;
+                if (randomIndex >= 50 && randomIndex <= 66)
+                {
+                    if (collider.TryGetComponent(out Target1 target1))                  
+                        return collider;
+                }
+
+                if (randomIndex >= 66 && randomIndex <= 83)
+                {
+                    if (collider.TryGetComponent(out Target2 target2))
+                        return collider;
+                }
+
+                if (randomIndex >= 83 && randomIndex <= 100)
+                {
+                    if (collider.TryGetComponent(out Target3 target3))
+                        return collider;
+                }
+            }
+
+            return _colliders[Random.Range(0, _colliders.Count)];
         }
     }
 }

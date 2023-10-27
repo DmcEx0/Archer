@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9740c53ad95a1794e976dcc190c0efef, type: 3}
+  m_Name: Crossbow1
+  m_EditorClassIdentifier: 
+  _presenter: {fileID: 4431628816255970375, guid: c980d27ed143349488e7fd5b5f9b03f8, type: 3}
+  _name: Crossbow1
+  _icon: {fileID: 21300000, guid: 1bbd541fca61c2c48a1aaf91c474e4a5, type: 3}
+  _price: 10
+  _wasBought: 1
+  _shotPower: 7.71
+  _cooldown: 2.02
+  _speedChangedAngle: 10.3

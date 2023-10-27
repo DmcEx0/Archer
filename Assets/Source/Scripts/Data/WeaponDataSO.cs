@@ -4,8 +4,11 @@ using UnityEngine;
 public class WeaponDataSO : EquipmentDataSO
 {
     [Space]
+    [Range(1, 10)]
     [SerializeField] private float _shotPower;
+    [Range(0, 5)]
     [SerializeField] private float _cooldown;
+    [Range(5, 30)]
     [SerializeField] private float _speedChangedAngle;
 
     public float ShotPower => _shotPower;

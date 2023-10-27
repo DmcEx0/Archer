@@ -20,15 +20,15 @@ namespace Archer.Model
         {
             Damage = damage;
 
-            SetPosition(position);
-            SetRotation(rotation);
+            MoveTo(position);
+            Rotate(rotation);
         }
 
         public void Update(float deltaTime)
         {
-            SetPosition(Position + BallisticsRouter.GetCalculatedPosition(ref _velocity, deltaTime));
+            MoveTo(Position + BallisticsRouter.GetCalculatedPosition(ref _velocity, deltaTime));
 
-            SetRotation(Quaternion.LookRotation(_velocity));
+            Rotate(Quaternion.LookRotation(_velocity));
 
             _accumulatedTime += deltaTime;
 

@@ -19,4 +19,4 @@ MonoBehaviour:
   _wasBought: 1
   _shotPower: 4
   _cooldown: 2
-  _speedChangedAngle: 13
+  _speedChangedAngle: 15

@@ -1,7 +1,7 @@
 using Archer.Model;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody), typeof(Collider))]
+[RequireComponent(typeof(Rigidbody), typeof(BoxCollider))]
 public class ArrowPresenter : Presenter
 {
     private Arrow _model => Model is Arrow ? Model as Arrow : null;
@@ -10,8 +10,9 @@ public class ArrowPresenter : Presenter
     {
         if (other.TryGetComponent(out Presenter presenter))
         {
-            if(presenter is EnemyPresenter || presenter is PlayerPresenter)
+            if (presenter is EnemyPresenter || presenter is PlayerPresenter)
             {
+                presenter.AnimationController.PlayeHitA();
                 presenter.OnCollision(_model.Damage);
             }
 

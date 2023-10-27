@@ -1,16 +1,15 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
 namespace Archer.Model
 {
-    public abstract class CharactersSpawner
+    public abstract class CharactersSpawner : IUpdatetable
     {
-        private Weapon _weapon;
-        private Character _character;
-
-        private Presenter _weaponTemplate;
-        private Presenter _characterTemplate;
+        private Weapon _weaponModel;
+        private Character _characterModel;
+        private WeaponPresenter _weaponTemplate;
 
         private IInputRouter _inputRouter;
 
@@ -21,34 +20,37 @@ namespace Archer.Model
             Factory = factory;
         }
 
-        public Presenter CharacterTemplate => _characterTemplate;//???
         public IInputRouter InputRouter => _inputRouter;
         protected PresenterFactory Factory { get; private set; }
 
         public UnityAction CharacterDying;
 
         protected abstract Presenter CreateCharacter(Character caharacterModel);
-        protected abstract Presenter CreateWeapon(WeaponPresenter weaponTemplate, Weapon weaponModel);
+        protected abstract WeaponPresenter CreateWeapon(WeaponPresenter weaponTemplate, Weapon weaponModel);
         protected abstract IInputRouter GetInputRouter();
 
         public void OnDisable()
         {
-            _character.Died -= OnDying;
+            OnDisableCharacter();
+
+            _characterModel.Died -= OnDying;
         }
 
-        public void Update(float deltaTime)
+        public virtual void Update(float deltaTime)
         {
             _inputRouter.Update(deltaTime);
         }
 
-        public Presenter SpawnCharacter(Health health, Transform characterSpawnPoint)
+        public KeyValuePair<Presenter, Character> SpawnCharacter(Health health, Transform characterSpawnPoint)
         {
-            _character = new Character(characterSpawnPoint.position, characterSpawnPoint.rotation, health);
-            _characterTemplate = CreateCharacter(_character);
+            _characterModel = new Character(characterSpawnPoint.position, characterSpawnPoint.rotation, health);
+            Presenter characterTemplate = CreateCharacter(_characterModel);
 
-            _character.Died += OnDying;
+            _characterModel.Died += OnDying;
 
-            return _characterTemplate;
+            KeyValuePair<Presenter, Character> character = new KeyValuePair<Presenter, Character>(characterTemplate, _characterModel);
+
+            return character;
         }
 
         public void SpawnWeapon(Presenter tempalte, WeaponDataSO weaponData, ArrowDataSO arrowData)
@@ -57,36 +59,45 @@ namespace Archer.Model
 
             Factory.CreatePoolOfPresenters(arrowData.Presenter);
 
-            _weapon = new Weapon(CastToGeneratable(tempalte).SpawnPoint.position, CastToGeneratable(tempalte).SpawnPoint.rotation, weaponData.SpeedChangedAngle, weaponData.ShotPower, weaponData.Cooldown);
-            _weaponTemplate = CreateWeapon(weaponData.Presenter as WeaponPresenter, _weapon);
-
-            _weaponTemplate.gameObject.SetActive(true);
+            _weaponModel = new Weapon(CastToGeneratable(tempalte).GeneratingPoint.position, CastToGeneratable(tempalte).GeneratingPoint.rotation, weaponData.SpeedChangedAngle, weaponData.ShotPower, weaponData.Cooldown);
+            _weaponTemplate = CreateWeapon(weaponData.Presenter as WeaponPresenter, _weaponModel);
+            _weaponModel.SetArrowSpawnPoint(CastToGeneratable(tempalte).GeneratingPoint.position);
+            _weaponTemplate.transform.SetParent(CastToGeneratable(tempalte).GeneratingPoint);
         }
 
         public void InitWeapon()
         {
-            _inputRouter = GetInputRouter().BindWeapon(_weapon);
+            _inputRouter = GetInputRouter().BindWeapon(_weaponModel);
 
-            _weapon.Shot += OnShot;
+            _weaponModel.Shot += OnShot;
 
             _inputRouter.OnEnable();
         }
 
+        public void EnabledIK(AnimationController animationController)
+        {
+            animationController.SetTargetsForHands(_weaponTemplate.RightHandTarget, _weaponTemplate.LeftHandTarget, _weaponTemplate.ChestTarget);
+        }
+
         private void OnDying()
         {
-            _weapon.Destroy();
+            OnDisableCharacter();
+            CharacterDying?.Invoke();
+        }
+
+        private void OnDisableCharacter()
+        {
+            _weaponModel.Destroy();
             _inputRouter.OnDisable();
 
-            _weapon.Shot -= OnShot;
-
-            CharacterDying?.Invoke();
+            _weaponModel.Shot -= OnShot;
         }
 
         private void OnShot(Arrow arrow)
         {
             Factory.CreateArrow(_arrowData.Presenter, arrow);
 
-            arrow.Init(CastToGeneratable(_weaponTemplate).SpawnPoint.position, Quaternion.Euler(0f, 0f, _weaponTemplate.transform.eulerAngles.x), _arrowData.Damage);
+            arrow.Init(CastToGeneratable(_weaponTemplate).GeneratingPoint.position, Quaternion.Euler(0f, 0f, _weaponTemplate.transform.eulerAngles.x), _arrowData.Damage);
         }
 
         private IGeneratable CastToGeneratable(Presenter presenter)

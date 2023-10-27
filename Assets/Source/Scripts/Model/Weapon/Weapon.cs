@@ -6,6 +6,7 @@ namespace Archer.Model
 {
     public class Weapon : Transformable, IUpdatetable
     {
+
         private readonly float _cooldown;
         private readonly float _startedPowerOfShot;
         private readonly float _speedChangedAngle;
@@ -22,11 +23,15 @@ namespace Archer.Model
             _speedChangedAngle = speedChangedAngle;
             _startedPowerOfShot = startedPowerOfShot;
             _cooldown = cooldown;
+
+            MoveTo(position);
+            Rotate(rotation);
         }
 
+        public Vector3 ArrowSpawnPosition { get; private set; }
         public bool CanShoot { get; private set; } = false;
-
         public float StartedPowerOfShot => _startedPowerOfShot;
+        public float Cooldown => _cooldown;
 
         public event UnityAction<Arrow> Shot;
 
@@ -35,7 +40,7 @@ namespace Archer.Model
             if (CanShoot == false)
                 throw new InvalidOperationException();
 
-            Vector3 accumulatedVelocity = -Forward * (_startedPowerOfShot * accumulatedPower);
+            Vector3 accumulatedVelocity = Forward * (_startedPowerOfShot * accumulatedPower);
 
             Arrow arrow = GetArrow(accumulatedVelocity);
             Shot?.Invoke(arrow);
@@ -46,20 +51,32 @@ namespace Archer.Model
         public void Update(float deltaTime)
         {
             Reload(deltaTime);
+            MoveTo(Position);
 
             if (_changedUp == true)
             {
-                ChangeAngleUp(deltaTime);
+                ChangeAngle(deltaTime, _maxAngle);
+
+                if ((int)Rotation.eulerAngles.x == (int)_maxAngle)
+                    _changedUp = false;
             }
             else if(_changedUp == false)
             {
-                ChangeAngleDown(deltaTime);
+                ChangeAngle(deltaTime, _minAngle);
+
+                if ((int)Rotation.eulerAngles.x == (int)_minAngle + 360)
+                    _changedUp = true;
             }
+        }
+
+        public void SetArrowSpawnPoint(Vector3 arrowSpawnPosition)
+        {
+            ArrowSpawnPosition = arrowSpawnPosition;
         }
 
         private Arrow GetArrow(Vector3 velocity)
         {
-            return new Arrow(Position, velocity);
+            return new Arrow(ArrowSpawnPosition, velocity);
         }
 
         private void Reload(float deltaTime)
@@ -76,33 +93,13 @@ namespace Archer.Model
             }
         }
 
-        //private void ChangeDirection()
-        //{
-        //    _tweener = _transform.DORotate(GetTargetDirection(_maxAngle), _durationChangedAngle)
-        //        .From(GetTargetDirection(_minAngle))
-        //        .SetLoops(-1, LoopType.Yoyo).SetEase(Ease.Linear);
-        //}
+        private Vector3 GetTargetDirection(float angle) => new Vector3(angle, Rotation.eulerAngles.y, Rotation.eulerAngles.z);
 
-        private Vector3 GetTargetDirection(float angle) => new Vector3(angle, Rotation.eulerAngles.y, 0);
-
-        private void ChangeAngleUp(float deltaTime)
+        private void ChangeAngle(float deltaTime, float angle)
         {
-            Quaternion nextRotation = Quaternion.RotateTowards(Rotation, Quaternion.Euler(GetTargetDirection(_maxAngle)), _speedChangedAngle * deltaTime);
+            Quaternion nextRotation = Quaternion.RotateTowards(Rotation, Quaternion.Euler(GetTargetDirection(angle)), _speedChangedAngle * deltaTime);
 
-            SetRotation(nextRotation);
-
-            if ((int)Rotation.eulerAngles.x == (int)_maxAngle)
-                _changedUp = false;
-        }
-
-        private void ChangeAngleDown(float deltaTime)
-        {
-            Quaternion nextRotation = Quaternion.RotateTowards(Rotation, Quaternion.Euler(GetTargetDirection(_minAngle)), _speedChangedAngle * deltaTime);
-
-            SetRotation(nextRotation);
-
-            if ((int)Rotation.eulerAngles.x == (int)_minAngle + 360)
-                _changedUp = true;
+            Rotate(nextRotation);
         }
     }
 }

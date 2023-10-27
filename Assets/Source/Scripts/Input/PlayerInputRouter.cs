@@ -6,6 +6,8 @@ using UnityEngine.Events;
 
 public class PlayerInputRouter : IInputRouter
 {
+    private AnimationController _animationController;
+
     private readonly PlayerInput _input;
 
     private readonly float _maxPower = 3f;
@@ -15,9 +17,10 @@ public class PlayerInputRouter : IInputRouter
 
     private float _power = 1;
 
-    public PlayerInputRouter()
+    public PlayerInputRouter(AnimationController animationController)
     {
         _input = new PlayerInput();
+        _animationController = animationController;
     }
 
     public event UnityAction<float, float> PowerChanged;
@@ -55,7 +58,10 @@ public class PlayerInputRouter : IInputRouter
             throw new InvalidOperationException();
 
         if (weapon.CanShoot)
+        {
+            _animationController.PlayShoot(weapon.Cooldown);
             weapon.Shoot(power);
+        }
     }
 
     public void Update(float deltaTime)

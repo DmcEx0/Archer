@@ -11,8 +11,9 @@ public class MeinMenuView : MonoBehaviour
     [Space]
     [SerializeField] private TMP_Text _textCoin;
     [SerializeField] private EquipmentBigIconView _equpmentBigIcon;
-    [SerializeField] private EquipmentSmallIconView _currentArrowView;
-    [SerializeField] private EquipmentSmallIconView _currentWeaponView;
+    [SerializeField] private EquipmentSmallIconView _arrowViewOnScene;
+    [SerializeField] private EquipmentSmallIconView _weaponViewOnScene
+        ;
     [SerializeField] private Button _startButton;
     [SerializeField] private GameObject _weaponScrollView;
     [SerializeField] private GameObject _arrowScrollView;
@@ -43,8 +44,8 @@ public class MeinMenuView : MonoBehaviour
 
         _equipmentListView.EquipmentSelected += OnShowBigIconEquipment;
 
-        _currentWeaponView.EquipmentSelected += OpenEquipmentsWindowShow;
-        _currentArrowView.EquipmentSelected += OpenEquipmentsWindowShow;
+        _weaponViewOnScene.EquipmentSelected += OpenEquipmentsWindowShow;
+        _arrowViewOnScene.EquipmentSelected += OpenEquipmentsWindowShow;
         
         _equpmentBigIcon.EquipmentSelected += OnEquipmentSelected;
     }
@@ -55,8 +56,8 @@ public class MeinMenuView : MonoBehaviour
 
         _equipmentListView.EquipmentSelected -= OnShowBigIconEquipment;
 
-        _currentWeaponView.EquipmentSelected -= OpenEquipmentsWindowShow;
-        _currentArrowView.EquipmentSelected -= OpenEquipmentsWindowShow;
+        _weaponViewOnScene.EquipmentSelected -= OpenEquipmentsWindowShow;
+        _arrowViewOnScene.EquipmentSelected -= OpenEquipmentsWindowShow;
 
         _equpmentBigIcon.EquipmentSelected -= OnEquipmentSelected;
     }
@@ -78,11 +79,11 @@ public class MeinMenuView : MonoBehaviour
 
     private void RenderEquimpemnt(WeaponDataSO weaponData)
     {
-        _currentWeaponView.Render(weaponData);
+        _weaponViewOnScene.Render(weaponData);
     }
     private void RenderEquimpemnt(ArrowDataSO arrowData)
     {
-        _currentArrowView.Render(arrowData);
+        _arrowViewOnScene.Render(arrowData);
     }
 
     private void StartGame()

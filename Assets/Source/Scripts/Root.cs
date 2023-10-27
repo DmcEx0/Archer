@@ -20,8 +20,9 @@ public class Root : MonoBehaviour
     private Health _playerHealth;
 
     private GameSession _gameSession;
+    private Score _score;
 
-    public void OnEnable()
+     private void OnEnable()
     {
         _playerSpawner.CharacterDying += ShowLoseGameWindow;
         _gameSession.AllEnemiesDying += ShowWinGameWindow;
@@ -31,18 +32,16 @@ public class Root : MonoBehaviour
     {
         _playerSpawner.CharacterDying -= ShowLoseGameWindow;
         _gameSession.AllEnemiesDying -= ShowWinGameWindow;
-
-        _playerSpawner.OnDisable();
-        _gameSession.OnDisable();
     }
 
     private void Awake()
     {
+        _score = new Score();
         _playerSpawner = new PlayerSpawner(_factory);
         _enemySpawner = new EnemySpawner(_playerPosition.position, _factory);
 
         _playerHealth = new Health(200);
-        _gameSession = new GameSession(_equipmentListData, _enemySpawner, _mainEmemyPosition, _enemiesSpawnPoints);
+        _gameSession = new GameSession(_equipmentListData, _enemySpawner, _mainEmemyPosition, _enemiesSpawnPoints, _score);
     }
 
     private void Start()
@@ -61,28 +60,35 @@ public class Root : MonoBehaviour
         ArrowDataSO arrowData = Config.Instance.ArrowConfig;
         WeaponDataSO weaponData = Config.Instance.WeaponConfig;
 
-        var playerTemplate = _playerSpawner.SpawnCharacter(_playerHealth, _playerPosition);
-        _playerSpawner.SpawnWeapon(playerTemplate, weaponData, arrowData);
+        KeyValuePair<Presenter, Character> playerTemplate = _playerSpawner.SpawnCharacter(_playerHealth, _playerPosition);
+        _playerSpawner.SpawnWeapon(playerTemplate.Key, weaponData, arrowData);
         _playerSpawner.InitWeapon();
         _factory.CreatePoolOfPresenters(arrowData.Presenter);
 
-        HealthBarView playerHealthBar = _playerSpawner.CharacterTemplate.GetComponentInChildren<HealthBarView>();
+        HealthBarView playerHealthBar = playerTemplate.Key.GetComponentInChildren<HealthBarView>();
         playerHealthBar.Init(_playerHealth);
 
-        PowerShotBarView powerShotPresenter = _playerSpawner.CharacterTemplate.GetComponentInChildren<PowerShotBarView>();
+        PowerShotBarView powerShotPresenter = playerTemplate.Key.GetComponentInChildren<PowerShotBarView>();
         powerShotPresenter.Init(_playerSpawner.InputRouter as PlayerInputRouter);
 
-        _gameSession.ActivateNextEnemy();
+        _gameSession.WaitForEnemyTakenPosition();
     }
 
     private void ShowLoseGameWindow()
     {
+        AddScore(_score.AmountCoins);
         _loseGameWindow.gameObject.SetActive(true);
+
+        _gameSession.OnDisable();
+        _playerSpawner.OnDisable();
     }
     private void ShowWinGameWindow(int coins)
     {
         AddScore(coins);
         _winGameWindow.gameObject.SetActive(true);
+
+        _gameSession.OnDisable();
+        _playerSpawner.OnDisable();
     }
 
     private void AddScore(int coins)

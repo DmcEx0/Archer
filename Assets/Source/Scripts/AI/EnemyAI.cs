@@ -1,3 +1,6 @@
+using ParadoxNotion;
+using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -5,14 +8,25 @@ namespace Archer.AI
 {
     public class EnemyAI
     {
+        const float _addDistance = 0.5f;
+        private const int _palyerLayer = 6;
+        private const int _targetLayer = 9;
+
         private readonly float _distanceToPlayer;
+
+        private readonly TargetRouter _targetRouter;
+
+        private readonly int _targetsLayerMask = (1 << _palyerLayer) | (1 << _targetLayer);
 
         private Vector3 _velocity;
         private float _accumulatedPowerOfShot;
 
+        private Collider _target;
+
         public EnemyAI(float distanceToPlayer)
         {
             _distanceToPlayer = distanceToPlayer;
+            _targetRouter = new();
         }
 
         public event UnityAction Shot;
@@ -22,11 +36,24 @@ namespace Archer.AI
             _accumulatedPowerOfShot = accumulatedPowerOfShot;
         }
 
-        public void TargetDetection(Vector3 position, Vector3 forward)
+        public void SetTarget()
         {
-            if (Physics.Linecast(position, CalculateEndPointAfterTime(position, forward), out RaycastHit hitInfo))
+            _target = _targetRouter.Target;
+        }
+
+        public void CheckTargetInDirection(Vector3 position, Vector3 forward)
+        {
+            if (Physics.Linecast(position, CalculateEndPointAfterTime(position, forward), out RaycastHit hitInfo, _targetsLayerMask))
             {
-                if (hitInfo.collider.TryGetComponent(out PlayerPresenter playerPresenter))
+                _targetRouter.TryAddColliderInList(hitInfo.collider);
+
+                if (_target == null)
+                {
+                    SetTarget();
+                    return;
+                }
+
+                if (hitInfo.collider == _target)
                 {
                     Shot?.Invoke();
                 }
@@ -37,8 +64,8 @@ namespace Archer.AI
         {
             _velocity = forward * _accumulatedPowerOfShot;
 
-            float time = _distanceToPlayer / _velocity.magnitude;
-
+            float time = (_distanceToPlayer + _addDistance) / _velocity.magnitude;
+       
             Vector3 endPoint = position + BallisticsRouter.GetCalculatedPositionAfterTime(_velocity, time);
 
             Debug.DrawLine(position, endPoint, Color.green, 0.01f);

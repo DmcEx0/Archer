@@ -1,4 +1,6 @@
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
 
 public class PlayerConfigurationPresenter : MonoBehaviour
 {
@@ -6,11 +8,14 @@ public class PlayerConfigurationPresenter : MonoBehaviour
 
     [Space]
     [SerializeField] private PlayerPresenter _playerPresenter;
+    [SerializeField] private Transform _rightHand;
+
+    private AnimationController _animationRig;
 
     private WeaponDataSO _currentWeaponData;
     private ArrowDataSO _currentArrowData;
 
-    private WeaponPresenter _currentWeaponPresenter;
+    private WeaponPresenter _currentWeaponTemplate;
     private ArrowPresenter _currentArrowPresenter;
 
     private void OnEnable()
@@ -25,6 +30,19 @@ public class PlayerConfigurationPresenter : MonoBehaviour
         _meinMenuView.ArrowChanged -= OnArrowPresenterChanged;
     }
 
+    private void Awake()
+    {
+        _animationRig = _playerPresenter.GetComponent<AnimationController>();
+    }
+
+    private void Update()
+    {
+        if (_currentWeaponTemplate != null)
+        {
+            _animationRig.SetTargetsForHands(_currentWeaponTemplate.RightHandTarget, _currentWeaponTemplate.LeftHandTarget, _currentWeaponTemplate.ChestTarget);
+        }
+    }
+
     private Presenter CreatePresenter(EquipmentDataSO equipmentData, Transform spawnPoint)
     {
         return Instantiate(equipmentData.Presenter, spawnPoint.position, spawnPoint.rotation);
@@ -32,11 +50,12 @@ public class PlayerConfigurationPresenter : MonoBehaviour
 
     private void OnWeaponPresenterChanged(WeaponDataSO weaponData)
     {
-        if(_currentWeaponPresenter != null)
-            Destroy(_currentWeaponPresenter.gameObject);
+        if(_currentWeaponTemplate != null)
+            Destroy(_currentWeaponTemplate.gameObject);
 
         _currentWeaponData = weaponData;
-        _currentWeaponPresenter = CreatePresenter(_currentWeaponData, _playerPresenter.SpawnPoint) as WeaponPresenter;
+        _currentWeaponTemplate = CreatePresenter(_currentWeaponData, _rightHand) as WeaponPresenter;
+        _currentWeaponTemplate.transform.parent = _rightHand;
     }
 
     private void OnArrowPresenterChanged(ArrowDataSO arrowData)
@@ -45,6 +64,7 @@ public class PlayerConfigurationPresenter : MonoBehaviour
             Destroy(_currentArrowPresenter.gameObject);
 
         _currentArrowData = arrowData;
-        _currentArrowPresenter = CreatePresenter(_currentArrowData, _currentWeaponPresenter.SpawnPoint) as ArrowPresenter;
+        _currentArrowPresenter = CreatePresenter(_currentArrowData, _currentWeaponTemplate.ArrowSlot) as ArrowPresenter;
+        _currentArrowPresenter.transform.SetParent(_currentWeaponTemplate.ArrowSlot);
     }
 }
