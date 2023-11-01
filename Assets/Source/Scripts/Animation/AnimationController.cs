@@ -3,9 +3,17 @@ using UnityEngine;
 [RequireComponent(typeof(Animator))]
 public class AnimationController : MonoBehaviour
 {
-    private const float _shootDuration = 1f;
-    private const float _aimDuration = 0.3f;
+    private const float ShootSpeed = 1f;
+    private const float AimSpeed = 0.7f;
+    private const float HitSpeed = 1f;
+    private const float DeathSpeed = 1f;
+    private const float SitInleSpeed = 1f;
 
+    [SerializeField] private AnimationClipData _animationClipData;
+    [SerializeField] private AnimationCurve _changePositionCurve;
+    [SerializeField] private float _offsetTime;
+
+    [Space]
     [SerializeField] private Transform _leftHandRigTarget;
     [SerializeField] private Transform _rightHandRigTarget;
     [SerializeField] private Transform _chestRigTarget;
@@ -16,23 +24,45 @@ public class AnimationController : MonoBehaviour
     private string _nextAnimationName;
 
     private float _duration;
+    private float _reloadSpeed;
 
-    private void Start()
-    {
-        _animator = GetComponent<Animator>();
-
-        PlayNext(HashAnimationNames.AimString);
-    }
+    private bool _isFinalAnimation = false;
 
     private void Update()
     {
+        if (_isFinalAnimation)
+            return;
+
+        if(_currentAnimationName == null) 
+            return;
+
         AnimatorStateInfo currentStateInfo = _animator.GetCurrentAnimatorStateInfo(0);
 
-
-        if (currentStateInfo.IsName(_currentAnimationName) && currentStateInfo.normalizedTime >= 1f)
+        if (currentStateInfo.IsName(_currentAnimationName) && currentStateInfo.normalizedTime >= 0.95f)
         {
             PlayNext(_nextAnimationName);
         }
+    }
+
+    public void Init(Animator animator)
+    {
+        _animator = animator;
+    }
+
+    public Vector3 TakenPosition(Vector3 startPosition, Vector3 endPostion, float deltaTime)
+    {
+        float normilizeTime = _duration / _offsetTime;
+
+        Vector3 nextPos = Vector3.Lerp(startPosition, endPostion, normilizeTime) + (new Vector3(0,3f,0) * _changePositionCurve.Evaluate(normilizeTime));
+
+        _duration += deltaTime;
+
+        if (_duration >= _offsetTime)
+        {
+            _duration = _offsetTime;
+        }
+
+        return nextPos;
     }
 
     public void SetTargetsForHands(Transform targetForRightHand, Transform targetForLeftHand, Transform targetForChest)
@@ -46,30 +76,32 @@ public class AnimationController : MonoBehaviour
 
     public void PlayeHitA()
     {
-        _currentAnimationName = HashAnimationNames.Hit_A_String;
-
-        _animator.Play(_currentAnimationName);
-
-        _nextAnimationName = HashAnimationNames.AimString;
+        PlayeCurrentAnimation(HashAnimationNames.Hit_A_String, HitSpeed, HashAnimationNames.AimString);
     }
 
     public void PlayeHitB()
     {
-        _currentAnimationName = HashAnimationNames.Hit_B_String;
+        PlayeCurrentAnimation(HashAnimationNames.Hit_B_String, HitSpeed, HashAnimationNames.AimString);
+    }
 
-        _animator.Play(_currentAnimationName);
-
-        _nextAnimationName = HashAnimationNames.AimString;
+    public void PlayDeaht()
+    {
+        PlayeCurrentAnimation(HashAnimationNames.DeathString, DeathSpeed, HashAnimationNames.DeathString, true);
     }
 
     public void PlayShoot(float durationReload)
     {
-        _duration = durationReload;
+        _reloadSpeed = durationReload;
 
-        _currentAnimationName = HashAnimationNames.ShootString;
-        _animator.Play(_currentAnimationName, 0, 0f);
-        _animator.speed = _shootDuration;
-        _nextAnimationName = HashAnimationNames.ReloadString;
+        PlayeCurrentAnimation(HashAnimationNames.ShootString, ShootSpeed, HashAnimationNames.ReloadString);
+    }
+
+    public void PlaySitIdle()
+    {
+        float offsetTime = 0.3f;
+        float speed = (_animationClipData.SitIdleLenght / _offsetTime) + offsetTime;
+
+        PlayeCurrentAnimation(HashAnimationNames.SitIdleString, speed, HashAnimationNames.SitStandUpString);
     }
 
     private void PlayNext(string animationName)
@@ -83,25 +115,42 @@ public class AnimationController : MonoBehaviour
             case HashAnimationNames.AimString:
                 PlayAim();
                 break;
+
+            case HashAnimationNames.SitIdleString:
+                PlaySitIdle();
+                break;
+
+            case HashAnimationNames.SitStandUpString:
+                PlaySitStandUp();
+                break;
         }
+    }
+
+    private void PlaySitStandUp()
+    {
+        PlayeCurrentAnimation(HashAnimationNames.SitStandUpString, SitInleSpeed, HashAnimationNames.AimString);
     }
 
     private void PlayReload()
     {
-        _currentAnimationName = HashAnimationNames.ReloadString;
-
-        _animator.Play(_currentAnimationName, 0, 0f);
-
-        _animator.speed = 1f / (_duration - _shootDuration);
-
-        _nextAnimationName = HashAnimationNames.AimString;
+        float speed = _animationClipData.RealoadLenght / _reloadSpeed;
+        PlayeCurrentAnimation(HashAnimationNames.ReloadString, speed, HashAnimationNames.AimString);
     }
 
     private void PlayAim()
     {
-        _currentAnimationName = HashAnimationNames.AimString;
+        PlayeCurrentAnimation(HashAnimationNames.AimString, AimSpeed, HashAnimationNames.AimString);
+    }
+
+    private void PlayeCurrentAnimation(string animationName, float animationSpeed, string nextAnimationName, bool isFinalAnimation = false)
+    {
+        _currentAnimationName = animationName;
+
         _animator.Play(_currentAnimationName, 0, 0f);
-        _animator.speed = _aimDuration;
-        _nextAnimationName = _currentAnimationName;
+        _animator.speed = animationSpeed;
+        
+        _nextAnimationName = nextAnimationName;
+
+        _isFinalAnimation = isFinalAnimation;
     }
 }

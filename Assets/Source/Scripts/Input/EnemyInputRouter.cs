@@ -1,6 +1,5 @@
 using Archer.AI;
 using Archer.Model;
-using UnityEngine;
 
 public class EnemyInputRouter : IInputRouter
 {
@@ -23,6 +22,11 @@ public class EnemyInputRouter : IInputRouter
         _enemyAI.SetStartVelocityOfFirstShoot(_maxPower * _weapon.StartedPowerOfShot);
 
         return this;
+    }
+
+    public void Update(float deltaTime)
+    {
+        _enemyAI.CheckTargetInDirection(_weapon.ArrowSpawnPosition, _weapon.Forward);
     }
 
     public void OnEnable()
@@ -51,10 +55,5 @@ public class EnemyInputRouter : IInputRouter
             _animationController.PlayShoot(weapon.Cooldown);
             _enemyAI.SetTarget();
         }
-    }
-
-    public void Update(float deltaTime)
-    {
-        _enemyAI.CheckTargetInDirection(_weapon.ArrowSpawnPosition, _weapon.Forward);
     }
 }

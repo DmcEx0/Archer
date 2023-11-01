@@ -28,12 +28,11 @@ namespace Archer.Model
             Rotate(rotation);
         }
 
+        public event UnityAction<Arrow> Shoted;
         public Vector3 ArrowSpawnPosition { get; private set; }
         public bool CanShoot { get; private set; } = false;
         public float StartedPowerOfShot => _startedPowerOfShot;
         public float Cooldown => _cooldown;
-
-        public event UnityAction<Arrow> Shot;
 
         public void Shoot(float accumulatedPower)
         {
@@ -43,7 +42,7 @@ namespace Archer.Model
             Vector3 accumulatedVelocity = Forward * (_startedPowerOfShot * accumulatedPower);
 
             Arrow arrow = GetArrow(accumulatedVelocity);
-            Shot?.Invoke(arrow);
+            Shoted?.Invoke(arrow);
 
             CanShoot = false;
         }

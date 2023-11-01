@@ -15,23 +15,23 @@ MonoBehaviour:
   projectName: Archer
   windowPosition:
     serializedVersion: 2
-    x: 650
-    y: 205
+    x: 421
+    y: 178
     width: 620
     height: 670
   representLogsInScene: 1
-  afterMerge: 0
-  mergeMethod: 2
+  afterMerge: 2
+  mergeMethod: 0
   oneMeshPerMaterialParams:
     addMeshCollider: 0
   allInOneParams:
-    materialToUse: {fileID: 2100000, guid: 5db9f27546344e243ab6057e8b2f03fc, type: 2}
+    materialToUse: {fileID: 2100000, guid: 5669eb6c6a033704fa8123a5ded1f204, type: 2}
     maxTexturesPerAtlas: 20
-    atlasResolution: 6
-    mipMapEdgesSize: 3
+    atlasResolution: 5
+    mipMapEdgesSize: 4
     atlasPadding: 1
     mergeTiledTextures: 1
-    useDefaultMainTextureProperty: 1
+    useDefaultMainTextureProperty: 0
     mainTexturePropertyToFind: _MainTex
     mainTexturePropertyToInsert: _MainTex
     metallicMapSupport: 0
@@ -62,15 +62,15 @@ MonoBehaviour:
     addMeshCollider: 0
     highlightUvVertices: 0
   justMaterialColorsParams:
-    materialToUse: {fileID: 2100000, guid: 5db9f27546344e243ab6057e8b2f03fc, type: 2}
+    materialToUse: {fileID: 2100000, guid: 5669eb6c6a033704fa8123a5ded1f204, type: 2}
     useDefaultColorProperty: 1
     colorPropertyToFind: _Color
     mainTexturePropertyToInsert: _MainTex
     addMeshCollider: 0
   combineChildrens: 1
   combineInactives: 0
-  lightmapSupport: 0
+  lightmapSupport: 1
   saveMeshInAssets: 1
   savePrefabOfThis: 0
   prefabName: prefab
-  nameOfThisMerge: Tree
+  nameOfThisMerge: Grass

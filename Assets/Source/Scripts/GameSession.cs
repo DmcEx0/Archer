@@ -23,9 +23,6 @@ namespace Archer.Model
         private Queue<WeaponDataSO> _enemyWeapons;
         private Queue<ArrowDataSO> _enemyArrow;
 
-        private float _deltaTime;
-        private float _speedTakenPosition = 5f;
-
         private bool _isEnemyTakenPosition = false;
 
         public event UnityAction<int> AllEnemiesDying;
@@ -45,28 +42,10 @@ namespace Archer.Model
 
         public void Update(float deltaTime)
         {
-            _deltaTime = deltaTime;
-
             if (_isEnemyTakenPosition)
             {
                 _enemySpawner.Update(deltaTime);
             }
-        }
-
-        public void OnDisable()
-        {
-            _enemySpawner.OnDisable();
-            _enemySpawner.CharacterDying -= OnEnemyDying;
-        }
-
-        public void ActivateNextEnemy(KeyValuePair<Presenter, Character> nextEnemyTemplate)
-        {
-            nextEnemyTemplate.Value.Rotate(_mainEnemySpawnPoint.rotation);
-
-            _enemySpawner.ActivateEnemyAI(nextEnemyTemplate.Key.AnimationController, nextEnemyTemplate.Value.Position);
-            _enemySpawner.SpawnWeapon(nextEnemyTemplate.Key, _enemyWeapons.Dequeue(), _enemyArrow.Dequeue());
-
-            _enemySpawner.InitWeapon();
         }
 
         public async void WaitForEnemyTakenPosition()
@@ -77,17 +56,35 @@ namespace Archer.Model
                 return;
             }
 
+            int index = 0;
             KeyValuePair<Presenter, Character> currentEnemy = _enemies.First();
+            currentEnemy.Key.AnimationController.PlaySitIdle();
 
             while (currentEnemy.Value.Position != _mainEnemySpawnPoint.position)
             {
-                currentEnemy.Value.MoveTo(Vector3.MoveTowards(currentEnemy.Value.Position, _mainEnemySpawnPoint.position, _speedTakenPosition * _deltaTime));
+                currentEnemy.Value.MoveTo(currentEnemy.Key.AnimationController.TakenPosition(_enemySpawnPoints[index].position, _mainEnemySpawnPoint.position, Time.deltaTime));
 
                 await Task.Yield();
             }
 
-            ActivateNextEnemy(currentEnemy);
+            ActivateNextEnemy(currentEnemy, currentEnemy.Key.AnimationController);
             _isEnemyTakenPosition = true;
+        }
+
+        public void OnDisable()
+        {
+            _enemySpawner.OnDisable();
+            _enemySpawner.CharacterDying -= OnEnemyDying;
+        }
+
+        private void ActivateNextEnemy(KeyValuePair<Presenter, Character> nextEnemyTemplate, AnimationController animationController)
+        {
+            nextEnemyTemplate.Value.Rotate(_mainEnemySpawnPoint.rotation);
+
+            _enemySpawner.ActivateEnemyAI(animationController, nextEnemyTemplate.Value.Position);
+            _enemySpawner.SpawnWeapon(nextEnemyTemplate.Key, _enemyWeapons.Dequeue(), _enemyArrow.Dequeue());
+
+            _enemySpawner.InitWeapon();
         }
 
         private void Init()

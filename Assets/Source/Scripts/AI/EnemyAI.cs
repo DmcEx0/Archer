@@ -8,15 +8,15 @@ namespace Archer.AI
 {
     public class EnemyAI
     {
-        const float _addDistance = 0.5f;
-        private const int _palyerLayer = 6;
-        private const int _targetLayer = 9;
+        private const float AddDistance = 0.5f;
+        private const int PalyerLayer = 6;
+        private const int TargetLayer = 9;
 
         private readonly float _distanceToPlayer;
 
         private readonly TargetRouter _targetRouter;
 
-        private readonly int _targetsLayerMask = (1 << _palyerLayer) | (1 << _targetLayer);
+        private readonly int _targetsLayerMask = (1 << PalyerLayer) | (1 << TargetLayer);
 
         private Vector3 _velocity;
         private float _accumulatedPowerOfShot;
@@ -64,7 +64,7 @@ namespace Archer.AI
         {
             _velocity = forward * _accumulatedPowerOfShot;
 
-            float time = (_distanceToPlayer + _addDistance) / _velocity.magnitude;
+            float time = (_distanceToPlayer + AddDistance) / _velocity.magnitude;
        
             Vector3 endPoint = position + BallisticsRouter.GetCalculatedPositionAfterTime(_velocity, time);
 

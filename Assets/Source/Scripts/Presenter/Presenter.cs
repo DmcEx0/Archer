@@ -23,8 +23,11 @@ public class Presenter : MonoBehaviour
         if(_model is IUpdatetable)
             _updatetable = (IUpdatetable) _model;
 
-        if(TryGetComponent(out AnimationController controller))
+        if (TryGetComponent(out AnimationController controller))
+        {
             _animationController = controller;
+            _animationController.Init(GetComponent<Animator>());
+        }
 
         _model.Rotated += OnRotated;
         _model.ChangedPosition += OnChangedPosition;

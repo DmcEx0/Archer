@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public static class HashAnimationNames
@@ -11,6 +9,8 @@ public static class HashAnimationNames
     public const string Hit_A_String = "Hit_A";
     public const string Hit_B_String = "Hit_B";
     public const string RunningString = "Running";
+    public const string SitIdleString = "SitIdle";
+    public const string SitStandUpString = "SitStandUp";
 
     public static readonly int Aim = Animator.StringToHash(AimString);
     public static readonly int Reload = Animator.StringToHash(ReloadString);

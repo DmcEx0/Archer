@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -20,21 +21,15 @@ namespace Archer.Model
             Factory = factory;
         }
 
+        public event UnityAction CharacterDying;
         public IInputRouter InputRouter => _inputRouter;
+        protected Character CurrentCharacter => _characterModel;
+        protected Weapon CurrentWeapon => _weaponModel;
         protected PresenterFactory Factory { get; private set; }
-
-        public UnityAction CharacterDying;
 
         protected abstract Presenter CreateCharacter(Character caharacterModel);
         protected abstract WeaponPresenter CreateWeapon(WeaponPresenter weaponTemplate, Weapon weaponModel);
         protected abstract IInputRouter GetInputRouter();
-
-        public void OnDisable()
-        {
-            OnDisableCharacter();
-
-            _characterModel.Died -= OnDying;
-        }
 
         public virtual void Update(float deltaTime)
         {
@@ -69,7 +64,7 @@ namespace Archer.Model
         {
             _inputRouter = GetInputRouter().BindWeapon(_weaponModel);
 
-            _weaponModel.Shot += OnShot;
+            _weaponModel.Shoted += OnShot;
 
             _inputRouter.OnEnable();
         }
@@ -79,10 +74,11 @@ namespace Archer.Model
             animationController.SetTargetsForHands(_weaponTemplate.RightHandTarget, _weaponTemplate.LeftHandTarget, _weaponTemplate.ChestTarget);
         }
 
-        private void OnDying()
+        public void OnDisable()
         {
             OnDisableCharacter();
-            CharacterDying?.Invoke();
+
+            _characterModel.Died -= OnDying;
         }
 
         private void OnDisableCharacter()
@@ -90,7 +86,7 @@ namespace Archer.Model
             _weaponModel.Destroy();
             _inputRouter.OnDisable();
 
-            _weaponModel.Shot -= OnShot;
+            _weaponModel.Shoted -= OnShot;
         }
 
         private void OnShot(Arrow arrow)
@@ -108,6 +104,12 @@ namespace Archer.Model
             }
             else
                 throw new InvalidOperationException(nameof(presenter));
+        }
+
+        private void OnDying()
+        {
+            OnDisableCharacter();
+            CharacterDying?.Invoke();
         }
     }
 }

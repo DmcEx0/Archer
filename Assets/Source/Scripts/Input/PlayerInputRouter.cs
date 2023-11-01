@@ -25,43 +25,10 @@ public class PlayerInputRouter : IInputRouter
 
     public event UnityAction<float, float> PowerChanged;
 
-    public void OnEnable()
-    {
-        _input.Enable();
-
-        _input.Player.Shoot.canceled += Shoot;
-    }
-
-    public void OnDisable()
-    {
-        _input.Disable();
-        _input.Player.Shoot.canceled -= Shoot;
-    }
-
     public IInputRouter BindWeapon(Weapon weapon)
     {
         _weapon = weapon;
         return this;
-    }
-
-    private void Shoot(CallbackContext ctx)
-    { 
-        float power = (float)ctx.time - (float)ctx.startTime;
-        power = Mathf.Clamp(power, _minPower, _maxPower);
-
-        TryShoot(_weapon, power);
-    }
-
-    private void TryShoot(Weapon weapon, float power)
-    {
-        if( weapon == null )
-            throw new InvalidOperationException();
-
-        if (weapon.CanShoot)
-        {
-            _animationController.PlayShoot(weapon.Cooldown);
-            weapon.Shoot(power);
-        }
     }
 
     public void Update(float deltaTime)
@@ -77,5 +44,38 @@ public class PlayerInputRouter : IInputRouter
         _power = 1;
         PowerChanged?.Invoke(_power, _maxPower);
 
+    }
+
+    private void Shoot(CallbackContext ctx)
+    { 
+        float power = (float)ctx.time - (float)ctx.startTime;
+        power = Mathf.Clamp(power, _minPower, _maxPower);
+
+        TryShoot(_weapon, power);
+    }
+
+    public void OnEnable()
+    {
+        _input.Enable();
+
+        _input.Player.Shoot.canceled += Shoot;
+    }
+
+    public void OnDisable()
+    {
+        _input.Disable();
+        _input.Player.Shoot.canceled -= Shoot;
+    }
+
+    private void TryShoot(Weapon weapon, float power)
+    {
+        if( weapon == null )
+            throw new InvalidOperationException();
+
+        if (weapon.CanShoot)
+        {
+            _animationController.PlayShoot(weapon.Cooldown);
+            weapon.Shoot(power);
+        }
     }
 }

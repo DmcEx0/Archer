@@ -15,18 +15,18 @@ namespace Archer.Model
             _playerPosition = playerPosition;
         }
 
-        public override void Update(float deltaTime)
-        {
-            base.Update(deltaTime);
-
-            EnabledIK(_animationController);
-        }
-
         protected override Presenter CreateCharacter(Character characterModel) => Factory.CreateEnemy(characterModel);
 
         protected override WeaponPresenter CreateWeapon(WeaponPresenter weaponTemplate, Weapon weaponModel) => Factory.CreateWeapon(weaponTemplate, weaponModel) as WeaponPresenter;
 
         protected override IInputRouter GetInputRouter() => new EnemyInputRouter(_enemyAI, _animationController);
+
+        public override void Update(float deltaTime)
+        {
+            base.Update(deltaTime);
+
+            EnabledIK(_animationController);
+        } 
 
         public void ActivateEnemyAI(AnimationController animationController ,Vector3 enemyPosition)
         {

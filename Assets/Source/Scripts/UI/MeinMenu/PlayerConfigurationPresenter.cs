@@ -9,62 +9,82 @@ public class PlayerConfigurationPresenter : MonoBehaviour
     [Space]
     [SerializeField] private PlayerPresenter _playerPresenter;
     [SerializeField] private Transform _rightHand;
+    [SerializeField] private Transform _endPointPosition;
 
-    private AnimationController _animationRig;
+    private AnimationController _animationController;
 
     private WeaponDataSO _currentWeaponData;
     private ArrowDataSO _currentArrowData;
 
     private WeaponPresenter _currentWeaponTemplate;
-    private ArrowPresenter _currentArrowPresenter;
+    private ArrowPresenter _currentArrowTemplate;
+
+    private Vector3 _startPlayerPosition;
 
     private void OnEnable()
     {
-        _meinMenuView.WeaponChanged += OnWeaponPresenterChanged;
-        _meinMenuView.ArrowChanged += OnArrowPresenterChanged;
+        _meinMenuView.EquipmentChenged += OnEquipmentSelected;
     }
 
     private void OnDisable()
     {
-        _meinMenuView.WeaponChanged -= OnWeaponPresenterChanged;
-        _meinMenuView.ArrowChanged -= OnArrowPresenterChanged;
+        _meinMenuView.EquipmentChenged -= OnEquipmentSelected;
     }
 
     private void Awake()
     {
-        _animationRig = _playerPresenter.GetComponent<AnimationController>();
+        _animationController = _playerPresenter.GetComponent<AnimationController>();
+        _animationController.Init(_playerPresenter.GetComponent<Animator>());
+    }
+
+    private void Start()
+    {
+        _startPlayerPosition = _playerPresenter.transform.position;
+        _animationController.PlaySitIdle();
     }
 
     private void Update()
     {
-        if (_currentWeaponTemplate != null)
-        {
-            _animationRig.SetTargetsForHands(_currentWeaponTemplate.RightHandTarget, _currentWeaponTemplate.LeftHandTarget, _currentWeaponTemplate.ChestTarget);
-        }
+        if (_playerPresenter.transform.position == _endPointPosition.position)
+            return;
+
+        _playerPresenter.transform.position = _animationController.TakenPosition(_startPlayerPosition, _endPointPosition.position, Time.deltaTime);
     }
 
     private Presenter CreatePresenter(EquipmentDataSO equipmentData, Transform spawnPoint)
     {
         return Instantiate(equipmentData.Presenter, spawnPoint.position, spawnPoint.rotation);
     }
+    
+    private void OnEquipmentSelected(EquipmentDataSO equipmentData)
+    {
+        if (equipmentData is WeaponDataSO)
+            OnWeaponPresenterChanged(equipmentData as WeaponDataSO);
+        else if(equipmentData is ArrowDataSO)
+            OnArrowPresenterChanged(equipmentData as ArrowDataSO);
+    }
+
+    private void DestroyCurrentPresenter(Presenter currentTemplate)
+    {
+        if(currentTemplate != null)
+            Destroy(currentTemplate.gameObject);
+    }
 
     private void OnWeaponPresenterChanged(WeaponDataSO weaponData)
     {
-        if(_currentWeaponTemplate != null)
-            Destroy(_currentWeaponTemplate.gameObject);
+        DestroyCurrentPresenter(_currentWeaponTemplate);
 
         _currentWeaponData = weaponData;
         _currentWeaponTemplate = CreatePresenter(_currentWeaponData, _rightHand) as WeaponPresenter;
-        _currentWeaponTemplate.transform.parent = _rightHand;
+        _currentWeaponTemplate.transform.SetParent(_rightHand);
     }
 
     private void OnArrowPresenterChanged(ArrowDataSO arrowData)
     {
-        if(_currentArrowPresenter != null)
-            Destroy(_currentArrowPresenter.gameObject);
+        DestroyCurrentPresenter(_currentArrowTemplate);
 
         _currentArrowData = arrowData;
-        _currentArrowPresenter = CreatePresenter(_currentArrowData, _currentWeaponTemplate.ArrowSlot) as ArrowPresenter;
-        _currentArrowPresenter.transform.SetParent(_currentWeaponTemplate.ArrowSlot);
+        _currentArrowTemplate = CreatePresenter(_currentArrowData, _currentWeaponTemplate.ArrowSlot) as ArrowPresenter;
+        _currentArrowTemplate.transform.SetParent(_rightHand);
     }
 }

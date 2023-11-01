@@ -11,13 +11,13 @@ namespace Archer.Model
             Position = position;
         }
 
-        public Quaternion Rotation { get; private set; }
-        public Vector3 Position { get; private set; }
-        public Vector3 Forward => Rotation * Vector3.forward;
-
         public event UnityAction Rotated;
         public event UnityAction ChangedPosition;
         public event UnityAction Destroying;
+
+        public Quaternion Rotation { get; private set; }
+        public Vector3 Position { get; private set; }
+        public Vector3 Forward => Rotation * Vector3.forward;
 
         public void Rotate(Quaternion rotation)
         {

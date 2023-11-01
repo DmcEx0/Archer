@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 828626cd6cd45a941bf8bcd54c0ead07, type: 3}
+  m_Name: AnimationClipInfo
+  m_EditorClassIdentifier: 
+  _aim: {fileID: 7400000, guid: 1259ea736229163478dbb0c6646708d9, type: 2}
+  _reload: {fileID: 7400000, guid: 9ce6de1acae4b4942a5f2f78afacbd4d, type: 2}
+  _shoot: {fileID: 7400000, guid: be823e7667b33e448ad11107370e116d, type: 2}
+  _death: {fileID: 7400000, guid: 153117c69c4f6204e89e683a09ac6a7e, type: 2}
+  _hit_A: {fileID: 7400000, guid: 34b45b34f4e9beb45a0dd2f767a7b583, type: 2}
+  _hit_B: {fileID: 7400000, guid: a508ca123e8777144b4474fe1099b109, type: 2}
+  _running: {fileID: 7400000, guid: a0f41690ded909f428bef99e9f8bdfea, type: 2}
+  _sitIdle: {fileID: 7400000, guid: 3f79164522a67754896ecc4c57472888, type: 2}
+  _sitStandUp: {fileID: 7400000, guid: 633cd9707e49ca24881968a59f720ff3, type: 2}

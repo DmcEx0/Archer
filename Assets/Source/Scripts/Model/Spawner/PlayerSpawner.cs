@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace Archer.Model
 {
     public class PlayerSpawner : CharactersSpawner
@@ -20,7 +22,7 @@ namespace Archer.Model
             Presenter playerTempalte = Factory.CreatePlayer(characterModel);
 
             _animationController = playerTempalte.AnimationController;
-            
+
             return playerTempalte;
         }
 

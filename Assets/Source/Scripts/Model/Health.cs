@@ -10,14 +10,14 @@ namespace Archer.Model
 
         private int _currentValue;
 
-        public event UnityAction<int, int> ValueChanged;
-        public event UnityAction Died;
-
         public Health(int maxValue)
         {
             _currentValue = maxValue;
             _maxValue = maxValue;
         }
+
+        public event UnityAction<int, int> ValueChanged;
+        public event UnityAction Died;
 
         public void TakeDamage(int damage)
         {

@@ -60,15 +60,15 @@ public class Root : MonoBehaviour
         ArrowDataSO arrowData = Config.Instance.ArrowConfig;
         WeaponDataSO weaponData = Config.Instance.WeaponConfig;
 
-        KeyValuePair<Presenter, Character> playerTemplate = _playerSpawner.SpawnCharacter(_playerHealth, _playerPosition);
-        _playerSpawner.SpawnWeapon(playerTemplate.Key, weaponData, arrowData);
+        KeyValuePair<Presenter, Character> player = _playerSpawner.SpawnCharacter(_playerHealth, _playerPosition);
+        _playerSpawner.SpawnWeapon(player.Key, weaponData, arrowData);
         _playerSpawner.InitWeapon();
         _factory.CreatePoolOfPresenters(arrowData.Presenter);
 
-        HealthBarView playerHealthBar = playerTemplate.Key.GetComponentInChildren<HealthBarView>();
+        HealthBarView playerHealthBar = player.Key.GetComponentInChildren<HealthBarView>();
         playerHealthBar.Init(_playerHealth);
 
-        PowerShotBarView powerShotPresenter = playerTemplate.Key.GetComponentInChildren<PowerShotBarView>();
+        PowerShotBarView powerShotPresenter = player.Key.GetComponentInChildren<PowerShotBarView>();
         powerShotPresenter.Init(_playerSpawner.InputRouter as PlayerInputRouter);
 
         _gameSession.WaitForEnemyTakenPosition();
@@ -82,6 +82,7 @@ public class Root : MonoBehaviour
         _gameSession.OnDisable();
         _playerSpawner.OnDisable();
     }
+
     private void ShowWinGameWindow(int coins)
     {
         AddScore(coins);

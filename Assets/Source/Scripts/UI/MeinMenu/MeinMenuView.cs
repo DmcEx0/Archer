@@ -30,8 +30,7 @@ public class MeinMenuView : MonoBehaviour
     private int _weaponIndex = 0;
     private int _arrowIndex = 0;
 
-    public event UnityAction<WeaponDataSO> WeaponChanged;
-    public event UnityAction<ArrowDataSO> ArrowChanged;
+    public event UnityAction<EquipmentDataSO> EquipmentChenged;
 
     private void Awake()
     { 
@@ -70,20 +69,20 @@ public class MeinMenuView : MonoBehaviour
         _currentWeaponData = _itemsData.WeaponsData[_weaponIndex];
         _currentArrowData = _itemsData.ArrowsData[_arrowIndex];
 
-        WeaponChanged?.Invoke(_currentWeaponData);
-        ArrowChanged?.Invoke(_currentArrowData);
+        EquipmentChenged?.Invoke(_currentWeaponData);
+        EquipmentChenged?.Invoke(_currentArrowData);
 
         RenderEquimpemnt(_currentWeaponData);
         RenderEquimpemnt(_currentArrowData);
     }
 
-    private void RenderEquimpemnt(WeaponDataSO weaponData)
+    private void RenderEquimpemnt(EquipmentDataSO equipmentData)
     {
-        _weaponViewOnScene.Render(weaponData);
-    }
-    private void RenderEquimpemnt(ArrowDataSO arrowData)
-    {
-        _arrowViewOnScene.Render(arrowData);
+        if(equipmentData is WeaponDataSO)
+            _weaponViewOnScene.Render(equipmentData);
+
+        else if(equipmentData is ArrowDataSO)
+            _arrowViewOnScene.Render(equipmentData);
     }
 
     private void StartGame()
@@ -97,37 +96,30 @@ public class MeinMenuView : MonoBehaviour
     {
         if (equipmentDataSO.Presenter is WeaponPresenter) 
         {
-            if (_weaponScrollView.gameObject.activeSelf == true)
-            {
-                _weaponScrollView.gameObject.SetActive(false);
-
-                return;
-            }
-
-            if (_arrowScrollView.gameObject.activeSelf == true)
-            {
-                _arrowScrollView.gameObject.SetActive(false);
-            }
-
-            _weaponScrollView.gameObject.SetActive(true);
+            EnabledSelectedScrollView(_weaponScrollView, _arrowScrollView);
         }
 
         else if (equipmentDataSO.Presenter is ArrowPresenter)
         {
-            if (_arrowScrollView.gameObject.activeSelf == true)
-            {
-                _arrowScrollView.gameObject.SetActive(false);
-
-                return;
-            }
-
-            if (_weaponScrollView.gameObject.activeSelf == true)
-            {
-                _weaponScrollView.gameObject.SetActive(false);
-            }
-
-            _arrowScrollView.gameObject.SetActive(true);
+            EnabledSelectedScrollView(_arrowScrollView, _weaponScrollView);
         }
+    }
+
+    private void EnabledSelectedScrollView(GameObject selectedScrollView, GameObject secondScrollView)
+    {
+        if (selectedScrollView.activeSelf == true)
+        {
+            selectedScrollView.SetActive(false);
+
+            return;
+        }
+
+        if (secondScrollView.activeSelf == true)
+        {
+            secondScrollView.SetActive(false);
+        }
+
+        selectedScrollView.SetActive(true);
     }
 
     private void OnShowBigIconEquipment(EquipmentDataSO equipmentData)
@@ -142,28 +134,26 @@ public class MeinMenuView : MonoBehaviour
         {
             _currentWeaponData = equipmentData as WeaponDataSO;
 
-            if (_currentWeaponData.WasBought)
-            {
-                WeaponChanged?.Invoke(_currentWeaponData);
-
-                RenderEquimpemnt(_currentWeaponData);
-
-                _weaponScrollView.gameObject.SetActive(false);
-            }
+            RenderSelectedEquipment(equipmentData, _weaponScrollView);
         }
 
         else if (equipmentData is ArrowDataSO)
         {
             _currentArrowData = equipmentData as ArrowDataSO;
 
-            if (_currentArrowData.WasBought)
-            {
-                ArrowChanged?.Invoke(_currentArrowData);
+            RenderSelectedEquipment(equipmentData, _arrowScrollView);
+        }
+    }
 
-                RenderEquimpemnt(_currentArrowData);
+    private void RenderSelectedEquipment(EquipmentDataSO equipmentData, GameObject scrollView)
+    {
+        if (equipmentData.WasBought)
+        {
+            EquipmentChenged?.Invoke(equipmentData);
 
-                _arrowScrollView.gameObject.SetActive(false);
-            }
+            RenderEquimpemnt(equipmentData);
+
+            scrollView.SetActive(false);
         }
     }
 }
