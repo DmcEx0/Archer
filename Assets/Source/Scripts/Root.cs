@@ -1,95 +1,121 @@
 using Archer.Model;
+using Assets.Source.Scripts.FSM.States;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Root : MonoBehaviour
 {
     [SerializeField] private EquipmentListSO _equipmentListData;
     [SerializeField] private PresenterFactory _factory;
-    [SerializeField] private Transform _playerPosition;
+    [SerializeField] private Transform _startPlayerPosition;
+    [SerializeField] private Transform _mainPlayerPosition;
     [SerializeField] private Transform _mainEmemyPosition;
     [SerializeField] private List<Transform> _enemiesSpawnPoints;
 
     [Space]
-    [SerializeField] private EndGameWindowView _loseGameWindow;
-    [SerializeField] private EndGameWindowView _winGameWindow;
+    [SerializeField] private EndGameWindowView _endGameWindow;
 
-    private PlayerSpawner _playerSpawner;
-    private EnemySpawner _enemySpawner;
+    private CharacterStateMachine _playerStateMachine;
+    private CharacterStateMachine _enemyStateMachine;
 
-    private Health _playerHealth;
+    private CharactersSpawner _playerSpawner;
+    private CharactersSpawner _enemySpawner;
 
-    private GameSession _gameSession;
     private Score _score;
 
-     private void OnEnable()
-    {
-        _playerSpawner.CharacterDying += ShowLoseGameWindow;
-        _gameSession.AllEnemiesDying += ShowWinGameWindow;
-    }
-
-    private void OnDisable()
-    {
-        _playerSpawner.CharacterDying -= ShowLoseGameWindow;
-        _gameSession.AllEnemiesDying -= ShowWinGameWindow;
-    }
+    private Dictionary<KeyValuePair<Presenter, Character>, CharacterStateMachine> _enemies;
 
     private void Awake()
     {
+        _enemies = new();
         _score = new Score();
-        _playerSpawner = new PlayerSpawner(_factory);
-        _enemySpawner = new EnemySpawner(_playerPosition.position, _factory);
 
-        _playerHealth = new Health(200);
-        _gameSession = new GameSession(_equipmentListData, _enemySpawner, _mainEmemyPosition, _enemiesSpawnPoints, _score);
+        _playerSpawner = new PlayerSpawner(_factory);
+        _enemySpawner = new EnemySpawner(_factory);
     }
 
     private void Start()
     {
-        Initialize();
+        CreatePlayer();
+        CreateEnemies();
+        ActivateNextEnemy();
     }
 
     private void Update()
     {
-        _playerSpawner.Update(Time.deltaTime);
-        _gameSession.Update(Time.deltaTime);
+        _playerStateMachine.Update(Time.deltaTime);
+        _enemyStateMachine.Update(Time.deltaTime);
+
+        foreach (var stateMachine in _enemies)
+        {
+            stateMachine.Value.Update(Time.deltaTime);
+        }
     }
 
-    private void Initialize()
+    private void CreatePlayer()
     {
+        Health health = new Health(1000);
+
         ArrowDataSO arrowData = Config.Instance.ArrowConfig;
         WeaponDataSO weaponData = Config.Instance.WeaponConfig;
 
-        KeyValuePair<Presenter, Character> player = _playerSpawner.SpawnCharacter(_playerHealth, _playerPosition);
-        _playerSpawner.SpawnWeapon(player.Key, weaponData, arrowData);
-        _playerSpawner.InitWeapon();
         _factory.CreatePoolOfPresenters(arrowData.Presenter);
 
-        HealthBarView playerHealthBar = player.Key.GetComponentInChildren<HealthBarView>();
-        playerHealthBar.Init(_playerHealth);
+        KeyValuePair<Presenter, Character> player = _playerSpawner.SpawnCharacter(health, _startPlayerPosition);
 
-        PowerShotBarView powerShotPresenter = player.Key.GetComponentInChildren<PowerShotBarView>();
-        powerShotPresenter.Init(_playerSpawner.InputRouter as PlayerInputRouter);
+        KeyValuePair<WeaponPresenter, Weapon> weapon = _playerSpawner.SpawnWeapon(player.Key, weaponData, arrowData);
 
-        _gameSession.WaitForEnemyTakenPosition();
+        _playerStateMachine = new CharacterStateMachine(player, weapon, _playerSpawner, _startPlayerPosition.position, _mainPlayerPosition);
+
+        _playerStateMachine.EnterIn(StatesEnum.Battle);
     }
 
-    private void ShowLoseGameWindow()
+    private void CreateEnemies()
+    {
+        for (int i = 0; i < _enemiesSpawnPoints.Count; i++)
+        {
+            Health health = new Health(20);
+            KeyValuePair<Presenter, Character> newEnemy = _enemySpawner.SpawnCharacter(health, _enemiesSpawnPoints[i]);
+
+            KeyValuePair<WeaponPresenter, Weapon> weapon = _enemySpawner.SpawnWeapon(newEnemy.Key, _equipmentListData.WeaponsData[0], _equipmentListData.ArrowsData[0]);
+            weapon.Key.gameObject.SetActive(false);
+
+            CharacterStateMachine newStateMachine = new CharacterStateMachine(newEnemy, weapon, _enemySpawner, newEnemy.Value.Position, _mainEmemyPosition);
+            newStateMachine.Died += OnEnemyDied;
+            newStateMachine.EnterIn(StatesEnum.Idle);
+            _enemies.Add(newEnemy, newStateMachine);
+        }
+    }
+
+    private void OnEnemyDied()
+    {
+        _score.AddCoinsOnKill(Config.Instance.CoinsForEnemy);
+        _enemyStateMachine.Died -= OnEnemyDied;
+
+        ActivateNextEnemy();
+    }
+
+    private void ActivateNextEnemy()
+    {
+        if (_enemies.Count == 0)
+        {
+            ShowEndGameWindow();
+            return;
+        }
+
+        KeyValuePair<KeyValuePair<Presenter, Character>, CharacterStateMachine> enemy = _enemies.First();
+        _enemyStateMachine = enemy.Value;
+        enemy.Value.EnterIn(StatesEnum.Battle);
+
+        _enemies.Remove(enemy.Key);
+    }
+
+    private void ShowEndGameWindow()
     {
         AddScore(_score.AmountCoins);
-        _loseGameWindow.gameObject.SetActive(true);
-
-        _gameSession.OnDisable();
-        _playerSpawner.OnDisable();
-    }
-
-    private void ShowWinGameWindow(int coins)
-    {
-        AddScore(coins);
-        _winGameWindow.gameObject.SetActive(true);
-
-        _gameSession.OnDisable();
-        _playerSpawner.OnDisable();
+        _endGameWindow.SetAmountCoins(_score.AmountCoins);
+        _endGameWindow.gameObject.SetActive(true);
     }
 
     private void AddScore(int coins)

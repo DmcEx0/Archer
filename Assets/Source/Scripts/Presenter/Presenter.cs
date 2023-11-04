@@ -1,4 +1,3 @@
-using System;
 using Archer.Model;
 using UnityEngine;
 
@@ -20,8 +19,8 @@ public class Presenter : MonoBehaviour
     {
         _model = model;
 
-        if(_model is IUpdatetable)
-            _updatetable = (IUpdatetable) _model;
+        if (_model is IUpdatetable)
+            _updatetable = (IUpdatetable)_model;
 
         if (TryGetComponent(out AnimationController controller))
         {
@@ -30,28 +29,18 @@ public class Presenter : MonoBehaviour
         }
 
         _model.Rotated += OnRotated;
-        _model.ChangedPosition += OnChangedPosition;
+        _model.Moved += OnMoved;
         _model.Destroying += OnDestroying;
+        _model.DestroyingAll += OnDestroyingAll;
 
         OnRotated();
-        OnChangedPosition();
+        OnMoved();
     }
 
-    public void DestroyCompose()
+    private void DestroyCompose()
     {
         gameObject.SetActive(false);
         gameObject.transform.position = Vector3.zero;
-    }
-
-    public void OnCollision(int damage)
-    {
-        if (_model is Character)
-        {
-            Character character = _model as Character;
-            character.TakeDamage(damage);
-        }
-        else
-            throw new InvalidOperationException();
     }
 
     private void OnRotated()
@@ -59,7 +48,7 @@ public class Presenter : MonoBehaviour
         transform.rotation = _model.Rotation;
     }
 
-    private void OnChangedPosition()
+    private void OnMoved()
     {
         transform.position = _model.Position;
     }
@@ -67,9 +56,15 @@ public class Presenter : MonoBehaviour
     private void OnDestroying()
     {
         _model.Rotated -= OnRotated;
-        _model.ChangedPosition -= OnChangedPosition;
+        _model.Moved -= OnMoved;
         _model.Destroying -= OnDestroying;
+    }
 
+    private void OnDestroyingAll()
+    {
+        OnDestroying();
         DestroyCompose();
+
+        _model.DestroyingAll -= OnDestroyingAll;
     }
 }

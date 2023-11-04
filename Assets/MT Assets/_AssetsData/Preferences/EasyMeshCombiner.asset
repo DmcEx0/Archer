@@ -15,10 +15,10 @@ MonoBehaviour:
   projectName: Archer
   windowPosition:
     serializedVersion: 2
-    x: 421
-    y: 178
+    x: 421.14288
+    y: 178.28572
     width: 620
-    height: 670
+    height: 669.8572
   representLogsInScene: 1
   afterMerge: 2
   mergeMethod: 0
@@ -73,4 +73,4 @@ MonoBehaviour:
   saveMeshInAssets: 1
   savePrefabOfThis: 0
   prefabName: prefab
-  nameOfThisMerge: Grass
+  nameOfThisMerge: Environment

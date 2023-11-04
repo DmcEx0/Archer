@@ -19,6 +19,8 @@ namespace Archer.Model
         public event UnityAction<int, int> ValueChanged;
         public event UnityAction Died;
 
+        public int Value => _currentValue;
+
         public void TakeDamage(int damage)
         {
             if (damage < 0)
@@ -27,7 +29,6 @@ namespace Archer.Model
             _currentValue = Mathf.Clamp(_currentValue - damage, _minValue, _maxValue);
 
             ValueChanged?.Invoke(_currentValue, _maxValue);
-
             TryDie();
         }
 

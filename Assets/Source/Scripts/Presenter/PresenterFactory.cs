@@ -9,7 +9,7 @@ public class PresenterFactory : MonoBehaviour
     [SerializeField] private Presenter _playerTempalte;
     [SerializeField] private Presenter _enemyTemplate;
 
-    private readonly int _poolCount = 20;
+    private readonly int _poolCount = 30;
 
     private List<ObjectPool<Presenter>> _pools = new List<ObjectPool<Presenter>>();
 
@@ -18,12 +18,12 @@ public class PresenterFactory : MonoBehaviour
         return CreatePresenter(_playerTempalte, player);
     }
 
-    public Presenter CreateEnemy(Character enemy) 
+    public Presenter CreateEnemy(Character enemy)
     {
         return CreatePresenter(_enemyTemplate, enemy);
     }
 
-    public Presenter CreateWeapon(Presenter weaponTemplate ,Weapon weapon)
+    public Presenter CreateWeapon(Presenter weaponTemplate, Weapon weapon)
     {
         return CreatePresenter(weaponTemplate, weapon);
     }
@@ -50,7 +50,7 @@ public class PresenterFactory : MonoBehaviour
         return presenter;
     }
 
-    private Presenter GetPresenterInPool(Presenter template,Transformable model)
+    private Presenter GetPresenterInPool(Presenter template, Transformable model)
     {
         ObjectPool<Presenter> currentPool = _pools.FirstOrDefault(pool => pool.FirstElement == template);
         Presenter presenter = currentPool.GetFreeElement();

@@ -9,19 +9,18 @@ namespace Archer.Model
 
         private Vector3 _velocity;
 
-        public Arrow(Vector3 position, Vector3 velocity) : base(position ,Quaternion.identity)
+        public Arrow(Vector3 position, Quaternion rotation, Vector3 velocity) : base(position, rotation)
         {
             _velocity = velocity;
+            MoveTo(position);
+            Rotate(rotation);
         }
 
         public int Damage { get; private set; }
 
-        public void Init(Vector3 position, Quaternion rotation, int damage)
+        public void SetDamage(int damage)
         {
             Damage = damage;
-
-            MoveTo(position);
-            Rotate(rotation);
         }
 
         public void Update(float deltaTime)
@@ -32,9 +31,9 @@ namespace Archer.Model
 
             _accumulatedTime += deltaTime;
 
-            if (_accumulatedTime >= _lifetime) 
+            if (_accumulatedTime >= _lifetime)
             {
-                Destroy();
+                DestroyAll();
             }
         }
     }

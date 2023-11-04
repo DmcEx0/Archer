@@ -10,13 +10,13 @@ public class ArrowPresenter : Presenter
     {
         if (other.TryGetComponent(out Presenter presenter))
         {
-            if (presenter is EnemyPresenter || presenter is PlayerPresenter)
+            if (presenter is IDamageable)
             {
-                presenter.AnimationController.PlayeHitA();
-                presenter.OnCollision(_model.Damage);
+                IDamageable damageable = presenter as IDamageable;
+                damageable.TakeDamage(_model.Damage);
             }
-
-            DestroyCompose();
+            _model.DestroyAll();
+            transform.SetParent(other.transform);
         }
     }
 }

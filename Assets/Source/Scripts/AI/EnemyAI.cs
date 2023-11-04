@@ -1,6 +1,3 @@
-using ParadoxNotion;
-using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -12,20 +9,20 @@ namespace Archer.AI
         private const int PalyerLayer = 6;
         private const int TargetLayer = 9;
 
-        private readonly float _distanceToPlayer;
-
         private readonly TargetRouter _targetRouter;
 
         private readonly int _targetsLayerMask = (1 << PalyerLayer) | (1 << TargetLayer);
 
         private Vector3 _velocity;
         private float _accumulatedPowerOfShot;
+        private float _distanceToPlayer;
 
         private Collider _target;
 
-        public EnemyAI(float distanceToPlayer)
+        private bool _isPlayerFound = false;
+
+        public EnemyAI()
         {
-            _distanceToPlayer = distanceToPlayer;
             _targetRouter = new();
         }
 
@@ -43,9 +40,21 @@ namespace Archer.AI
 
         public void CheckTargetInDirection(Vector3 position, Vector3 forward)
         {
-            if (Physics.Linecast(position, CalculateEndPointAfterTime(position, forward), out RaycastHit hitInfo, _targetsLayerMask))
+            if (_isPlayerFound == false)
             {
-                _targetRouter.TryAddColliderInList(hitInfo.collider);
+                if (Physics.Raycast(position, forward, out RaycastHit hitInfo1))
+                {
+                    if (hitInfo1.collider.TryGetComponent(out PlayerPresenter player))
+                    {
+                        _distanceToPlayer = (position - player.transform.position).magnitude - 0.7f;
+                        _isPlayerFound = true;
+                    }
+                }
+            }
+
+            if (Physics.Linecast(position, CalculateEndPointAfterTime(position, forward), out RaycastHit hitInfo2, _targetsLayerMask))
+            {
+                _targetRouter.TryAddColliderInList(hitInfo2.collider);
 
                 if (_target == null)
                 {
@@ -53,7 +62,7 @@ namespace Archer.AI
                     return;
                 }
 
-                if (hitInfo.collider == _target)
+                if (hitInfo2.collider == _target)
                 {
                     Shot?.Invoke();
                 }
@@ -65,11 +74,11 @@ namespace Archer.AI
             _velocity = forward * _accumulatedPowerOfShot;
 
             float time = (_distanceToPlayer + AddDistance) / _velocity.magnitude;
-       
+
             Vector3 endPoint = position + BallisticsRouter.GetCalculatedPositionAfterTime(_velocity, time);
 
             Debug.DrawLine(position, endPoint, Color.green, 0.01f);
-            Debug.DrawRay(position, forward * _distanceToPlayer, Color.red, 0.01f);
+            Debug.DrawRay(position, forward * 10, Color.red, 0.01f);
 
             return endPoint;
         }

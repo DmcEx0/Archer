@@ -11,11 +11,6 @@ public class HealthBarView : MonoBehaviour
 
     private float _value;
 
-    private void OnDisable()
-    {
-        _health.ValueChanged -= OnHealthChanged;
-    }
-
     private void Awake()
     {
         _camera = Camera.main;
@@ -32,6 +27,11 @@ public class HealthBarView : MonoBehaviour
     private void OnHealthChanged(int currentValue, int maxValue)
     {
         _value = (float)currentValue / (float)maxValue;
+
+        if (_value <= 0)
+        {
+            _health.ValueChanged -= OnHealthChanged;
+        }
     }
 
     public void Init(Health health)

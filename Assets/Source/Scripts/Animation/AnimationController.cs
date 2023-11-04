@@ -27,13 +27,16 @@ public class AnimationController : MonoBehaviour
     private float _reloadSpeed;
 
     private bool _isFinalAnimation = false;
+    private bool _isFinalCurve = false;
+
+    public bool IsFinalCurve => _isFinalCurve;
 
     private void Update()
     {
         if (_isFinalAnimation)
             return;
 
-        if(_currentAnimationName == null) 
+        if (_currentAnimationName == null)
             return;
 
         AnimatorStateInfo currentStateInfo = _animator.GetCurrentAnimatorStateInfo(0);
@@ -48,12 +51,28 @@ public class AnimationController : MonoBehaviour
     {
         _animator = animator;
     }
+    private float _dur;
+    public Vector3 TakenPosition2(Vector3 startPosition, Vector3 endPostion, float deltaTime)
+    {
+        _isFinalCurve = false;
+        float normilizeTime = _dur / _offsetTime;
+        Vector3 nextPos = Vector3.Lerp(startPosition, endPostion, normilizeTime) + (new Vector3(0, 3f, 0) * _changePositionCurve.Evaluate(normilizeTime));
+
+        _dur += deltaTime;
+
+        if (_dur >= _offsetTime)
+        {
+            _dur = 0;
+            _isFinalCurve = true;
+        }
+
+        return nextPos;
+    }
 
     public Vector3 TakenPosition(Vector3 startPosition, Vector3 endPostion, float deltaTime)
     {
         float normilizeTime = _duration / _offsetTime;
-
-        Vector3 nextPos = Vector3.Lerp(startPosition, endPostion, normilizeTime) + (new Vector3(0,3f,0) * _changePositionCurve.Evaluate(normilizeTime));
+        Vector3 nextPos = Vector3.Lerp(startPosition, endPostion, normilizeTime) + (new Vector3(0, 3f, 0) * _changePositionCurve.Evaluate(normilizeTime));
 
         _duration += deltaTime;
 
@@ -63,6 +82,15 @@ public class AnimationController : MonoBehaviour
         }
 
         return nextPos;
+    }
+
+    public void EnabledIK(Transform targetForRightHand, Transform targetForLeftHand, Transform targetForChest)
+    {
+        _leftHandRigTarget.position = targetForLeftHand.position;
+
+        _rightHandRigTarget.position = targetForRightHand.position;
+
+        _chestRigTarget.rotation = targetForChest.rotation;
     }
 
     public void SetTargetsForHands(Transform targetForRightHand, Transform targetForLeftHand, Transform targetForChest)
@@ -144,11 +172,14 @@ public class AnimationController : MonoBehaviour
 
     private void PlayeCurrentAnimation(string animationName, float animationSpeed, string nextAnimationName, bool isFinalAnimation = false)
     {
+        if (_animator.isActiveAndEnabled == false)
+            return;
+
         _currentAnimationName = animationName;
 
         _animator.Play(_currentAnimationName, 0, 0f);
         _animator.speed = animationSpeed;
-        
+
         _nextAnimationName = nextAnimationName;
 
         _isFinalAnimation = isFinalAnimation;

@@ -47,7 +47,7 @@ public class PlayerInputRouter : IInputRouter
     }
 
     private void Shoot(CallbackContext ctx)
-    { 
+    {
         float power = (float)ctx.time - (float)ctx.startTime;
         power = Mathf.Clamp(power, _minPower, _maxPower);
 
@@ -69,7 +69,7 @@ public class PlayerInputRouter : IInputRouter
 
     private void TryShoot(Weapon weapon, float power)
     {
-        if( weapon == null )
+        if (weapon == null)
             throw new InvalidOperationException();
 
         if (weapon.CanShoot)

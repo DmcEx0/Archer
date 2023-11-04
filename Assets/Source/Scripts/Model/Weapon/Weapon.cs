@@ -18,7 +18,7 @@ namespace Archer.Model
 
         private bool _changedUp = true;
 
-        public Weapon(Vector3 position ,Quaternion rotation ,float speedChangedAngle, float startedPowerOfShot, float cooldown) : base(position, rotation)
+        public Weapon(Vector3 position, Quaternion rotation, float speedChangedAngle, float startedPowerOfShot, float cooldown) : base(position, rotation)
         {
             _speedChangedAngle = speedChangedAngle;
             _startedPowerOfShot = startedPowerOfShot;
@@ -59,7 +59,7 @@ namespace Archer.Model
                 if ((int)Rotation.eulerAngles.x == (int)_maxAngle)
                     _changedUp = false;
             }
-            else if(_changedUp == false)
+            else if (_changedUp == false)
             {
                 ChangeAngle(deltaTime, _minAngle);
 
@@ -75,7 +75,7 @@ namespace Archer.Model
 
         private Arrow GetArrow(Vector3 velocity)
         {
-            return new Arrow(ArrowSpawnPosition, velocity);
+            return new Arrow(ArrowSpawnPosition, Quaternion.Euler(0f, 0f, Rotation.eulerAngles.x), velocity);
         }
 
         private void Reload(float deltaTime)
