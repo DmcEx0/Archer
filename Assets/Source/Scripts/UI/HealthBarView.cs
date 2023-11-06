@@ -21,7 +21,7 @@ public class HealthBarView : MonoBehaviour
 
     private void Update()
     {
-        _healthBarSlider.value = Mathf.Lerp(_healthBarSlider.value, _value, 1.5f * Time.deltaTime);
+        _healthBarSlider.value = Mathf.Lerp(_healthBarSlider.value, _value, 3f * Time.deltaTime);
     }
 
     private void OnHealthChanged(int currentValue, int maxValue)

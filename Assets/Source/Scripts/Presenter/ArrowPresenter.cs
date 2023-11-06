@@ -4,19 +4,23 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody), typeof(BoxCollider))]
 public class ArrowPresenter : Presenter
 {
-    private Arrow _model => Model is Arrow ? Model as Arrow : null;
+    private Collider _collider;
+    public Arrow ArrowModel => base.Model is Arrow ? base.Model as Arrow : null;
+
+    private void Awake()
+    {
+        _collider = GetComponent<Collider>();
+    }
+
+    private void OnEnable()
+    {
+        _collider.enabled = true;
+    }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.TryGetComponent(out Presenter presenter))
-        {
-            if (presenter is IDamageable)
-            {
-                IDamageable damageable = presenter as IDamageable;
-                damageable.TakeDamage(_model.Damage);
-            }
-            _model.DestroyAll();
-            transform.SetParent(other.transform);
-        }
+        _collider.enabled = false;
+        ArrowModel.DestroyAll();
+        //transform.SetParent(other.transform);
     }
 }

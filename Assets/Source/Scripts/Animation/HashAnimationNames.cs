@@ -12,7 +12,10 @@ public static class HashAnimationNames
     public const string SitIdleString = "SitIdle";
     public const string SitStandUpString = "SitStandUp";
 
-    public static readonly int Aim = Animator.StringToHash(AimString);
+    public static readonly int StandUpAim = Animator.StringToHash("StandUpAim");
+    public static readonly int Sit = Animator.StringToHash("Sit");
+    public static readonly int StandUp = Animator.StringToHash("StandUp");
+
     public static readonly int Reload = Animator.StringToHash(ReloadString);
     public static readonly int Shoot = Animator.StringToHash(ShootString);
     public static readonly int Death = Animator.StringToHash(DeathString);

@@ -29,6 +29,9 @@ namespace Archer.Model
         }
 
         public event UnityAction<Arrow> Shoted;
+
+        public event Func<bool> ActivatedSkill;
+
         public Vector3 ArrowSpawnPosition { get; private set; }
         public bool CanShoot { get; private set; } = false;
         public float StartedPowerOfShot => _startedPowerOfShot;
@@ -41,7 +44,14 @@ namespace Archer.Model
 
             Vector3 accumulatedVelocity = Forward * (_startedPowerOfShot * accumulatedPower);
 
-            Arrow arrow = GetArrow(accumulatedVelocity);
+            bool isActivatedSkill = false;
+
+            if (ActivatedSkill != null)
+                isActivatedSkill = ActivatedSkill.Invoke();
+            else
+                isActivatedSkill = false;
+
+            Arrow arrow = GetArrow(accumulatedVelocity, isActivatedSkill);
             Shoted?.Invoke(arrow);
 
             CanShoot = false;
@@ -73,9 +83,9 @@ namespace Archer.Model
             ArrowSpawnPosition = arrowSpawnPosition;
         }
 
-        private Arrow GetArrow(Vector3 velocity)
+        private Arrow GetArrow(Vector3 velocity, bool isActivatedSkill)
         {
-            return new Arrow(ArrowSpawnPosition, Quaternion.Euler(0f, 0f, Rotation.eulerAngles.x), velocity);
+            return new Arrow(ArrowSpawnPosition, Quaternion.Euler(0f, 0f, Rotation.eulerAngles.x), velocity, isActivatedSkill);
         }
 
         private void Reload(float deltaTime)

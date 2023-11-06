@@ -1,6 +1,5 @@
 using Archer.AI;
 using Archer.Model;
-using UnityEngine;
 
 public class EnemyInputRouter : IInputRouter
 {
@@ -27,7 +26,7 @@ public class EnemyInputRouter : IInputRouter
 
     public void Update(float deltaTime)
     {
-        _enemyAI.CheckTargetInDirection(_weapon.ArrowSpawnPosition, _weapon.Forward);
+        _enemyAI.CheckTargetInDirection(_weapon.ArrowSpawnPosition, _weapon.Forward, deltaTime);
     }
 
     public void OnEnable()

@@ -10,8 +10,16 @@ public class AnimationController : MonoBehaviour
     private const float SitInleSpeed = 1f;
 
     [SerializeField] private AnimationClipData _animationClipData;
-    [SerializeField] private AnimationCurve _changePositionCurve;
-    [SerializeField] private float _offsetTime;
+
+    [Space]
+    [SerializeField] private AnimationCurve _takenPositionCurve;
+    [SerializeField] private float _takenPositionOffsetY;
+    [SerializeField] private float _takenPositionTime;
+
+    [Space]
+    [SerializeField] private AnimationCurve _discardCurve;
+    [SerializeField] private float _discardOffsetY;
+    [SerializeField] private float _discardTime;
 
     [Space]
     [SerializeField] private Transform _leftHandRigTarget;
@@ -23,23 +31,29 @@ public class AnimationController : MonoBehaviour
     private string _currentAnimationName;
     private string _nextAnimationName;
 
-    private float _duration;
+    private float _discardDuration;
+    private float _takenPositionDuration;
     private float _reloadSpeed;
 
     private bool _isFinalAnimation = false;
-    private bool _isFinalCurve = false;
+    private bool _isTakenPosition = false;
+    private bool _isDiskard = false;
 
-    public bool IsFinalCurve => _isFinalCurve;
+    public bool IsTakenPosition => _isTakenPosition;
+    public bool IsDiskard => _isDiskard;
+
+    private void Awake()
+    {
+        _animator = GetComponent<Animator>();
+    }
 
     private void Update()
     {
-        if (_isFinalAnimation)
-            return;
-
-        if (_currentAnimationName == null)
+        if (_isFinalAnimation || _currentAnimationName == null)
             return;
 
         AnimatorStateInfo currentStateInfo = _animator.GetCurrentAnimatorStateInfo(0);
+
 
         if (currentStateInfo.IsName(_currentAnimationName) && currentStateInfo.normalizedTime >= 0.95f)
         {
@@ -47,23 +61,18 @@ public class AnimationController : MonoBehaviour
         }
     }
 
-    public void Init(Animator animator)
+    public Vector3 Diskard(Vector3 startPosition, Vector3 endPostion, float deltaTime)
     {
-        _animator = animator;
-    }
-    private float _dur;
-    public Vector3 TakenPosition2(Vector3 startPosition, Vector3 endPostion, float deltaTime)
-    {
-        _isFinalCurve = false;
-        float normilizeTime = _dur / _offsetTime;
-        Vector3 nextPos = Vector3.Lerp(startPosition, endPostion, normilizeTime) + (new Vector3(0, 3f, 0) * _changePositionCurve.Evaluate(normilizeTime));
+        float normilizeTime = _discardDuration / _discardTime;
 
-        _dur += deltaTime;
+        Vector3 nextPos = Vector3.Lerp(startPosition, endPostion, normilizeTime) + (new Vector3(0, _discardOffsetY, 0) * _discardCurve.Evaluate(normilizeTime));
 
-        if (_dur >= _offsetTime)
+        _discardDuration += deltaTime;
+
+        if (_discardDuration >= _discardTime)
         {
-            _dur = 0;
-            _isFinalCurve = true;
+            _discardDuration = 0;
+            _isDiskard = true;
         }
 
         return nextPos;
@@ -71,14 +80,15 @@ public class AnimationController : MonoBehaviour
 
     public Vector3 TakenPosition(Vector3 startPosition, Vector3 endPostion, float deltaTime)
     {
-        float normilizeTime = _duration / _offsetTime;
-        Vector3 nextPos = Vector3.Lerp(startPosition, endPostion, normilizeTime) + (new Vector3(0, 3f, 0) * _changePositionCurve.Evaluate(normilizeTime));
+        float normilizeTime = _takenPositionDuration / _takenPositionTime;
+        Vector3 nextPos = Vector3.Lerp(startPosition, endPostion, normilizeTime) + (new Vector3(0, _takenPositionOffsetY, 0) * _takenPositionCurve.Evaluate(normilizeTime));
 
-        _duration += deltaTime;
+        _takenPositionDuration += deltaTime;
 
-        if (_duration >= _offsetTime)
+        if (_takenPositionDuration >= _takenPositionTime)
         {
-            _duration = _offsetTime;
+            _takenPositionDuration = _takenPositionTime;
+            _isTakenPosition = true;
         }
 
         return nextPos;
@@ -127,7 +137,7 @@ public class AnimationController : MonoBehaviour
     public void PlaySitIdle()
     {
         float offsetTime = 0.3f;
-        float speed = (_animationClipData.SitIdleLenght / _offsetTime) + offsetTime;
+        float speed = (_animationClipData.SitIdleLenght / _takenPositionTime) + offsetTime;
 
         PlayeCurrentAnimation(HashAnimationNames.SitIdleString, speed, HashAnimationNames.SitStandUpString);
     }
@@ -172,8 +182,8 @@ public class AnimationController : MonoBehaviour
 
     private void PlayeCurrentAnimation(string animationName, float animationSpeed, string nextAnimationName, bool isFinalAnimation = false)
     {
-        if (_animator.isActiveAndEnabled == false)
-            return;
+        //if (_animator.isActiveAndEnabled == false)
+        //    return;
 
         _currentAnimationName = animationName;
 

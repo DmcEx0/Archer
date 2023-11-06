@@ -24,31 +24,31 @@ namespace Archer.AI
 
         private Collider SelectedTarget()
         {
-            int randomIndex = Random.Range(0,100);
+            int randomIndex = Random.Range(0, 100);
 
             foreach (Collider collider in _colliders)
             {
                 if (randomIndex <= 50)       // вынести шанс в отдельный код
                 {
-                    if (collider.TryGetComponent(out PlayerPresenter playerPresenter))
+                    if (collider.TryGetComponent(out HitBodyDetector body))
                         return collider;
                 }
 
                 if (randomIndex >= 50 && randomIndex <= 66)
                 {
-                    if (collider.TryGetComponent(out Target1 target1))                  
+                    if (collider.TryGetComponent(out HitHeadDetector head))
                         return collider;
                 }
 
                 if (randomIndex >= 66 && randomIndex <= 83)
                 {
-                    if (collider.TryGetComponent(out Target2 target2))
+                    if (collider.TryGetComponent(out Target1 target1))
                         return collider;
                 }
 
                 if (randomIndex >= 83 && randomIndex <= 100)
                 {
-                    if (collider.TryGetComponent(out Target3 target3))
+                    if (collider.TryGetComponent(out Target2 target2))
                         return collider;
                 }
             }

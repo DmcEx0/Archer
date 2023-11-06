@@ -5,13 +5,9 @@ public class Presenter : MonoBehaviour
 {
     private Transformable _model;
 
-    private AnimationController _animationController;
-
     private IUpdatetable _updatetable = null;
 
     protected Transformable Model => _model;
-
-    public AnimationController AnimationController => _animationController;
 
     private void Update() => _updatetable?.Update(Time.deltaTime);
 
@@ -21,12 +17,6 @@ public class Presenter : MonoBehaviour
 
         if (_model is IUpdatetable)
             _updatetable = (IUpdatetable)_model;
-
-        if (TryGetComponent(out AnimationController controller))
-        {
-            _animationController = controller;
-            _animationController.Init(GetComponent<Animator>());
-        }
 
         _model.Rotated += OnRotated;
         _model.Moved += OnMoved;
@@ -50,7 +40,8 @@ public class Presenter : MonoBehaviour
 
     private void OnMoved()
     {
-        transform.position = _model.Position;
+        if (this != null)
+            transform.position = _model.Position;
     }
 
     private void OnDestroying()

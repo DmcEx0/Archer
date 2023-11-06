@@ -11,8 +11,6 @@ public class PlayerConfigurationPresenter : MonoBehaviour
     [SerializeField] private Transform _rightHand;
     [SerializeField] private Transform _endPointPosition;
 
-    private AnimationController _animationController;
-
     private WeaponDataSO _currentWeaponData;
     private ArrowDataSO _currentArrowData;
 
@@ -31,42 +29,36 @@ public class PlayerConfigurationPresenter : MonoBehaviour
         _meinMenuView.EquipmentChenged -= OnEquipmentSelected;
     }
 
-    private void Awake()
-    {
-        _animationController = _playerPresenter.GetComponent<AnimationController>();
-        _animationController.Init(_playerPresenter.GetComponent<Animator>());
-    }
-
     private void Start()
     {
         _startPlayerPosition = _playerPresenter.transform.position;
-        _animationController.PlaySitIdle();
+        _playerPresenter.AnimationController.PlaySitIdle();
     }
 
     private void Update()
     {
-        if (_playerPresenter.transform.position == _endPointPosition.position)
+        if (_playerPresenter.AnimationController.IsTakenPosition == true)
             return;
 
-        _playerPresenter.transform.position = _animationController.TakenPosition(_startPlayerPosition, _endPointPosition.position, Time.deltaTime);
+        _playerPresenter.transform.position = _playerPresenter.AnimationController.TakenPosition(_startPlayerPosition, _endPointPosition.position, Time.deltaTime);
     }
 
     private Presenter CreatePresenter(EquipmentDataSO equipmentData, Transform spawnPoint)
     {
         return Instantiate(equipmentData.Presenter, spawnPoint.position, spawnPoint.rotation);
     }
-    
+
     private void OnEquipmentSelected(EquipmentDataSO equipmentData)
     {
         if (equipmentData is WeaponDataSO)
             OnWeaponPresenterChanged(equipmentData as WeaponDataSO);
-        else if(equipmentData is ArrowDataSO)
+        else if (equipmentData is ArrowDataSO)
             OnArrowPresenterChanged(equipmentData as ArrowDataSO);
     }
 
     private void DestroyCurrentPresenter(Presenter currentTemplate)
     {
-        if(currentTemplate != null)
+        if (currentTemplate != null)
             Destroy(currentTemplate.gameObject);
     }
 

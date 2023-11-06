@@ -8,7 +8,7 @@ namespace Archer.Model
     {
         private Weapon _weaponModel;
         private Character _characterModel;
-        private Presenter _characterTemplate;
+        private CharacterPresenter _characterTemplate;
         private WeaponPresenter _weaponTemplate;
 
         private ArrowDataSO _arrowData;
@@ -23,12 +23,12 @@ namespace Archer.Model
         protected abstract Presenter CreateCharacter(Character caharacterModel);
         protected abstract WeaponPresenter CreateWeapon(WeaponPresenter weaponTemplate, Weapon weaponModel);
 
-        public KeyValuePair<Presenter, Character> SpawnCharacter(Health health, Transform characterSpawnPoint)
+        public KeyValuePair<CharacterPresenter, Character> SpawnCharacter(Health health, Transform characterSpawnPoint)
         {
             _characterModel = new Character(characterSpawnPoint.position, characterSpawnPoint.rotation, health);
-            _characterTemplate = CreateCharacter(_characterModel);
+            _characterTemplate = CreateCharacter(_characterModel) as CharacterPresenter;
 
-            KeyValuePair<Presenter, Character> character = new KeyValuePair<Presenter, Character>(_characterTemplate, _characterModel);
+            KeyValuePair<CharacterPresenter, Character> character = new KeyValuePair<CharacterPresenter, Character>(_characterTemplate, _characterModel);
 
             return character;
         }
@@ -62,7 +62,7 @@ namespace Archer.Model
         {
             Factory.CreateArrow(_arrowData.Presenter, arrow);
 
-            arrow.SetDamage(_arrowData.Damage);
+            arrow.SetDamage(_arrowData.MainDamage, _arrowData.AdditionalDamage, _arrowData.SkillType);
         }
     }
 }

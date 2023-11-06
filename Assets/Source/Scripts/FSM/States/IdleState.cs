@@ -1,7 +1,7 @@
 using Archer.Model;
 using UnityEngine;
 
-namespace Assets.Source.Scripts.FSM.States
+namespace Archer.Model.FSM
 {
     public class IdleState : IState
     {

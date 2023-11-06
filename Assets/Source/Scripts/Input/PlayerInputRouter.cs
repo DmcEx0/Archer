@@ -43,7 +43,6 @@ public class PlayerInputRouter : IInputRouter
 
         _power = 1;
         PowerChanged?.Invoke(_power, _maxPower);
-
     }
 
     private void Shoot(CallbackContext ctx)
@@ -57,7 +56,6 @@ public class PlayerInputRouter : IInputRouter
     public void OnEnable()
     {
         _input.Enable();
-
         _input.Player.Shoot.canceled += Shoot;
     }
 

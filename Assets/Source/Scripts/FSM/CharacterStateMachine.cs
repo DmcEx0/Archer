@@ -3,20 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace Assets.Source.Scripts.FSM.States
+namespace Archer.Model.FSM
 {
     public class CharacterStateMachine
     {
-        private Dictionary<StatesEnum, IState> _states;
+        private Dictionary<StatesType, IState> _states;
         private IState _currentState;
 
-        public CharacterStateMachine(KeyValuePair<Presenter, Character> character, KeyValuePair<WeaponPresenter, Weapon> weapon, CharactersSpawner charactersSpawner, Vector3 startPosition, Transform endPoint)
+        public CharacterStateMachine(KeyValuePair<CharacterPresenter, Character> character, KeyValuePair<WeaponPresenter, Weapon> weapon, CharactersSpawner charactersSpawner, Vector3 startPosition, Transform endPoint)
         {
-            _states = new Dictionary<StatesEnum, IState>()
+            _states = new Dictionary<StatesType, IState>()
             {
-                [StatesEnum.Idle] = new IdleState(this),
-                [StatesEnum.Battle] = new BattleState(this),
-                [StatesEnum.Die] = new DieState(this),
+                [StatesType.Idle] = new IdleState(this),
+                [StatesType.Battle] = new BattleState(this),
+                [StatesType.Die] = new DieState(this),
             };
 
             CharactersSpawner = charactersSpawner;
@@ -31,10 +31,10 @@ namespace Assets.Source.Scripts.FSM.States
         public Vector3 StartPosition { get; private set; }
         public Transform EndPoint { get; private set; }
         public CharactersSpawner CharactersSpawner { get; private set; }
-        public KeyValuePair<Presenter, Character> Character { get; private set; }
+        public KeyValuePair<CharacterPresenter, Character> Character { get; private set; }
         public KeyValuePair<WeaponPresenter, Weapon> Weapon { get; private set; }
 
-        public void EnterIn(StatesEnum stateEnum)
+        public void EnterIn(StatesType stateEnum)
         {
             if (_states.TryGetValue(stateEnum, out IState state))
             {

@@ -1,15 +1,12 @@
 using Archer.AI;
-using Archer.Model;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Assets.Source.Scripts.FSM.States
+namespace Archer.Model.FSM
 {
     public class BattleState : IState
     {
         private readonly CharacterStateMachine _stateMachine;
-
-        private AnimationController _animationController;
 
         private IInputRouter _inputRouter;
 
@@ -22,15 +19,13 @@ namespace Assets.Source.Scripts.FSM.States
 
         public void Enter()
         {
-            _animationController = _stateMachine.Character.Key.GetComponent<AnimationController>();
-
             WaitForTakenPosition();
         }
 
         public void Exit()
         {
             DisableWeapon();
-            WaitForDiskard();
+            _stateMachine.Character.Value.Died -= OnDied;
         }
 
         public void Update(float deltaTime)
@@ -40,14 +35,14 @@ namespace Assets.Source.Scripts.FSM.States
                 IGeneratable weaponGeneratable = _stateMachine.Weapon.Key;
                 _stateMachine.Weapon.Value.SetArrowSpawnPoint(weaponGeneratable.GeneratingPoint.position);
 
-                _animationController.EnabledIK(_stateMachine.Weapon.Key.RightHandTarget, _stateMachine.Weapon.Key.LeftHandTarget, _stateMachine.Weapon.Key.ChestTarget);
+                _stateMachine.Character.Key.AnimationController.EnabledIK(_stateMachine.Weapon.Key.RightHandTarget, _stateMachine.Weapon.Key.LeftHandTarget, _stateMachine.Weapon.Key.ChestTarget);
                 _inputRouter.Update(deltaTime);
             }
         }
 
         private void InitPlayer()
         {
-            Init(new PlayerInputRouter(_animationController));
+            Init(new PlayerInputRouter(_stateMachine.Character.Key.AnimationController));
 
             PowerShotBarView powerShotPresenter = _stateMachine.Character.Key.GetComponentInChildren<PowerShotBarView>();
             powerShotPresenter.Init(_inputRouter as PlayerInputRouter);
@@ -55,7 +50,7 @@ namespace Assets.Source.Scripts.FSM.States
 
         private void InitEnemy()
         {
-            Init(new EnemyInputRouter(new EnemyAI(), _animationController));
+            Init(new EnemyInputRouter(new EnemyAI(), _stateMachine.Character.Key.AnimationController));
         }
 
         private void Init(IInputRouter inputRouter)
@@ -81,11 +76,14 @@ namespace Assets.Source.Scripts.FSM.States
 
         private async void WaitForTakenPosition()
         {
-            _animationController.PlaySitIdle();
+            if (_stateMachine.Character.Value == null)
+                return;
 
-            while (_stateMachine.Character.Value.Position != _stateMachine.EndPoint.position)
+            _stateMachine.Character.Key.AnimationController.PlaySitIdle();
+
+            while (_stateMachine.Character.Key.AnimationController.IsTakenPosition == false)
             {
-                _stateMachine.Character.Value.MoveTo(_animationController.TakenPosition(_stateMachine.StartPosition, _stateMachine.EndPoint.position, Time.deltaTime));
+                _stateMachine.Character.Value.MoveTo(_stateMachine.Character.Key.AnimationController.TakenPosition(_stateMachine.StartPosition, _stateMachine.EndPoint.position, Time.deltaTime));
 
                 await Task.Yield();
             }
@@ -99,37 +97,16 @@ namespace Assets.Source.Scripts.FSM.States
             _isTakenPosition = true;
         }
 
-        private async void WaitForDiskard()
-        {
-            float randomOffsetX = Random.Range(2f, 4f);
-
-            Vector3 endPositon = new Vector3(_stateMachine.Character.Value.Position.x + randomOffsetX, 0, _stateMachine.Character.Value.Position.z);
-
-            while (_stateMachine.Character.Key.AnimationController.IsFinalCurve == false)
-            {
-                _stateMachine.Character.Value.MoveTo(_stateMachine.Character.Key.AnimationController.TakenPosition2(_stateMachine.Character.Value.Position, endPositon, Time.deltaTime));
-
-                await Task.Yield();
-            }
-
-            DisableCharacter();
-        }
-
         private void OnDied()
         {
-            _stateMachine.EnterIn(StatesEnum.Die);
+            _stateMachine.EnterIn(StatesType.Die);
         }
 
-        private void DisableCharacter()
-        {
-            _stateMachine.Character.Value.Destroy();
-            _stateMachine.Character.Value.Died -= OnDied;
-        }
         private void DisableWeapon()
         {
             _stateMachine.Weapon.Value.Shoted -= _stateMachine.CharactersSpawner.OnShot;
-            _stateMachine.Weapon.Value.DestroyAll();
-            _inputRouter.OnDisable(); ;
+            _stateMachine.Weapon.Value.Destroy();
+            _inputRouter.OnDisable();
         }
     }
 }

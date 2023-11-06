@@ -13,7 +13,7 @@ public struct BallisticsRouter
 
     public static Vector3 GetCalculatedPositionAfterTime(Vector3 velocity, float time)
     {
-        velocity = velocity * time + Vector3.down * _gravity * time * time /2f;
+        velocity = velocity * time + Vector3.down * _gravity * time * time / 2f;
 
         return velocity ;
     }

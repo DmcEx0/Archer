@@ -5,7 +5,7 @@ namespace Archer.AI
 {
     public class EnemyAI
     {
-        private const float AddDistance = 0.5f;
+        private const float DelayBeforeFiring = 0.2f;
         private const int PalyerLayer = 6;
         private const int TargetLayer = 9;
 
@@ -15,7 +15,9 @@ namespace Archer.AI
 
         private Vector3 _velocity;
         private float _accumulatedPowerOfShot;
-        private float _distanceToPlayer;
+        private float _distanceToTarget;
+
+        private float _accumulatedTime;
 
         private Collider _target;
 
@@ -38,33 +40,34 @@ namespace Archer.AI
             _target = _targetRouter.Target;
         }
 
-        public void CheckTargetInDirection(Vector3 position, Vector3 forward)
+        public void CheckTargetInDirection(Vector3 position, Vector3 forward, float deltaTime)
         {
             if (_isPlayerFound == false)
             {
                 if (Physics.Raycast(position, forward, out RaycastHit hitInfo1))
                 {
-                    if (hitInfo1.collider.TryGetComponent(out PlayerPresenter player))
+                    if (hitInfo1.collider.TryGetComponent(out HitBodyDetector body))
                     {
-                        _distanceToPlayer = (position - player.transform.position).magnitude - 0.7f;
+                        _target = hitInfo1.collider;
                         _isPlayerFound = true;
                     }
                 }
             }
 
+            _distanceToTarget = (_target.transform.position - position).magnitude;
+
             if (Physics.Linecast(position, CalculateEndPointAfterTime(position, forward), out RaycastHit hitInfo2, _targetsLayerMask))
             {
                 _targetRouter.TryAddColliderInList(hitInfo2.collider);
 
-                if (_target == null)
-                {
-                    SetTarget();
-                    return;
-                }
-
                 if (hitInfo2.collider == _target)
                 {
-                    Shot?.Invoke();
+                    _accumulatedTime += deltaTime;
+                    if (_accumulatedTime >= DelayBeforeFiring)
+                    {
+                        Shot?.Invoke();
+                        _accumulatedTime = 0f;
+                    }
                 }
             }
         }
@@ -73,7 +76,7 @@ namespace Archer.AI
         {
             _velocity = forward * _accumulatedPowerOfShot;
 
-            float time = (_distanceToPlayer + AddDistance) / _velocity.magnitude;
+            float time = _distanceToTarget / _velocity.magnitude;
 
             Vector3 endPoint = position + BallisticsRouter.GetCalculatedPositionAfterTime(_velocity, time);
 
