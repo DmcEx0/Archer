@@ -52,6 +52,8 @@ namespace Archer.AI
                         _isPlayerFound = true;
                     }
                 }
+
+                return;
             }
 
             _distanceToTarget = (_target.transform.position - position).magnitude;

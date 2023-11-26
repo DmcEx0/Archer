@@ -1,6 +1,5 @@
-using Unity.VisualScripting;
+using Agava.YandexGames;
 using UnityEngine;
-using UnityEngine.Animations.Rigging;
 
 public class PlayerConfigurationPresenter : MonoBehaviour
 {
@@ -10,6 +9,11 @@ public class PlayerConfigurationPresenter : MonoBehaviour
     [SerializeField] private PlayerPresenter _playerPresenter;
     [SerializeField] private Transform _rightHand;
     [SerializeField] private Transform _endPointPosition;
+
+    [Space]
+    [SerializeField] private AudioDataSO _audioData;
+    [SerializeField] private AudioSource _SFXAudioSource;
+    [SerializeField] private AudioSource _musicAudioSource;
 
     private WeaponDataSO _currentWeaponData;
     private ArrowDataSO _currentArrowData;
@@ -22,17 +26,29 @@ public class PlayerConfigurationPresenter : MonoBehaviour
     private void OnEnable()
     {
         _meinMenuView.EquipmentChenged += OnEquipmentSelected;
+        _meinMenuView.SettingsWindowView.SFXChanged += ChangeSFXStatus;
+        _meinMenuView.SettingsWindowView.MusicChanged += ChangeMusicStatus;
     }
 
     private void OnDisable()
     {
         _meinMenuView.EquipmentChenged -= OnEquipmentSelected;
+        _meinMenuView.SettingsWindowView.SFXChanged -= ChangeSFXStatus;
+        _meinMenuView.SettingsWindowView.MusicChanged -= ChangeMusicStatus;
+    }
+
+    private void Awake()
+    {
+        YandexGamesSdk.GameReady();
     }
 
     private void Start()
     {
         _startPlayerPosition = _playerPresenter.transform.position;
         _playerPresenter.AnimationController.PlaySitIdle();
+
+        _audioData.Init(_SFXAudioSource, _musicAudioSource);
+        _audioData.Play(Sounds.MeinMenu, true);
     }
 
     private void Update()
@@ -78,5 +94,15 @@ public class PlayerConfigurationPresenter : MonoBehaviour
         _currentArrowData = arrowData;
         _currentArrowTemplate = CreatePresenter(_currentArrowData, _currentWeaponTemplate.ArrowSlot) as ArrowPresenter;
         _currentArrowTemplate.transform.SetParent(_rightHand);
+    }
+
+    private void ChangeSFXStatus(bool isSFXOn)
+    {
+        _audioData.SetActiveSFX(isSFXOn);
+    }
+
+    private void ChangeMusicStatus(bool isMusicOn)
+    {
+        _audioData.SetActiveMusic(isMusicOn);
     }
 }

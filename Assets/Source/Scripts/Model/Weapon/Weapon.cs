@@ -29,8 +29,8 @@ namespace Archer.Model
         }
 
         public event UnityAction<Arrow> Shoted;
-
-        public event Func<bool> ActivatedSkill;
+        public event UnityAction ActivatedSkill;
+        public event Func<bool> GetActivatedSkillStatus;
 
         public Vector3 ArrowSpawnPosition { get; private set; }
         public bool CanShoot { get; private set; } = false;
@@ -46,10 +46,15 @@ namespace Archer.Model
 
             bool isActivatedSkill = false;
 
-            if (ActivatedSkill != null)
-                isActivatedSkill = ActivatedSkill.Invoke();
-            else
-                isActivatedSkill = false;
+            if (GetActivatedSkillStatus != null)
+            {
+                isActivatedSkill = GetActivatedSkillStatus.Invoke();
+
+                if (isActivatedSkill)
+                {
+                    ActivatedSkill?.Invoke();
+                }
+            }
 
             Arrow arrow = GetArrow(accumulatedVelocity, isActivatedSkill);
             Shoted?.Invoke(arrow);

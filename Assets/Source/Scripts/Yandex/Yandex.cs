@@ -1,6 +1,6 @@
 using Agava.YandexGames;
+using IJunior.TypedScenes;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Yandex : MonoBehaviour
@@ -12,10 +12,9 @@ public class Yandex : MonoBehaviour
 
     private IEnumerator Start()
     {
-        if (Application.isEditor)
-            yield break;
-
         yield return YandexGamesSdk.Initialize(LoadPlayerData);
+
+        Menu.Load();
     }
 
     private void LoadPlayerData()

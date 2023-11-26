@@ -18,13 +18,25 @@ public class Presenter : MonoBehaviour
         if (_model is IUpdatetable)
             _updatetable = (IUpdatetable)_model;
 
+        OnInitialized();
+
+        OnRotated();
+        OnMoved();
+    }
+
+    protected virtual void OnInitialized()
+    {
         _model.Rotated += OnRotated;
         _model.Moved += OnMoved;
         _model.Destroying += OnDestroying;
         _model.DestroyingAll += OnDestroyingAll;
+    }
 
-        OnRotated();
-        OnMoved();
+    protected virtual void OnDestroying()
+    {
+        _model.Rotated -= OnRotated;
+        _model.Moved -= OnMoved;
+        _model.Destroying -= OnDestroying;
     }
 
     private void DestroyCompose()
@@ -42,13 +54,6 @@ public class Presenter : MonoBehaviour
     {
         if (this != null)
             transform.position = _model.Position;
-    }
-
-    private void OnDestroying()
-    {
-        _model.Rotated -= OnRotated;
-        _model.Moved -= OnMoved;
-        _model.Destroying -= OnDestroying;
     }
 
     private void OnDestroyingAll()

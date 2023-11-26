@@ -1,3 +1,4 @@
+using Agava.YandexGames;
 using Archer.Model;
 using Archer.Model.FSM;
 using System.Collections.Generic;
@@ -15,7 +16,12 @@ public class Root : MonoBehaviour
 
     [Space]
     [SerializeField] private EndGameWindowView _endGameWindow;
-    [SerializeField] private SkillButtonView _skillButton;
+    [SerializeField] private SkillButtonView _skillButtonView;
+
+    [Space]
+    [SerializeField] private AudioSource _SFXAudioSource;
+    [SerializeField] private AudioSource _musicAudioSource;
+    [SerializeField] private AudioDataSO _audioData;
 
     private CharacterStateMachine _playerStateMachine;
     private CharacterStateMachine _enemyStateMachine;
@@ -23,26 +29,27 @@ public class Root : MonoBehaviour
     private CharactersSpawner _playerSpawner;
     private CharactersSpawner _enemySpawner;
 
-    private Score _score;
+    private Weapon _playerWeapon;
+
+    private RevardSystem _revardSystem;
 
     private Dictionary<KeyValuePair<CharacterPresenter, Character>, CharacterStateMachine> _enemies;
-
-    private void OnEnable()
-    {
-
-    }
 
     private void Awake()
     {
         _enemies = new();
-        _score = new Score();
+        _revardSystem = new RevardSystem();
 
-        _playerSpawner = new PlayerSpawner(_factory);
-        _enemySpawner = new EnemySpawner(_factory);
+        _audioData.Init(_SFXAudioSource, _musicAudioSource);
+
+        _playerSpawner = new PlayerSpawner(_factory, _audioData);
+        _enemySpawner = new EnemySpawner(_factory, _audioData);
     }
 
     private void Start()
     {
+        _audioData.Play(Sounds.Game, true);
+
         CreatePlayer();
         CreateEnemies();
 
@@ -74,9 +81,12 @@ public class Root : MonoBehaviour
         KeyValuePair<CharacterPresenter, Character> player = _playerSpawner.SpawnCharacter(health, _startPlayerPosition);
 
         KeyValuePair<WeaponPresenter, Weapon> weapon = _playerSpawner.SpawnWeapon(player.Key, weaponData, arrowData);
-        weapon.Value.ActivatedSkill += _skillButton.GetActivatedStatus; // ?????????? Unsubscribe
+        _playerWeapon = weapon.Value;
+        _playerWeapon.GetActivatedSkillStatus += _skillButtonView.GetActivatedStatus;
+        _playerWeapon.ActivatedSkill += _skillButtonView.ResetButton;
 
         _playerStateMachine = new CharacterStateMachine(player, weapon, _playerSpawner, _startPlayerPosition.position, _mainPlayerPosition);
+        _playerStateMachine.Died += OnPlayerDied;
         _playerStateMachine.EnterIn(StatesType.Idle);
     }
 
@@ -84,7 +94,7 @@ public class Root : MonoBehaviour
     {
         for (int i = 0; i < 1; i++)
         {
-            Health health = new Health(50);
+            Health health = new Health(20);
 
             KeyValuePair<CharacterPresenter, Character> newEnemy = _enemySpawner.SpawnCharacter(health, _enemiesSpawnPoints[i]);
             newEnemy.Key.HitInHead += OnHitInHead;
@@ -103,7 +113,9 @@ public class Root : MonoBehaviour
 
     private void OnEnemyDied()
     {
-        _score.AddCoinsOnKill(Config.Instance.CoinsForEnemy);
+        _revardSystem.AddCoinsOnKill(Config.Instance.CoinsForEnemy);
+        _revardSystem.AddScoreOnKill(Config.Instance.ScoreForEnemt);
+
         _enemyStateMachine.Character.Key.HitInHead -= OnHitInHead;
         _enemyStateMachine.Died -= OnEnemyDied;
 
@@ -114,7 +126,7 @@ public class Root : MonoBehaviour
     {
         if (_enemies.Count == 0)
         {
-            DisableCharacter();
+            _playerStateMachine.EnterIn(StatesType.Idle);
             ShowEndGameWindow();
             return;
         }
@@ -128,23 +140,36 @@ public class Root : MonoBehaviour
 
     private void ShowEndGameWindow()
     {
-        AddScore(_score.AmountCoins);
-        _endGameWindow.SetAmountCoins(_score.AmountCoins);
+        AddCoins();
+        AddScore();
+
+        _endGameWindow.SetAmountCoins(_revardSystem.AmountCoins);
         _endGameWindow.gameObject.SetActive(true);
+
+        _revardSystem.Reset();
     }
 
-    private void AddScore(int coins)
+    private void AddCoins()
     {
-        PlayerData.Instance.Coins += coins;
+        PlayerData.Instance.Coins += _revardSystem.AmountCoins;
     }
 
-    private void DisableCharacter()
+    private void AddScore()
     {
-        _playerStateMachine.EnterIn(StatesType.Idle);
+        PlayerData.Instance.Score += _revardSystem.AmountScore;
+    }
+
+    private void OnPlayerDied()
+    {
+        _playerWeapon.GetActivatedSkillStatus -= _skillButtonView.GetActivatedStatus;
+        _playerWeapon.ActivatedSkill -= _skillButtonView.ResetButton;
+        _playerStateMachine.Died -= OnPlayerDied;
+        _enemyStateMachine.EnterIn(StatesType.Idle);
+        ShowEndGameWindow();
     }
 
     private void OnHitInHead()
     {
-        _skillButton.OnCooldownChanged();
+        _skillButtonView.OnCooldownChanged();
     }
 }

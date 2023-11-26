@@ -1,3 +1,4 @@
+using Agava.YandexGames;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -10,15 +11,20 @@ public class MeinMenuView : MonoBehaviour
 
     [Space]
     [SerializeField] private TMP_Text _textCoin;
+    [SerializeField] private Button _startButton;
+
+    [Space, Header("Equipment")]
     [SerializeField] private EquipmentBigIconView _equpmentBigIcon;
     [SerializeField] private EquipmentSmallIconView _arrowViewOnScene;
-    [SerializeField] private EquipmentSmallIconView _weaponViewOnScene
-        ;
-    [SerializeField] private Button _startButton;
+    [SerializeField] private EquipmentSmallIconView _weaponViewOnScene;
     [SerializeField] private GameObject _weaponScrollView;
     [SerializeField] private GameObject _arrowScrollView;
     [SerializeField] private Transform _arrowContainerScrollView;
     [SerializeField] private Transform _weaponContainerScrollView;
+
+    [Space, Header("Settings")]
+    [SerializeField] private Button _settingsButton;
+    [SerializeField] private SettingsWindowView _settingsWindowView;
 
     private EquipmentListView _equipmentListView;
 
@@ -32,26 +38,32 @@ public class MeinMenuView : MonoBehaviour
 
     public event UnityAction<EquipmentDataSO> EquipmentChenged;
 
+    public event UnityAction<bool> MusicChanged;
+
+    public SettingsWindowView SettingsWindowView => _settingsWindowView;
+
     private void Awake()
-    { 
+    {
         _equipmentListView = GetComponent<EquipmentListView>();
     }
 
     private void OnEnable()
     {
         _startButton.onClick.AddListener(StartGame);
+        _settingsButton.onClick.AddListener(OnShowSettnigsWindow);
 
         _equipmentListView.EquipmentSelected += OnShowBigIconEquipment;
 
         _weaponViewOnScene.EquipmentSelected += OpenEquipmentsWindowShow;
         _arrowViewOnScene.EquipmentSelected += OpenEquipmentsWindowShow;
-        
+
         _equpmentBigIcon.EquipmentSelected += OnEquipmentSelected;
     }
 
     private void OnDisable()
     {
         _startButton.onClick.RemoveListener(StartGame);
+        _settingsButton.onClick.RemoveListener(OnShowSettnigsWindow);
 
         _equipmentListView.EquipmentSelected -= OnShowBigIconEquipment;
 
@@ -78,10 +90,10 @@ public class MeinMenuView : MonoBehaviour
 
     private void RenderEquimpemnt(EquipmentDataSO equipmentData)
     {
-        if(equipmentData is WeaponDataSO)
+        if (equipmentData is WeaponDataSO)
             _weaponViewOnScene.Render(equipmentData);
 
-        else if(equipmentData is ArrowDataSO)
+        else if (equipmentData is ArrowDataSO)
             _arrowViewOnScene.Render(equipmentData);
     }
 
@@ -92,9 +104,14 @@ public class MeinMenuView : MonoBehaviour
         SceneManager.LoadScene("Game");
     }
 
+    private void OnShowSettnigsWindow()
+    {
+        _settingsWindowView.gameObject.SetActive(true);
+    }
+
     private void OpenEquipmentsWindowShow(EquipmentDataSO equipmentDataSO)
     {
-        if (equipmentDataSO.Presenter is WeaponPresenter) 
+        if (equipmentDataSO.Presenter is WeaponPresenter)
         {
             EnabledSelectedScrollView(_weaponScrollView, _arrowScrollView);
         }

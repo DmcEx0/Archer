@@ -1284,6 +1284,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _weaponPosition: {fileID: 7585807874612367057}
+  _fireParticle: {fileID: 0}
+  _poisonParticle: {fileID: 0}
 --- !u!95 &8349522684585004657
 Animator:
   serializedVersion: 5

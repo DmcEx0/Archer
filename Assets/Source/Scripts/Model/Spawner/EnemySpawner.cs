@@ -5,7 +5,7 @@ namespace Archer.Model
 {
     public class EnemySpawner : CharactersSpawner
     {
-        public EnemySpawner(PresenterFactory factory) : base(factory)
+        public EnemySpawner(PresenterFactory factory, AudioDataSO audioData) : base(factory, audioData)
         {
         }
 

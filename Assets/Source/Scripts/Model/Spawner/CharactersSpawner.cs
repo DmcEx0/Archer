@@ -12,10 +12,12 @@ namespace Archer.Model
         private WeaponPresenter _weaponTemplate;
 
         private ArrowDataSO _arrowData;
+        private AudioDataSO _audioData;
 
-        protected CharactersSpawner(PresenterFactory factory)
+        protected CharactersSpawner(PresenterFactory factory, AudioDataSO audioData)
         {
             Factory = factory;
+            _audioData = audioData;
         }
 
         public PresenterFactory Factory { get; private set; }
@@ -63,6 +65,11 @@ namespace Archer.Model
             Factory.CreateArrow(_arrowData.Presenter, arrow);
 
             arrow.SetDamage(_arrowData.MainDamage, _arrowData.AdditionalDamage, _arrowData.SkillType);
+
+            if (arrow.SkillType == ArrowSkillType.None)
+                _audioData.Play(Sounds.Shot1);
+            else
+                _audioData.Play(Sounds.Shot2);
         }
     }
 }

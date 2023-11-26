@@ -1,6 +1,4 @@
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class SkillButtonView : MonoBehaviour
@@ -63,9 +61,6 @@ public class SkillButtonView : MonoBehaviour
 
     public bool GetActivatedStatus()
     {
-        if (_isSkillActivated == true)
-            ResetButton();
-
         return _isSkillActivated;
     }
 

@@ -4,7 +4,7 @@ namespace Archer.Model
 {
     public class PlayerSpawner : CharactersSpawner
     {
-        public PlayerSpawner(PresenterFactory factory) : base(factory)
+        public PlayerSpawner(PresenterFactory factory, AudioDataSO audioData) : base(factory, audioData)
         {
         }
 

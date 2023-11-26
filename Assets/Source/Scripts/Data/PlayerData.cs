@@ -1,3 +1,4 @@
+using Agava.YandexGames;
 using System;
 using UnityEngine;
 using UnityEngine.Events;
@@ -7,22 +8,38 @@ public class PlayerData : MonoBehaviour
     private static PlayerData s_instance;
 
     private const string _coinKey = "Coin";
-    private const int _defaultCountCoins = 10;
+    private const string _scoreKey = "Score";
 
+    private const int _defaultCountCoins = 10;
+    private const int _defaultScore = 0;
 
     private int _coins;
+    private int _score;
 
     public int Coins
     {
         get { return _coins; }
         set
         {
-            if(value < 0)
+            if (value < 0)
                 throw new ArgumentOutOfRangeException(nameof(value));
 
             _coins = value;
             CoinChanged?.Invoke(_coins);
             SaveMoney();
+        }
+    }
+
+    public int Score
+    {
+        get { return _score; }
+        set
+        {
+            if (value < 0)
+                throw new ArgumentOutOfRangeException(nameof(value));
+
+            _score = value;
+            SaveScore();
         }
     }
 
@@ -55,6 +72,12 @@ public class PlayerData : MonoBehaviour
     private void SaveMoney()
     {
         PlayerPrefs.SetInt(_coinKey, _coins);
+        PlayerPrefs.Save();
+    }
+
+    private void SaveScore()
+    {
+        PlayerPrefs.SetInt(_scoreKey, _score);
         PlayerPrefs.Save();
     }
 }
