@@ -21,8 +21,6 @@ namespace Archer.AI
 
         private Collider _target;
 
-        private bool _isPlayerFound = false;
-
         public EnemyAI()
         {
             _targetRouter = new();
@@ -42,14 +40,13 @@ namespace Archer.AI
 
         public void CheckTargetInDirection(Vector3 position, Vector3 forward, float deltaTime)
         {
-            if (_isPlayerFound == false)
+            if (_target == null)
             {
                 if (Physics.Raycast(position, forward, out RaycastHit hitInfo1))
                 {
                     if (hitInfo1.collider.TryGetComponent(out HitBodyDetector body))
                     {
                         _target = hitInfo1.collider;
-                        _isPlayerFound = true;
                     }
                 }
 
@@ -76,9 +73,10 @@ namespace Archer.AI
 
         private Vector3 CalculateEndPointAfterTime(Vector3 position, Vector3 forward)
         {
+            float addDistanceToTarget = 1f;
             _velocity = forward * _accumulatedPowerOfShot;
 
-            float time = _distanceToTarget / _velocity.magnitude;
+            float time = (_distanceToTarget + addDistanceToTarget) / _velocity.magnitude;
 
             Vector3 endPoint = position + BallisticsRouter.GetCalculatedPositionAfterTime(_velocity, time);
 

@@ -1,3 +1,4 @@
+using IJunior.TypedScenes;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -10,16 +11,21 @@ public class EndGameWindowView : MonoBehaviour
 
     private void OnEnable()
     {
-        _meinMenuButton.onClick.AddListener(() => { SceneManager.LoadScene("Menu"); });
+        _meinMenuButton.onClick.AddListener(LoadMenuScene);
+    }
+
+    private void OnDisable()
+    {
+        _meinMenuButton.onClick.RemoveListener(LoadMenuScene);
+    }
+
+    private void LoadMenuScene()
+    {
+        Menu.Load();
     }
 
     public void SetAmountCoins(int amountCoins)
     {
         _goldText.text = $"+{amountCoins}";
-    }
-
-    private void OnDisable()
-    {
-        _meinMenuButton.onClick.RemoveListener(() => { SceneManager.LoadScene("Menu"); });
     }
 }

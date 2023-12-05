@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3259702298063071963
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6621760879672496165}
+  - component: {fileID: 3080020627290202721}
+  - component: {fileID: 246234746528856149}
+  m_Layer: 0
+  m_Name: _Root
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6621760879672496165
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3259702298063071963}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3080020627290202721
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3259702298063071963}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8427efd1ac4312c45a48bde4530b6a66, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _playerTempalte: {fileID: 2440494145732799570, guid: ecd3014930defe4419ea9f7b442aab22, type: 3}
+  _enemyTemplate: {fileID: 4365549649675870978, guid: 4c1b005c6399c9a4db109fc6717250a9, type: 3}
+--- !u!114 &246234746528856149
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3259702298063071963}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 551c52b6d15925b4695a462cde2b1ffa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _equipmentListData: {fileID: 11400000, guid: 98839b9ca45fd6a43ab7f3f7cfddaba9, type: 2}
+  _factory: {fileID: 3080020627290202721}
+  _startPlayerPosition: {fileID: 0}
+  _mainPlayerPosition: {fileID: 0}
+  _mainEmemyPosition: {fileID: 0}
+  _enemiesSpawnPoints:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  _endGameWindow: {fileID: 0}
+  _skillButtonView: {fileID: 0}
+  _SFXAudioSource: {fileID: 0}
+  _musicAudioSource: {fileID: 0}
+  _audioData: {fileID: 11400000, guid: 78d2b584b41f2974e821616f7d803fa7, type: 2}

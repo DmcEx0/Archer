@@ -8946,6 +8946,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _leaderboardView: {fileID: 1091838037}
   _showLeaderboard: {fileID: 1476029123}
+  _playerRanking: {fileID: 0}
 --- !u!1 &1855214608
 GameObject:
   m_ObjectHideFlags: 0
@@ -9146,7 +9147,7 @@ GameObject:
   - component: {fileID: 1889920514}
   - component: {fileID: 1889920513}
   m_Layer: 5
-  m_Name: ButtonSetting
+  m_Name: SettingButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

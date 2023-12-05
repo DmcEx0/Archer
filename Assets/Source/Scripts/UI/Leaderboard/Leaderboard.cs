@@ -12,7 +12,9 @@ namespace Assets.Source.Scripts.UI.Liderboard
 
         [SerializeField] private LeaderboardView _leaderboardView;
         [SerializeField] private Button _showLeaderboard;
+        [SerializeField] private LeaderboardElement _playerRanking;
 
+        private List<LeaderboardPlayer> _leaderboardPlayers = new();
         private readonly int _numberOfPlayerInLeaderboard = 4;
 
         private void OnEnable()
@@ -30,15 +32,16 @@ namespace Assets.Source.Scripts.UI.Liderboard
             if (PlayerAccount.IsAuthorized == false)
                 return;
 
-            Agava.YandexGames.Leaderboard.GetPlayerEntry(LeaderboardName, _ =>
+            Agava.YandexGames.Leaderboard.GetPlayerEntry(LeaderboardName, entry =>
             {
-                Agava.YandexGames.Leaderboard.SetScore(LeaderboardName, PlayerData.Instance.Score);
+                if (PlayerData.Instance.Score > entry.score)
+                    Agava.YandexGames.Leaderboard.SetScore(LeaderboardName, PlayerData.Instance.Score);
             });
         }
 
         private void Fill()
         {
-            List<LeaderboardPlayer> leaderboardPlayers = new();
+            _leaderboardPlayers.Clear();
 
             Agava.YandexGames.Leaderboard.GetEntries(LeaderboardName, result =>
             {
@@ -53,10 +56,10 @@ namespace Assets.Source.Scripts.UI.Liderboard
                     if (string.IsNullOrEmpty(name))
                         name = AnunymousName;
 
-                    leaderboardPlayers.Add(new LeaderboardPlayer(rank, name, score));
+                    _leaderboardPlayers.Add(new LeaderboardPlayer(rank, name, score));
                 }
 
-                _leaderboardView.ConstructLeaderboard(leaderboardPlayers);
+                _leaderboardView.ConstructLeaderboard(_leaderboardPlayers);
             });
         }
 
@@ -64,32 +67,22 @@ namespace Assets.Source.Scripts.UI.Liderboard
         {
             _leaderboardView.gameObject.SetActive(true);
 
-            Authorize();
+            Authorized();
         }
 
-        private void Authorize()
+        private void Authorized()
         {
-            //PlayerAccount.Authorize(
-            //    onSuccessCallback: () =>
-            //    {
-            //        PlayerAccount.RequestPersonalProfileDataPermission();
-            //        SetPlayer();
-            //        Fill();
-            //    },
-            //    onErrorCallback: (error) =>
-            //    {
-            //        _leaderboardView.gameObject.SetActive(false);
-            //    });
-
-            PlayerAccount.Authorize();
-
-            if (PlayerAccount.IsAuthorized)
-            {
-                PlayerAccount.RequestPersonalProfileDataPermission();
-
-                SetPlayer();
-                Fill();
-            }
+            PlayerAccount.Authorize(
+                onSuccessCallback: () =>
+                {
+                    PlayerAccount.RequestPersonalProfileDataPermission();
+                    SetPlayer();
+                    Fill();
+                },
+                onErrorCallback: (error) =>
+                {
+                    _leaderboardView.gameObject.SetActive(false);
+                });
         }
     }
 }

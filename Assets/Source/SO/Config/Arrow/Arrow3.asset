@@ -18,5 +18,5 @@ MonoBehaviour:
   _price: 20
   _wasBought: 1
   _mainDamage: 15
-  _additionalDamage: 4
+  _additionalDamage: 6
   _skillType: 3

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -12,8 +13,14 @@ public class SettingsWindowView : MonoBehaviour
     public event UnityAction<bool> SFXChanged;
     public event UnityAction<bool> MusicChanged;
 
+    public event Func<bool> SfxStatus;
+    public event Func<bool> MusicStatus;
+
     private void OnEnable()
     {
+        _sfxToggle.isOn = SfxStatus.Invoke();
+        _musicToggle.isOn = MusicStatus.Invoke();
+
         _closeButton.onClick.AddListener(Close);
         _sfxToggle.onValueChanged.AddListener(ChangeStatusSFX);
         _musicToggle.onValueChanged.AddListener(ChangeStatusMusic);

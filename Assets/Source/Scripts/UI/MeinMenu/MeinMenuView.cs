@@ -1,4 +1,5 @@
 using Agava.YandexGames;
+using IJunior.TypedScenes;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -29,6 +30,7 @@ public class MeinMenuView : MonoBehaviour
     private EquipmentListView _equipmentListView;
 
     private Config _config;
+    private LevelManager _levelManager;
 
     private WeaponDataSO _currentWeaponData;
     private ArrowDataSO _currentArrowData;
@@ -38,13 +40,12 @@ public class MeinMenuView : MonoBehaviour
 
     public event UnityAction<EquipmentDataSO> EquipmentChenged;
 
-    public event UnityAction<bool> MusicChanged;
-
     public SettingsWindowView SettingsWindowView => _settingsWindowView;
 
     private void Awake()
     {
         _equipmentListView = GetComponent<EquipmentListView>();
+        _levelManager = new();
     }
 
     private void OnEnable()
@@ -101,7 +102,7 @@ public class MeinMenuView : MonoBehaviour
     {
         _config = new Config(_currentWeaponData, _currentArrowData);
 
-        SceneManager.LoadScene("Game");
+        _levelManager.LoadNextLevel();
     }
 
     private void OnShowSettnigsWindow()

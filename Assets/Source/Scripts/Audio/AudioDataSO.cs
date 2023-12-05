@@ -13,25 +13,40 @@ public class AudioDataSO : ScriptableObject
     private float _SFXVolume;
     private float _musicVolume;
 
-    private bool _isSFXOn;
-    private bool _isMusicOn;
+    public bool SfxIsOn
+    {
+        get
+        {
+            if (_SFXVolume == 1)
+                return true;
+            if (_SFXVolume == 0)
+                return false;
+
+            return true;
+        }
+    }
+
+    public bool MusicIsOn
+    {
+        get
+        {
+            if (_musicVolume == 1)
+                return true;
+            if (_musicVolume == 0)
+                return false;
+
+            return true;
+        }
+    }
 
     public void Init(AudioSource SFXAudioSource, AudioSource MusicAudioSource)
     {
         _musicAudioSource = MusicAudioSource;
         _SFXAudioSource = SFXAudioSource;
-
-        _SFXVolume = 1f;
-        _musicVolume = 1f;
-
-        _musicAudioSource.volume = _musicVolume;
-        _SFXAudioSource.volume = _SFXVolume;
     }
 
     public void SetActiveSFX(bool isSFXOn)
     {
-        //_isSFXOn = isSFXOn;
-
         if (isSFXOn == false)
             _SFXVolume = 0;
         else
@@ -42,8 +57,6 @@ public class AudioDataSO : ScriptableObject
 
     public void SetActiveMusic(bool isMusicOn)
     {
-        //_isMusicOn = isMusicOn;
-
         if (isMusicOn == false)
             _musicVolume = 0;
         else
@@ -52,7 +65,7 @@ public class AudioDataSO : ScriptableObject
         _musicAudioSource.volume = _musicVolume;
     }
 
-    public void Play(Sounds sound, bool isLoop = false)
+    public void Play(Sounds sound)
     {
         if (_musicAudioSource == null && _SFXAudioSource == null)
             throw new System.Exception();
@@ -61,13 +74,15 @@ public class AudioDataSO : ScriptableObject
 
         if (audio.Type == SoundType.Music)
         {
-            _musicAudioSource.loop = isLoop;
+            _musicAudioSource.loop = true;
             _musicAudioSource.PlayOneShot(audio.Clip);
+            _musicAudioSource.volume = _musicVolume;
         }
 
         if (audio.Type == SoundType.SFX)
         {
             _SFXAudioSource.PlayOneShot(audio.Clip);
+            _SFXAudioSource.volume = _SFXVolume;
         }
     }
 }

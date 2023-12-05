@@ -17,6 +17,6 @@ MonoBehaviour:
   _icon: {fileID: 21300000, guid: 6b180740e859ab44c9edc753085bd1bf, type: 3}
   _price: 0
   _wasBought: 1
-  _mainDamage: 5
-  _additionalDamage: 15
+  _mainDamage: 20
+  _additionalDamage: 10
   _skillType: 1
