@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -38,6 +39,11 @@ namespace Archer.AI
             _target = _targetRouter.Target;
         }
 
+        public void SaveWeaponRotation(float rotationX)
+        {
+            _targetRouter.SaveWeaponRotation(rotationX);
+        }
+
         public void CheckTargetInDirection(Vector3 position, Vector3 forward, float deltaTime)
         {
             if (_target == null)
@@ -54,6 +60,7 @@ namespace Archer.AI
             }
 
             _distanceToTarget = (_target.transform.position - position).magnitude;
+            //закэшировать позицию таргетов
 
             if (Physics.Linecast(position, CalculateEndPointAfterTime(position, forward), out RaycastHit hitInfo2, _targetsLayerMask))
             {
@@ -62,6 +69,7 @@ namespace Archer.AI
                 if (hitInfo2.collider == _target)
                 {
                     _accumulatedTime += deltaTime;
+
                     if (_accumulatedTime >= DelayBeforeFiring)
                     {
                         Shot?.Invoke();

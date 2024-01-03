@@ -12,7 +12,7 @@ namespace Assets.Source.Scripts.UI.Liderboard
 
         [SerializeField] private LeaderboardView _leaderboardView;
         [SerializeField] private Button _showLeaderboard;
-        [SerializeField] private LeaderboardElement _playerRanking;
+        //[SerializeField] private LeaderboardElement _playerRanking;
 
         private List<LeaderboardPlayer> _leaderboardPlayers = new();
         private readonly int _numberOfPlayerInLeaderboard = 4;
@@ -32,10 +32,9 @@ namespace Assets.Source.Scripts.UI.Liderboard
             if (PlayerAccount.IsAuthorized == false)
                 return;
 
-            Agava.YandexGames.Leaderboard.GetPlayerEntry(LeaderboardName, entry =>
+            Agava.YandexGames.Leaderboard.GetPlayerEntry(LeaderboardName, _ =>
             {
-                if (PlayerData.Instance.Score > entry.score)
-                    Agava.YandexGames.Leaderboard.SetScore(LeaderboardName, PlayerData.Instance.Score);
+                Agava.YandexGames.Leaderboard.SetScore(LeaderboardName, PlayerData.Instance.Score);
             });
         }
 
@@ -43,9 +42,14 @@ namespace Assets.Source.Scripts.UI.Liderboard
         {
             _leaderboardPlayers.Clear();
 
+            if (PlayerAccount.IsAuthorized == false)
+                return;
+
             Agava.YandexGames.Leaderboard.GetEntries(LeaderboardName, result =>
             {
-                for (int i = 0; i < result.entries.Length; i++)
+                int playersAmount = Mathf.Clamp(result.entries.Length, 1, _numberOfPlayerInLeaderboard);
+
+                for (int i = 0; i < playersAmount; i++)
                 {
                     var entry = result.entries[i];
 

@@ -74,15 +74,16 @@ public class AudioDataSO : ScriptableObject
 
         if (audio.Type == SoundType.Music)
         {
-            _musicAudioSource.loop = true;
-            _musicAudioSource.PlayOneShot(audio.Clip);
             _musicAudioSource.volume = _musicVolume;
+            _musicAudioSource.loop = true;
+            _musicAudioSource.clip = audio.Clip;
+            _musicAudioSource.Play();
         }
 
         if (audio.Type == SoundType.SFX)
         {
-            _SFXAudioSource.PlayOneShot(audio.Clip);
             _SFXAudioSource.volume = _SFXVolume;
+            _SFXAudioSource.PlayOneShot(audio.Clip);
         }
     }
 }

@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EquipmentDataSO : ScriptableObject
+public abstract class EquipmentDataSO : ScriptableObject
 {
     [SerializeField] private Presenter _presenter;
 
-    [Space] 
+    [Space]
     [SerializeField] private string _name;
     [SerializeField] private Sprite _icon;
     [SerializeField] private int _price;

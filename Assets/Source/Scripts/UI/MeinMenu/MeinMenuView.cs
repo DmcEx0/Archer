@@ -102,7 +102,8 @@ public class MeinMenuView : MonoBehaviour
     {
         _config = new Config(_currentWeaponData, _currentArrowData);
 
-        _levelManager.LoadNextLevel();
+        //_levelManager.LoadNextLevel();
+        Level5.Load();
     }
 
     private void OnShowSettnigsWindow()

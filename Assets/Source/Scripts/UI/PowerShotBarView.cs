@@ -7,7 +7,6 @@ public class PowerShotBarView : MonoBehaviour
     [SerializeField] private Image _powerShotSlider;
 
     private PlayerInputRouter _playerInputRouter;
-    private Camera _camera;
 
     private float _value;
 
@@ -18,7 +17,6 @@ public class PowerShotBarView : MonoBehaviour
 
     private void Awake()
     {
-        _camera = Camera.main;
         _powerShotSlider.fillAmount = 0;
     }
 

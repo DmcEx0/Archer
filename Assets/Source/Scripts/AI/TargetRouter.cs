@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Archer.AI
@@ -7,12 +8,17 @@ namespace Archer.AI
     {
         private List<Collider> _colliders;
 
+        private List<float> _rotationsX;
+
+        private Targets _target;
+
         public TargetRouter()
         {
             _colliders = new List<Collider>();
+            _rotationsX = new List<float>();
         }
 
-        public Collider Target => SelectedTarget();
+        public Collider Target => GetTarget();
 
         public void TryAddColliderInList(Collider collider)
         {
@@ -22,36 +28,48 @@ namespace Archer.AI
             _colliders.Add(collider);
         }
 
-        private Collider SelectedTarget()
+        public void SaveWeaponRotation(float rotationX)
+        {
+            _rotationsX.Add(rotationX);
+        }
+
+        private void SelectRandomTarget()
         {
             int randomIndex = Random.Range(0, 100);
 
-            foreach (Collider collider in _colliders)
+            if (randomIndex <= 50)
             {
-                if (randomIndex <= 50)       // вынести шанс в отдельный код
-                {
-                    if (collider.TryGetComponent(out HitBodyDetector body))
-                        return collider;
-                }
-
-                if (randomIndex >= 50 && randomIndex <= 66)
-                {
-                    if (collider.TryGetComponent(out HitHeadDetector head))
-                        return collider;
-                }
-
-                if (randomIndex >= 66 && randomIndex <= 83)
-                {
-                    if (collider.TryGetComponent(out Target1 target1))
-                        return collider;
-                }
-
-                if (randomIndex >= 83 && randomIndex <= 100)
-                {
-                    if (collider.TryGetComponent(out Target2 target2))
-                        return collider;
-                }
+                _target = Targets.Body;
             }
+
+            if (randomIndex >= 50 && randomIndex <= 66)
+            {
+                _target = Targets.Head;
+            }
+
+            if (randomIndex >= 66 && randomIndex <= 83)
+            {
+                _target = Targets.Target1;
+            }
+
+            if (randomIndex >= 83 && randomIndex <= 100)
+            {
+                _target = Targets.Target2;
+            }
+        }
+
+        private Collider GetTarget()
+        {
+            SelectRandomTarget();
+
+            Collider collider1 = _target switch
+            {
+                Targets.Body => _colliders.FirstOrDefault(col => col.TryGetComponent(out HitBodyDetector body)),
+                Targets.Head => _colliders.FirstOrDefault(col => col.TryGetComponent(out HitHeadDetector head)),
+                Targets.Target1 => _colliders.FirstOrDefault(col => col.TryGetComponent(out Target1 target1)),
+                Targets.Target2 => _colliders.FirstOrDefault(col => col.TryGetComponent(out Target2 target2)),
+                _ => _colliders[Random.Range(0, _colliders.Count)]
+            };
 
             return _colliders[Random.Range(0, _colliders.Count)];
         }

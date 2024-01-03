@@ -1,6 +1,5 @@
 using Archer.AI;
 using Archer.Model;
-using UnityEngine;
 
 public class EnemyInputRouter : IInputRouter
 {
@@ -53,8 +52,10 @@ public class EnemyInputRouter : IInputRouter
         if (weapon.CanShoot)
         {
             weapon.Shoot(power);
+
             _animationController.PlayShoot(weapon.Cooldown);
             _enemyAI.SetTarget();
+            _enemyAI.SaveWeaponRotation(weapon.Rotation.eulerAngles.x);
         }
     }
 }

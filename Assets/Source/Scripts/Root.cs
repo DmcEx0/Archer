@@ -62,7 +62,7 @@ public class Root : MonoBehaviour
     private void AddRevardOnEnemyKill()
     {
         _revardSystem.AddCoinsOnKill(Config.Instance.CoinsForEnemy);
-        _revardSystem.AddScoreOnKill(Config.Instance.ScoreForEnemt);
+        _revardSystem.AddScoreOnKill(Config.Instance.ScoreForEnemy);
     }
 
     private void ShowEndGameWindow()

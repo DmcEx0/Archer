@@ -46,7 +46,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _playerTempalte: {fileID: 2440494145732799570, guid: ecd3014930defe4419ea9f7b442aab22, type: 3}
-  _enemyTemplate: {fileID: 4365549649675870978, guid: 4c1b005c6399c9a4db109fc6717250a9, type: 3}
+  _enemiesTemplates:
+  - {fileID: 4365549649675870978, guid: 4c1b005c6399c9a4db109fc6717250a9, type: 3}
+  - {fileID: 6965146579054864602, guid: a59c0287312a2bc4ab1fda6d86be895e, type: 3}
 --- !u!114 &246234746528856149
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,11 +1,18 @@
 {
   "dependencies": {
+    "com.agava.webutility": {
+      "version": "https://github.com/forcepusher/com.agava.webutility.git#3.1.0",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "32d39130ea78dce0c3ea0ed83ec5f022efefde42"
+    },
     "com.agava.yandexgames": {
       "version": "https://github.com/forcepusher/com.agava.yandexgames.git",
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "b544fb0b88bfee362610c8ece71e41c1e4634bb1"
+      "hash": "faf20595c0f18f4a471e6b27fbd5fbf5fd05d7a2"
     },
     "com.unity.2d.sprite": {
       "version": "1.0.0",

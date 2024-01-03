@@ -78,7 +78,7 @@ public class PlayerData : MonoBehaviour
     public void CompleteLevel()
     {
         if (_level > MaxCountLevel)
-            throw new InvalidOperationException();
+            return;
 
         _level += 1;
         SaveLevel();

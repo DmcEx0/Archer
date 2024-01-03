@@ -12,5 +12,5 @@ public class Config
     public WeaponDataSO WeaponConfig { get; private set; }
     public ArrowDataSO ArrowConfig { get; private set; }
     public int CoinsForEnemy { get; private set; } = 10;
-    public int ScoreForEnemt { get; private set; } = 10;
+    public int ScoreForEnemy { get; private set; } = 10;
 }

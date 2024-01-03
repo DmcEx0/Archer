@@ -37,6 +37,9 @@ namespace Archer.Model.FSM
         {
             float randomOffsetX = Random.Range(2f, 4f);
 
+            if (_stateMachine.Character.Key is PlayerPresenter)
+                randomOffsetX *= -1;
+
             Vector3 endPositon = new Vector3(_stateMachine.Character.Value.Position.x + randomOffsetX, 0, _stateMachine.Character.Value.Position.z);
 
             while (_stateMachine.Character.Key.AnimationController.IsDiskard == false)

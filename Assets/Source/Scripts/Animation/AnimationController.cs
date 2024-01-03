@@ -1,6 +1,7 @@
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
 
-[RequireComponent(typeof(Animator))]
+[RequireComponent(typeof(Animator), typeof(RigBuilder))]
 public class AnimationController : MonoBehaviour
 {
     private const float ShootSpeed = 1f;
@@ -61,11 +62,11 @@ public class AnimationController : MonoBehaviour
         }
     }
 
-    public Vector3 Diskard(Vector3 startPosition, Vector3 endPostion, float deltaTime)
+    public Vector3 Diskard(Vector3 startPosition, Vector3 endPosition, float deltaTime)
     {
         float normilizeTime = _discardDuration / _discardTime;
 
-        Vector3 nextPos = Vector3.Lerp(startPosition, endPostion, normilizeTime) + (new Vector3(0, _discardOffsetY, 0) * _discardCurve.Evaluate(normilizeTime));
+        Vector3 nextPos = Vector3.Lerp(startPosition, endPosition, normilizeTime) + (new Vector3(0, _discardOffsetY, 0) * _discardCurve.Evaluate(normilizeTime));
 
         _discardDuration += deltaTime;
 
@@ -95,15 +96,6 @@ public class AnimationController : MonoBehaviour
     }
 
     public void EnabledIK(Transform targetForRightHand, Transform targetForLeftHand, Transform targetForChest)
-    {
-        _leftHandRigTarget.position = targetForLeftHand.position;
-
-        _rightHandRigTarget.position = targetForRightHand.position;
-
-        _chestRigTarget.rotation = targetForChest.rotation;
-    }
-
-    public void SetTargetsForHands(Transform targetForRightHand, Transform targetForLeftHand, Transform targetForChest)
     {
         _leftHandRigTarget.position = targetForLeftHand.position;
 

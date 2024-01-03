@@ -7,7 +7,7 @@ using UnityEngine;
 public class PresenterFactory : MonoBehaviour
 {
     [SerializeField] private Presenter _playerTempalte;
-    [SerializeField] private Presenter _enemyTemplate;
+    [SerializeField] private List<Presenter> _enemiesTemplates;
 
     private readonly int _poolCount = 30;
 
@@ -20,7 +20,9 @@ public class PresenterFactory : MonoBehaviour
 
     public Presenter CreateEnemy(Character enemy)
     {
-        return CreatePresenter(_enemyTemplate, enemy);
+        int randomEnemy = Random.Range(0, _enemiesTemplates.Count);
+
+        return CreatePresenter(_enemiesTemplates[randomEnemy], enemy);
     }
 
     public Presenter CreateWeapon(Presenter weaponTemplate, Weapon weapon)

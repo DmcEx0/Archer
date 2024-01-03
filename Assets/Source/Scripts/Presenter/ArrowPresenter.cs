@@ -20,6 +20,10 @@ public class ArrowPresenter : Presenter
     private void OnTriggerEnter(Collider other)
     {
         _collider.enabled = false;
+
+        if (other.isTrigger)
+            return;
+
         ArrowModel.DestroyAll();
         //transform.SetParent(other.transform);
     }

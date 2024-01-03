@@ -1,3 +1,4 @@
+using Lean.Localization;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -10,6 +11,7 @@ public class EquipmentBigIconView : MonoBehaviour
     [SerializeField] private TMP_Text _tmpText;
     [SerializeField] private Image _image;
     [SerializeField] private Image _lockImage;
+    [SerializeField] private LeanLocalizedTextMeshProUGUI _TMPLocalization;
 
     private EquipmentDataSO _equipmentData;
 
@@ -27,6 +29,22 @@ public class EquipmentBigIconView : MonoBehaviour
         _closeButton.onClick.RemoveListener(CloseWindow);
     }
 
+    public void Render(EquipmentDataSO equipmentData)
+    {
+        _equipmentData = equipmentData;
+
+        //_tmpText.text = _equipmentData.Name;
+        SetArrowName(_equipmentData.Name);
+        _image.sprite = _equipmentData.Icon;
+
+        _lockImage.gameObject.SetActive(true);
+
+        if (_equipmentData.WasBought)
+        {
+            _lockImage.gameObject.SetActive(false);
+        }
+    }
+
     private void CloseWindow()
     {
         gameObject.SetActive(false);
@@ -36,28 +54,39 @@ public class EquipmentBigIconView : MonoBehaviour
     {
         EquipmentSelected?.Invoke(_equipmentData);
 
-        if(_equipmentData.WasBought)
+        if (_equipmentData.WasBought)
             CloseWindow();
 
         if (_equipmentData.WasBought == false)
         {
-            if(_equipmentData.TryBuy())
+            if (_equipmentData.TryBuy())
                 CloseWindow();
         }
     }
 
-    public void Render(EquipmentDataSO equipmentData)
+    private void SetArrowName(string equipName)
     {
-        _equipmentData = equipmentData;
-
-        _tmpText.text = _equipmentData.Name;
-        _image.sprite = _equipmentData.Icon;
-
-        _lockImage.gameObject.SetActive(true);
-
-        if (_equipmentData.WasBought)
+        switch (equipName)
         {
-            _lockImage.gameObject.SetActive(false);
+            case "Arrow1":
+                _TMPLocalization.TranslationName = LeanLocalization.CurrentTranslations[equipName].Name;
+                break;
+
+            case "Arrow2":
+                _TMPLocalization.TranslationName = LeanLocalization.CurrentTranslations[equipName].Name;
+                break;
+
+            case "Arrow3":
+                _TMPLocalization.TranslationName = LeanLocalization.CurrentTranslations[equipName].Name;
+                break;
+
+            case "Crossbow1":
+                _TMPLocalization.TranslationName = LeanLocalization.CurrentTranslations[equipName].Name;
+                break;
+
+            case "Crossbow2":
+                _TMPLocalization.TranslationName = LeanLocalization.CurrentTranslations[equipName].Name;
+                break;
         }
     }
 }

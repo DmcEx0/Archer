@@ -18,5 +18,5 @@ MonoBehaviour:
   _price: 10
   _wasBought: 1
   _shotPower: 5.7
-  _cooldown: 1.74
-  _speedChangedAngle: 15.1
+  _cooldown: 2.02
+  _speedChangedAngle: 18.2

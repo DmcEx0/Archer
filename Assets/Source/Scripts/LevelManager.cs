@@ -18,7 +18,7 @@ public class LevelManager
     {
         int currentLevel = PlayerData.Instance.Level;
 
-        if (currentLevel + 1 > 5)
+        if (currentLevel >= 6)
             LoadRandomLevel();
 
         if (_levels.ContainsKey(currentLevel))
@@ -29,7 +29,7 @@ public class LevelManager
 
     private void LoadRandomLevel()
     {
-        int randomLevel = Random.Range(0, 6);
+        int randomLevel = Random.Range(1, 6);
 
         _levels[randomLevel]();
     }
