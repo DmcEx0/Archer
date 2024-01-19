@@ -45,22 +45,34 @@ public class AudioDataSO : ScriptableObject
         _SFXAudioSource = SFXAudioSource;
     }
 
+    public void Pause()
+    {
+        if (_musicAudioSource == null)
+            return;
+
+        _SFXAudioSource.Pause();
+        _musicAudioSource.Pause();
+    }
+
+    public void UpPause()
+    {
+        if (_musicAudioSource == null)
+            return;
+
+        _SFXAudioSource.UnPause();
+        _musicAudioSource.UnPause();
+    }
+
     public void SetActiveSFX(bool isSFXOn)
     {
-        if (isSFXOn == false)
-            _SFXVolume = 0;
-        else
-            _SFXVolume = 1;
+        _SFXVolume = isSFXOn ? 1 : 0;
 
         _SFXAudioSource.volume = _SFXVolume;
     }
 
     public void SetActiveMusic(bool isMusicOn)
     {
-        if (isMusicOn == false)
-            _musicVolume = 0;
-        else
-            _musicVolume = 1;
+        _musicVolume = isMusicOn ? 1 : 0;
 
         _musicAudioSource.volume = _musicVolume;
     }

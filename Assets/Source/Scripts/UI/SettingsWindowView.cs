@@ -6,25 +6,29 @@ using UnityEngine.UI;
 
 public class SettingsWindowView : MonoBehaviour
 {
+    [SerializeField] private AudioDataSO _audioData;
+
+    [Space]
     [SerializeField] private Button _closeButton;
+
+    [Space]
     [SerializeField] private Button _languageButtonRus;
     [SerializeField] private Button _languageButtonEng;
     [SerializeField] private Button _languageButtonTur;
+
+    [Space]
     [SerializeField] private Toggle _sfxToggle;
     [SerializeField] private Toggle _musicToggle;
 
-    public event UnityAction<bool> SFXChanged;
-    public event UnityAction<bool> MusicChanged; //??????
-
-    public event Func<bool> SfxStatus;
-    public event Func<bool> MusicStatus;
+    public bool MusicToggleIsOn => _musicToggle.isOn;
 
     private void OnEnable()
     {
-        _sfxToggle.isOn = SfxStatus.Invoke();
-        _musicToggle.isOn = MusicStatus.Invoke();
+        _sfxToggle.isOn = _audioData.SfxIsOn;
+        _musicToggle.isOn = _audioData.MusicIsOn;
 
         _closeButton.onClick.AddListener(Close);
+
         _sfxToggle.onValueChanged.AddListener(ChangeStatusSFX);
         _musicToggle.onValueChanged.AddListener(ChangeStatusMusic);
 
@@ -36,6 +40,7 @@ public class SettingsWindowView : MonoBehaviour
     private void OnDisable()
     {
         _closeButton.onClick.RemoveListener(Close);
+
         _sfxToggle.onValueChanged.RemoveListener(ChangeStatusSFX);
         _musicToggle.onValueChanged.RemoveListener(ChangeStatusMusic);
 
@@ -51,12 +56,12 @@ public class SettingsWindowView : MonoBehaviour
 
     private void ChangeStatusSFX(bool isSFXOn)
     {
-        SFXChanged?.Invoke(isSFXOn);
+        _audioData.SetActiveSFX(isSFXOn);
     }
 
     private void ChangeStatusMusic(bool isMusicOn)
     {
-        MusicChanged?.Invoke(isMusicOn);
+        _audioData.SetActiveMusic(isMusicOn);
     }
 
     private void SelectRusLanguage()

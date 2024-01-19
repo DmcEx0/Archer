@@ -163,7 +163,8 @@ public class AnimationController : MonoBehaviour
 
     private void PlayReload()
     {
-        float speed = _animationClipData.RealoadLenght / _reloadSpeed;
+        float speed = ((_reloadSpeed - _animationClipData.RealoadLenght) / _animationClipData.RealoadLenght) + 1;
+
         PlayeCurrentAnimation(HashAnimationNames.ReloadString, speed, HashAnimationNames.AimString);
     }
 
@@ -179,9 +180,8 @@ public class AnimationController : MonoBehaviour
 
         _currentAnimationName = animationName;
 
-        _animator.Play(_currentAnimationName, 0, 0f);
         _animator.speed = animationSpeed;
-
+        _animator.Play(_currentAnimationName, 0, 0f);
         _nextAnimationName = nextAnimationName;
 
         _isFinalAnimation = isFinalAnimation;

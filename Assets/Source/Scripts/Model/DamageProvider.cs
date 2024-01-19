@@ -1,19 +1,19 @@
-using System.Threading.Tasks;
 using UnityEngine.Events;
+using Cysharp.Threading.Tasks;
+using System;
+using UnityEngine.LowLevel;
 
 namespace Archer.Model
 {
     public class DamageProvider
     {
-        private const int NumberMillisecondsPerSecond = 1000;
-
         private const int DelayDefaultType = 0;
         private const int NumberOfIterationDefaultType = 1;
 
-        private const int DelayFireTypeMillisecons = 400;
+        private const float DelayFireTypeMillisecons = 0.4f;
         private const int NumberOfIterationFireType = 5;
 
-        private const int DelayPoisonTypeMillisecons = 300;
+        private const float DelayPoisonTypeMillisecons = 0.3f;
         private const int NumberOfIterationPoisonType = 10;
 
         private Character _character;
@@ -24,6 +24,8 @@ namespace Archer.Model
         {
             _character = character;
             _character.DamageReceived += TakeDamage;
+            var loop = PlayerLoop.GetCurrentPlayerLoop();
+            PlayerLoopHelper.Initialize(ref loop, InjectPlayerLoopTimings.Minimum);
         }
 
         public event UnityAction<int, bool, float, ArrowSkillType> DamageReceived;
@@ -33,13 +35,13 @@ namespace Archer.Model
             _character.DamageReceived -= TakeDamage;
         }
 
-        private async void ApplyPeriodicDamage(int damagePerIteration, int nuberOfIteration, int deltay, ArrowSkillType skillType)
+        private async void ApplyPeriodicDamage(int damagePerIteration, int nuberOfIteration, float delay, ArrowSkillType skillType)
         {
-            float playingEffectTime = (nuberOfIteration * deltay) / NumberMillisecondsPerSecond;
+            float playingEffectTime = (nuberOfIteration * delay);
 
             for (int i = 0; i < nuberOfIteration; i++)
             {
-                await Task.Delay(deltay);
+                await UniTask.Delay(TimeSpan.FromSeconds(delay), DelayType.DeltaTime, PlayerLoopTiming.Update);
 
                 _isSkillImpact = true;
                 DamageReceived?.Invoke(damagePerIteration, _isSkillImpact, playingEffectTime, skillType);

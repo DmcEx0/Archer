@@ -12,10 +12,14 @@ public abstract class EquipmentDataSO : ScriptableObject
     [SerializeField] private int _price;
     [SerializeField] private bool _wasBought = false;
 
+    [Space]
+    [SerializeField] private int _id;
+
     public Presenter Presenter => _presenter;
     public string Name => _name;
     public Sprite Icon => _icon;
     public bool WasBought => _wasBought;
+    public int ID => _id;
 
     public bool TryBuy()
     {

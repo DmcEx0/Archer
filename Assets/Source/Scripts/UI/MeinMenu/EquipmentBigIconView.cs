@@ -16,6 +16,7 @@ public class EquipmentBigIconView : MonoBehaviour
     private EquipmentDataSO _equipmentData;
 
     public event UnityAction<EquipmentDataSO> EquipmentSelected;
+    public event UnityAction<bool> WindowClose;
 
     private void OnEnable()
     {
@@ -33,8 +34,7 @@ public class EquipmentBigIconView : MonoBehaviour
     {
         _equipmentData = equipmentData;
 
-        //_tmpText.text = _equipmentData.Name;
-        SetArrowName(_equipmentData.Name);
+        SetEquipmentName(_equipmentData.Name);
         _image.sprite = _equipmentData.Icon;
 
         _lockImage.gameObject.SetActive(true);
@@ -48,6 +48,7 @@ public class EquipmentBigIconView : MonoBehaviour
     private void CloseWindow()
     {
         gameObject.SetActive(false);
+        WindowClose?.Invoke(true);
     }
 
     private void OnEquipmentSelected()
@@ -64,7 +65,7 @@ public class EquipmentBigIconView : MonoBehaviour
         }
     }
 
-    private void SetArrowName(string equipName)
+    private void SetEquipmentName(string equipName)
     {
         switch (equipName)
         {

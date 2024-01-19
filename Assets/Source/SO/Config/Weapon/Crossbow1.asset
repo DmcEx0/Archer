@@ -17,6 +17,7 @@ MonoBehaviour:
   _icon: {fileID: 21300000, guid: 09e97aab174f6854596bd10f52923b4a, type: 3}
   _price: 10
   _wasBought: 1
+  _id: 1
   _shotPower: 5.7
   _cooldown: 2.02
   _speedChangedAngle: 18.2

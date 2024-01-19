@@ -12,7 +12,6 @@ namespace Assets.Source.Scripts.UI.Liderboard
 
         [SerializeField] private LeaderboardView _leaderboardView;
         [SerializeField] private Button _showLeaderboard;
-        //[SerializeField] private LeaderboardElement _playerRanking;
 
         private List<LeaderboardPlayer> _leaderboardPlayers = new();
         private readonly int _numberOfPlayerInLeaderboard = 4;

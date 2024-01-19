@@ -1,5 +1,4 @@
 using UnityEngine;
-using Agava.YandexGames;
 
 public class PlayerConfigurationPresenter : MonoBehaviour
 {
@@ -26,20 +25,11 @@ public class PlayerConfigurationPresenter : MonoBehaviour
     private void OnEnable()
     {
         _meinMenuView.EquipmentChenged += OnEquipmentSelected;
-        _meinMenuView.SettingsWindowView.SFXChanged += ChangeSFXStatus;
-        _meinMenuView.SettingsWindowView.MusicChanged += ChangeMusicStatus;
-        _meinMenuView.SettingsWindowView.SfxStatus += GetSfxStatus;
-        _meinMenuView.SettingsWindowView.MusicStatus += GetMusicStatus;
     }
 
     private void OnDisable()
     {
         _meinMenuView.EquipmentChenged -= OnEquipmentSelected;
-        _meinMenuView.SettingsWindowView.SFXChanged -= ChangeSFXStatus;
-        _meinMenuView.SettingsWindowView.MusicChanged -= ChangeMusicStatus;
-
-        _meinMenuView.SettingsWindowView.SfxStatus -= GetSfxStatus;
-        _meinMenuView.SettingsWindowView.MusicStatus -= GetMusicStatus;
     }
 
     private void Awake()
@@ -99,25 +89,5 @@ public class PlayerConfigurationPresenter : MonoBehaviour
         _currentArrowData = arrowData;
         _currentArrowTemplate = CreatePresenter(_currentArrowData, _currentWeaponTemplate.ArrowSlot) as ArrowPresenter;
         _currentArrowTemplate.transform.SetParent(_rightHand);
-    }
-
-    private void ChangeSFXStatus(bool isSFXOn)
-    {
-        _audioData.SetActiveSFX(isSFXOn);
-    }
-
-    private bool GetSfxStatus()
-    {
-        return _audioData.SfxIsOn;
-    }
-
-    private bool GetMusicStatus()
-    {
-        return _audioData.MusicIsOn;
-    }
-
-    private void ChangeMusicStatus(bool isMusicOn)
-    {
-        _audioData.SetActiveMusic(isMusicOn);
     }
 }

@@ -73,7 +73,7 @@ public class GameSession
 
     private void CreatePlayer()
     {
-        Health health = new Health(250);
+        Health health = new Health(100);
 
         ArrowDataSO arrowData = Config.Instance.ArrowConfig;
         WeaponDataSO weaponData = Config.Instance.WeaponConfig;

@@ -1,9 +1,8 @@
-using Agava.YandexGames;
 using IJunior.TypedScenes;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class MeinMenuView : MonoBehaviour
@@ -16,8 +15,8 @@ public class MeinMenuView : MonoBehaviour
 
     [Space, Header("Equipment")]
     [SerializeField] private EquipmentBigIconView _equpmentBigIcon;
-    [SerializeField] private EquipmentSmallIconView _arrowViewOnScene;
-    [SerializeField] private EquipmentSmallIconView _weaponViewOnScene;
+    [SerializeField] private EquipmentSmallIconView _selectArrowButton;
+    [SerializeField] private EquipmentSmallIconView _selectWeaponButton;
     [SerializeField] private GameObject _weaponScrollView;
     [SerializeField] private GameObject _arrowScrollView;
     [SerializeField] private Transform _arrowContainerScrollView;
@@ -55,10 +54,12 @@ public class MeinMenuView : MonoBehaviour
 
         _equipmentListView.EquipmentSelected += OnShowBigIconEquipment;
 
-        _weaponViewOnScene.EquipmentSelected += OpenEquipmentsWindowShow;
-        _arrowViewOnScene.EquipmentSelected += OpenEquipmentsWindowShow;
+        _selectWeaponButton.EquipmentSelected += OpenEquipmentsWindowShow;
+        _selectArrowButton.EquipmentSelected += OpenEquipmentsWindowShow;
 
         _equpmentBigIcon.EquipmentSelected += OnEquipmentSelected;
+
+        _equpmentBigIcon.WindowClose += IsEnabledUIElements;
     }
 
     private void OnDisable()
@@ -68,10 +69,12 @@ public class MeinMenuView : MonoBehaviour
 
         _equipmentListView.EquipmentSelected -= OnShowBigIconEquipment;
 
-        _weaponViewOnScene.EquipmentSelected -= OpenEquipmentsWindowShow;
-        _arrowViewOnScene.EquipmentSelected -= OpenEquipmentsWindowShow;
+        _selectWeaponButton.EquipmentSelected -= OpenEquipmentsWindowShow;
+        _selectArrowButton.EquipmentSelected -= OpenEquipmentsWindowShow;
 
         _equpmentBigIcon.EquipmentSelected -= OnEquipmentSelected;
+
+        _equpmentBigIcon.WindowClose -= IsEnabledUIElements;
     }
 
     private void Start()
@@ -79,8 +82,11 @@ public class MeinMenuView : MonoBehaviour
         _equipmentListView.Render(_weaponContainerScrollView, _itemsData.WeaponsData);
         _equipmentListView.Render(_arrowContainerScrollView, _itemsData.ArrowsData);
 
-        _currentWeaponData = _itemsData.WeaponsData[_weaponIndex];
-        _currentArrowData = _itemsData.ArrowsData[_arrowIndex];
+        //_currentWeaponData = _itemsData.WeaponsData[_weaponIndex];
+        _currentWeaponData = _itemsData.WeaponsData.FirstOrDefault(w => w.ID == PlayerData.Instance.CrossbowID);
+
+        //_currentArrowData = _itemsData.ArrowsData[_arrowIndex];
+        _currentArrowData = _itemsData.ArrowsData.FirstOrDefault(a => a.ID == PlayerData.Instance.ArrowID);
 
         EquipmentChenged?.Invoke(_currentWeaponData);
         EquipmentChenged?.Invoke(_currentArrowData);
@@ -92,10 +98,10 @@ public class MeinMenuView : MonoBehaviour
     private void RenderEquimpemnt(EquipmentDataSO equipmentData)
     {
         if (equipmentData is WeaponDataSO)
-            _weaponViewOnScene.Render(equipmentData);
+            _selectWeaponButton.Render(equipmentData);
 
         else if (equipmentData is ArrowDataSO)
-            _arrowViewOnScene.Render(equipmentData);
+            _selectArrowButton.Render(equipmentData);
     }
 
     private void StartGame()
@@ -103,7 +109,7 @@ public class MeinMenuView : MonoBehaviour
         _config = new Config(_currentWeaponData, _currentArrowData);
 
         //_levelManager.LoadNextLevel();
-        Level5.Load();
+        Level1.Load();
     }
 
     private void OnShowSettnigsWindow()
@@ -145,6 +151,24 @@ public class MeinMenuView : MonoBehaviour
     {
         _equpmentBigIcon.gameObject.SetActive(true);
         _equpmentBigIcon.Render(equipmentData);
+
+        _arrowScrollView.SetActive(false);
+
+        IsEnabledUIElements(false);
+    }
+
+    private void IsEnabledUIElements(bool enabled)
+    {
+        if (enabled == false)
+        {
+            _arrowScrollView.gameObject.SetActive(enabled);
+            _weaponScrollView.gameObject.SetActive(enabled);
+        }
+
+        _selectArrowButton.gameObject.SetActive(enabled);
+        _selectWeaponButton.gameObject.SetActive(enabled);
+
+        _startButton.gameObject.SetActive(enabled);
     }
 
     private void OnEquipmentSelected(EquipmentDataSO equipmentData)
@@ -152,6 +176,7 @@ public class MeinMenuView : MonoBehaviour
         if (equipmentData is WeaponDataSO)
         {
             _currentWeaponData = equipmentData as WeaponDataSO;
+            PlayerData.Instance.CrossbowID = _currentWeaponData.ID;
 
             RenderSelectedEquipment(equipmentData, _weaponScrollView);
         }
@@ -159,6 +184,7 @@ public class MeinMenuView : MonoBehaviour
         else if (equipmentData is ArrowDataSO)
         {
             _currentArrowData = equipmentData as ArrowDataSO;
+            PlayerData.Instance.ArrowID = _currentArrowData.ID;
 
             RenderSelectedEquipment(equipmentData, _arrowScrollView);
         }

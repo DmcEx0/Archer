@@ -1,7 +1,5 @@
 using Archer.Model;
-using Archer.Model.FSM;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class Root : MonoBehaviour
