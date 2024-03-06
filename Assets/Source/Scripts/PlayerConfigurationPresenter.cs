@@ -1,3 +1,4 @@
+using Agava.YandexGames;
 using UnityEngine;
 
 public class PlayerConfigurationPresenter : MonoBehaviour
@@ -34,7 +35,9 @@ public class PlayerConfigurationPresenter : MonoBehaviour
 
     private void Awake()
     {
-        //YandexGamesSdk.GameReady();
+#if UNITY_WEBGL && !UNITY_EDITOR
+        YandexGamesSdk.GameReady();
+#endif
     }
 
     private void Start()

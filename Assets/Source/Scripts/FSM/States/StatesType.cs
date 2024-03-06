@@ -4,6 +4,6 @@
     {
         Idle = 0,
         Battle = 1,
-        Die = 2
+        Die = 2,
     }
 }

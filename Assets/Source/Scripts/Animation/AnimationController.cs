@@ -178,6 +178,9 @@ public class AnimationController : MonoBehaviour
         //if (_animator.isActiveAndEnabled == false)
         //    return;
 
+        if (_animator == null)
+            return;
+
         _currentAnimationName = animationName;
 
         _animator.speed = animationSpeed;

@@ -5,8 +5,10 @@ using UnityEngine;
 using System.Linq;
 using UnityEngine.Events;
 
-public class GameSession
+public class GameSession : IGameSession
 {
+    private readonly ConfigCurrentLvl _configCurrentLvl;
+
     private PresenterFactory _presenterFactory;
     private AudioDataSO _audioData;
 
@@ -29,10 +31,14 @@ public class GameSession
 
     private SkillButtonView _skillButtonView;
 
-    public event UnityAction EnemyDied;
-    public event UnityAction LevelCompete;
+    private bool _isPlayerVictory;
 
-    public GameSession(PresenterFactory presenterFactory, AudioDataSO audioData, Transform startPlayerPos, Transform mainPlayerPos, List<Transform> enemySpawnPoints, Transform mainEnemyPos, EquipmentListSO equipmentListData, SkillButtonView skillButtonView)
+    public event UnityAction EnemyDied;
+    public event UnityAction<bool> LevelCompete;
+
+    public GameSession(PresenterFactory presenterFactory, AudioDataSO audioData, Transform startPlayerPos,
+        Transform mainPlayerPos, List<Transform> enemySpawnPoints, Transform mainEnemyPos,
+        EquipmentListSO equipmentListData, SkillButtonView skillButtonView, ConfigCurrentLvl configCurrentLvl)
     {
         _presenterFactory = presenterFactory;
         _audioData = audioData;
@@ -42,6 +48,7 @@ public class GameSession
         _mainEnemyPosition = mainEnemyPos;
         _equipmentListData = equipmentListData;
         _skillButtonView = skillButtonView;
+        _configCurrentLvl = configCurrentLvl;
     }
 
     public void Init()
@@ -71,12 +78,17 @@ public class GameSession
         }
     }
 
+    public void OnExitGame()
+    {
+        _playerStateMachine.EnterIn(StatesType.Idle);
+    }
+
     private void CreatePlayer()
     {
-        Health health = new Health(100);
+        Health health = new(_configCurrentLvl.PlayerHealth);
 
-        ArrowDataSO arrowData = Config.Instance.ArrowConfig;
-        WeaponDataSO weaponData = Config.Instance.WeaponConfig;
+        WeaponDataSO weaponData = _equipmentListData.WeaponsData.FirstOrDefault(w => w.ID == PlayerData.Instance.CrossbowID);
+        ArrowDataSO arrowData = _equipmentListData.ArrowsData.FirstOrDefault(a => a.ID == PlayerData.Instance.ArrowID);
 
         _presenterFactory.CreatePoolOfPresenters(arrowData.Presenter);
 
@@ -89,6 +101,8 @@ public class GameSession
         _playerWeapon.GetActivatedSkillStatus += _skillButtonView.GetActivatedStatus;
         _playerWeapon.ActivatedSkill += _skillButtonView.ResetButton;
 
+        _skillButtonView.OnUIPressed += _playerWeapon.GetUIPressStatus;
+
         _playerStateMachine = new CharacterStateMachine(player, weapon, _playerSpawner, _startPlayerPosition.position, _mainPlayerPosition);
         _playerStateMachine.Died += OnPlayerDied;
         _playerStateMachine.EnterIn(StatesType.Idle);
@@ -96,18 +110,18 @@ public class GameSession
 
     private void CreateEnemies()
     {
-        int minHealthValue = 60;
-        int maxHealthValue = 70;
-
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < _enemiesSpawnPoints.Count; i++)
         {
-            int healthValue = Random.Range(minHealthValue, maxHealthValue);
-            Health health = new Health(healthValue);
+            int randomIndexArrow = Random.Range(0, _equipmentListData.ArrowsData.Count);
+            int randomIndexWeapon = Random.Range(0, _equipmentListData.WeaponsData.Count);
+
+            int healthValue = Random.Range(_configCurrentLvl.MinHealthEnemy, _configCurrentLvl.MaxHealthEnemy);
+            Health health = new(healthValue);
 
             KeyValuePair<CharacterPresenter, Character> newEnemy = _enemySpawner.SpawnCharacter(health, _enemiesSpawnPoints[i]);
             newEnemy.Key.HitInHead += OnHitInHead;
 
-            KeyValuePair<WeaponPresenter, Weapon> weapon = _enemySpawner.SpawnWeapon(newEnemy.Key, _equipmentListData.WeaponsData[0], _equipmentListData.ArrowsData[0]);
+            KeyValuePair<WeaponPresenter, Weapon> weapon = _enemySpawner.SpawnWeapon(newEnemy.Key, _equipmentListData.WeaponsData[randomIndexWeapon], _equipmentListData.ArrowsData[randomIndexArrow]);
             weapon.Key.gameObject.SetActive(false);
 
             CharacterStateMachine newStateMachine = new CharacterStateMachine(newEnemy, weapon, _enemySpawner, newEnemy.Value.Position, _mainEnemyPosition);
@@ -123,9 +137,13 @@ public class GameSession
     {
         if (_enemies.Count == 0)
         {
+            _isPlayerVictory = true;
+
             _playerStateMachine.EnterIn(StatesType.Idle);
-            LevelCompete?.Invoke();
+            LevelCompete?.Invoke(_isPlayerVictory);
             PlayerData.Instance.CompleteLevel();
+
+            Unsubscribe();
 
             return;
         }
@@ -149,11 +167,20 @@ public class GameSession
 
     private void OnPlayerDied()
     {
+        _isPlayerVictory = false;
+
+        Unsubscribe();
+
+        _enemyStateMachine.EnterIn(StatesType.Idle);
+        LevelCompete?.Invoke(_isPlayerVictory);
+    }
+
+    private void Unsubscribe()
+    {
+        _skillButtonView.OnUIPressed -= _playerWeapon.GetUIPressStatus;
         _playerWeapon.GetActivatedSkillStatus -= _skillButtonView.GetActivatedStatus;
         _playerWeapon.ActivatedSkill -= _skillButtonView.ResetButton;
         _playerStateMachine.Died -= OnPlayerDied;
-        _enemyStateMachine.EnterIn(StatesType.Idle);
-        LevelCompete?.Invoke();
     }
 
     private void OnHitInHead()

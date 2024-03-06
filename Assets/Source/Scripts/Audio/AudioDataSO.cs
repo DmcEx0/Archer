@@ -13,6 +13,8 @@ public class AudioDataSO : ScriptableObject
     private float _SFXVolume;
     private float _musicVolume;
 
+    private ITimeControllable _currentController = null;
+
     public bool SfxIsOn
     {
         get
@@ -45,22 +47,32 @@ public class AudioDataSO : ScriptableObject
         _SFXAudioSource = SFXAudioSource;
     }
 
-    public void Pause()
+    public void Pause(ITimeControllable controller)
     {
-        if (_musicAudioSource == null)
+        if (_musicAudioSource == null || _SFXAudioSource == null)
+            return;
+
+        if (_currentController == null)
+            _currentController = controller;
+        else
             return;
 
         _SFXAudioSource.Pause();
         _musicAudioSource.Pause();
     }
 
-    public void UpPause()
+    public void UnPause(ITimeControllable controller)
     {
-        if (_musicAudioSource == null)
+        if (_musicAudioSource == null || _SFXAudioSource == null)
+            return;
+
+        if (controller != _currentController)
             return;
 
         _SFXAudioSource.UnPause();
         _musicAudioSource.UnPause();
+
+        _currentController = null;
     }
 
     public void SetActiveSFX(bool isSFXOn)
@@ -79,7 +91,7 @@ public class AudioDataSO : ScriptableObject
 
     public void Play(Sounds sound)
     {
-        if (_musicAudioSource == null && _SFXAudioSource == null)
+        if (_musicAudioSource == null || _SFXAudioSource == null)
             throw new System.Exception();
 
         AudioItem audio = _audioItems.FirstOrDefault(a => a.Sound == sound);

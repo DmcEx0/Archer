@@ -22,7 +22,6 @@ public class CharacterPresenter : Presenter, IGeneratable
     public event UnityAction HitInHead;
 
     private Character _model => Model is Character ? Model as Character : null;
-
     public Transform GeneratingPoint => _weaponPosition;
     public AnimationController AnimationController => _animationController;
 
@@ -103,7 +102,9 @@ public class CharacterPresenter : Presenter, IGeneratable
     private void PlayEffect(ParticleSystem particleSystem)
     {
         _currentParticle = particleSystem;
-        _currentParticle.Play();
+
+        if (_currentParticle != null)
+            _currentParticle.Play();
     }
 
     private void OnDeactivateSkillImpact()

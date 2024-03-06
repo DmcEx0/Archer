@@ -1,11 +1,10 @@
 using UnityEngine;
 using Agava.WebUtility;
-using static Agava.YandexGames.YandexGamesEnvironment;
 
-public class LossFocus : MonoBehaviour
+public class LossFocus : MonoBehaviour, ITimeControllable
 {
     [SerializeField] private AudioDataSO _audioData;
-    [SerializeField] private SettingsWindowView _settingsWindowView;
+    [SerializeField] private TimeScaleSetter _timeScaleSetter;
 
     private void OnEnable()
     {
@@ -21,26 +20,29 @@ public class LossFocus : MonoBehaviour
 
     private void OnInBackgroundChangeApp(bool inApp)
     {
-        PauseGame(inApp);
-
-        if (inApp == false)
-            _audioData.Pause();
+        PauseGame(!inApp);
+        //Debug.Log("inApp = " + inApp);
+        if (inApp)
+            _audioData.UnPause(this);
         else
-            _audioData.UpPause();
+            _audioData.Pause(this);
     }
 
     private void OnInBackgroundChangeWeb(bool isBackground)
     {
         PauseGame(isBackground);
+        //Debug.Log("isBackground = " + isBackground);
 
-        if (isBackground == false)
-            _audioData.Pause();
+        if (isBackground)
+            _audioData.Pause(this);
         else
-            _audioData.UpPause();
+            _audioData.UnPause(this);
     }
 
     private void PauseGame(bool value)
     {
-        Time.timeScale = value ? 1 : 0;
+
+        //Debug.Log(value);
+        _timeScaleSetter.SetGamePause(value, this);
     }
 }

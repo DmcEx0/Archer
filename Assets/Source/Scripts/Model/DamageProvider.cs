@@ -11,10 +11,10 @@ namespace Archer.Model
         private const int NumberOfIterationDefaultType = 1;
 
         private const float DelayFireTypeMillisecons = 0.4f;
-        private const int NumberOfIterationFireType = 5;
+        private const int NumberOfIterationFireType = 4;
 
         private const float DelayPoisonTypeMillisecons = 0.3f;
-        private const int NumberOfIterationPoisonType = 10;
+        private const int NumberOfIterationPoisonType = 6;
 
         private Character _character;
 

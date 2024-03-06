@@ -1,22 +1,17 @@
 using Agava.YandexGames;
-using Lean.Localization;
-using Unity.VisualScripting;
-using UnityEngine;
 
-public class Localization : MonoBehaviour
+public class Localization
 {
     private const string EnglishCode = "en";
     private const string RussianCode = "ru";
     private const string TurkishCode = "tr";
 
-    private void Awake()
+    public void ChangeLanguage()
     {
-#if UNITY_WEBGL && !UNITY_EDITOR
-        ChangeLanguage();
-#endif
+        PlayerData.Instance.CurrentLanguage = IdentifyLanguage();
     }
 
-    private void ChangeLanguage()
+    private string IdentifyLanguage()
     {
         string languageCode = YandexGamesSdk.Environment.i18n.lang;
 
@@ -28,6 +23,6 @@ public class Localization : MonoBehaviour
             _ => Language.ENG.ToString()
         };
 
-        LeanLocalization.SetCurrentLanguageAll(language);
+        return language;
     }
 }

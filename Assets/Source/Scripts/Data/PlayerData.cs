@@ -1,6 +1,4 @@
-using Agava.YandexGames;
 using System;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -13,14 +11,24 @@ public class PlayerData : MonoBehaviour
     private const string LevelKey = "Level";
     private const string ArrowIDKey = "ArrowID";
     private const string CrossbowIDKey = "CrossbowID";
+    private const string LanguageKey = "Language";
+    private const string TutorialIsCompleteKey = "TutorialIsComplete";
 
-    private const int DefaultCountCoins = 10;
+    private const string DefaultLanguage = Language.ENG;
+
+    private const int DefaultTutorialState = 0;
+
+    private const int DefaultCountCoins = 0;
     private const int DefaultScore = 0;
     private const int DefaultLevel = 1;
     private const int DefaultArrowID = 1;
     private const int DefaultCrossbowID = 1;
 
-    private const int MaxCountLevel = 5;
+    private const int MaxCountLevel = 4;
+
+    private string _language;
+
+    private int _tutorialIsComplete;
 
     private int _coins;
     private int _score;
@@ -79,6 +87,38 @@ public class PlayerData : MonoBehaviour
         }
     }
 
+    public string CurrentLanguage
+    {
+        get => _language;
+        set
+        {
+            _language = value;
+            SaveLanguage();
+        }
+    }
+
+    public bool TutorialIsComplete
+    {
+        get
+        {
+            if (_tutorialIsComplete == 0)
+                return false;
+            if (_tutorialIsComplete == 1)
+                return true;
+
+            return false;
+        }
+        set
+        {
+            if (value == false)
+                _tutorialIsComplete = 0;
+            if (value == true)
+                _tutorialIsComplete = 1;
+
+            SaveTutorialState();
+        }
+    }
+
     public static PlayerData Instance
     {
         get
@@ -116,6 +156,8 @@ public class PlayerData : MonoBehaviour
         _level = PlayerPrefs.HasKey(LevelKey) ? PlayerPrefs.GetInt(LevelKey) : DefaultLevel;
         _arrowID = PlayerPrefs.HasKey(ArrowIDKey) ? PlayerPrefs.GetInt(ArrowIDKey) : DefaultArrowID;
         _crossbowID = PlayerPrefs.HasKey(CrossbowIDKey) ? PlayerPrefs.GetInt(CrossbowIDKey) : DefaultCrossbowID;
+        _language = PlayerPrefs.HasKey(LanguageKey) ? PlayerPrefs.GetString(LanguageKey) : DefaultLanguage;
+        _tutorialIsComplete = PlayerPrefs.HasKey(TutorialIsCompleteKey) ? PlayerPrefs.GetInt(TutorialIsCompleteKey) : DefaultTutorialState;
     }
 
     private void SaveMoney()
@@ -145,6 +187,18 @@ public class PlayerData : MonoBehaviour
     private void SaveCrossbow()
     {
         PlayerPrefs.SetInt(CrossbowIDKey, _crossbowID);
+        PlayerPrefs.Save();
+    }
+
+    private void SaveLanguage()
+    {
+        PlayerPrefs.SetString(LanguageKey, _language);
+        PlayerPrefs.Save();
+    }
+
+    private void SaveTutorialState()
+    {
+        PlayerPrefs.SetInt(TutorialIsCompleteKey, _tutorialIsComplete);
         PlayerPrefs.Save();
     }
 }

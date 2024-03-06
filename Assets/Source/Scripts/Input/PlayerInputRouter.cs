@@ -3,6 +3,7 @@ using UnityEngine;
 using System;
 using static UnityEngine.InputSystem.InputAction;
 using UnityEngine.Events;
+using Unity.VisualScripting;
 
 public class PlayerInputRouter : IInputRouter
 {
@@ -16,6 +17,7 @@ public class PlayerInputRouter : IInputRouter
     private Weapon _weapon;
 
     private float _power = 1;
+    private bool _isUIPressed = false;
 
     public PlayerInputRouter(AnimationController animationController)
     {
@@ -31,8 +33,21 @@ public class PlayerInputRouter : IInputRouter
         return this;
     }
 
+    public void CanGainingPower(bool isCanNot)
+    {
+        PowerChanged?.Invoke(_power, _maxPower);
+
+        _isUIPressed = isCanNot;
+    }
+
     public void Update(float deltaTime)
     {
+        if (_isUIPressed == true)
+        {
+            Debug.Log("is UI Pressed");
+            return;
+        }
+
         if (_input.Player.Shoot.inProgress && _weapon.CanShoot)
         {
             _power += deltaTime;
@@ -41,16 +56,19 @@ public class PlayerInputRouter : IInputRouter
             return;
         }
 
-        _power = 1;
         PowerChanged?.Invoke(_power, _maxPower);
+        _power = 1;
     }
 
     private void Shoot(CallbackContext ctx)
     {
+        float minPowerToShot = 1.2f;
         float power = (float)ctx.time - (float)ctx.startTime;
+
         power = Mathf.Clamp(power, _minPower, _maxPower);
 
-        TryShoot(_weapon, power);
+        if (_power > minPowerToShot)
+            TryShoot(_weapon, power);
     }
 
     public void OnEnable()

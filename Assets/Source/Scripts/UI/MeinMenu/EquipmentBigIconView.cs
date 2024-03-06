@@ -6,35 +6,49 @@ using UnityEngine.UI;
 
 public class EquipmentBigIconView : MonoBehaviour
 {
-    [SerializeField] private Button _button;
+    [SerializeField] private Button _buyButton;
+    [SerializeField] private Button _equipButton;
     [SerializeField] private Button _closeButton;
-    [SerializeField] private TMP_Text _tmpText;
+
+    [Space]
     [SerializeField] private Image _image;
     [SerializeField] private Image _lockImage;
+
+    [Space]
+    [SerializeField] private TMP_Text _equipmentPrice;
+
+    [Space]
     [SerializeField] private LeanLocalizedTextMeshProUGUI _TMPLocalization;
 
     private EquipmentDataSO _equipmentData;
 
     public event UnityAction<EquipmentDataSO> EquipmentSelected;
-    public event UnityAction<bool> WindowClose;
+    public event UnityAction<bool> OnOpened;
 
     private void OnEnable()
     {
-        _button.onClick.AddListener(OnEquipmentSelected);
-        _closeButton.onClick.AddListener(CloseWindow);
+        _equipButton.onClick.AddListener(OnEquipmentSelected);
+        _buyButton.onClick.AddListener(TryBuy);
+
+        _closeButton.onClick.AddListener(Close);
+        OnOpened?.Invoke(false);
     }
 
     private void OnDisable()
     {
-        _button.onClick.RemoveListener(OnEquipmentSelected);
-        _closeButton.onClick.RemoveListener(CloseWindow);
+        _equipButton.onClick.RemoveListener(OnEquipmentSelected);
+        _buyButton.onClick.RemoveListener(TryBuy);
+
+        _closeButton.onClick.RemoveListener(Close);
     }
 
     public void Render(EquipmentDataSO equipmentData)
     {
         _equipmentData = equipmentData;
 
-        SetEquipmentName(_equipmentData.Name);
+        EnableRequiredButton();
+
+        _TMPLocalization.TranslationName = LeanLocalization.CurrentTranslations[_equipmentData.Name].Name;
         _image.sprite = _equipmentData.Icon;
 
         _lockImage.gameObject.SetActive(true);
@@ -45,49 +59,41 @@ public class EquipmentBigIconView : MonoBehaviour
         }
     }
 
-    private void CloseWindow()
+    private void EnableRequiredButton()
+    {
+        if (_equipmentData.WasBought)
+        {
+            _buyButton.gameObject.SetActive(false);
+            _equipButton.gameObject.SetActive(true);
+        }
+        else
+        {
+            _buyButton.gameObject.SetActive(true);
+            _equipButton.gameObject.SetActive(false);
+
+            _equipmentPrice.text = _equipmentData.Price.ToString();
+        }
+    }
+
+    private void Close()
     {
         gameObject.SetActive(false);
-        WindowClose?.Invoke(true);
+        OnOpened?.Invoke(true);
     }
 
     private void OnEquipmentSelected()
     {
         EquipmentSelected?.Invoke(_equipmentData);
 
-        if (_equipmentData.WasBought)
-            CloseWindow();
+        Close();
+    }
 
+    private void TryBuy()
+    {
         if (_equipmentData.WasBought == false)
         {
             if (_equipmentData.TryBuy())
-                CloseWindow();
-        }
-    }
-
-    private void SetEquipmentName(string equipName)
-    {
-        switch (equipName)
-        {
-            case "Arrow1":
-                _TMPLocalization.TranslationName = LeanLocalization.CurrentTranslations[equipName].Name;
-                break;
-
-            case "Arrow2":
-                _TMPLocalization.TranslationName = LeanLocalization.CurrentTranslations[equipName].Name;
-                break;
-
-            case "Arrow3":
-                _TMPLocalization.TranslationName = LeanLocalization.CurrentTranslations[equipName].Name;
-                break;
-
-            case "Crossbow1":
-                _TMPLocalization.TranslationName = LeanLocalization.CurrentTranslations[equipName].Name;
-                break;
-
-            case "Crossbow2":
-                _TMPLocalization.TranslationName = LeanLocalization.CurrentTranslations[equipName].Name;
-                break;
+                Close();
         }
     }
 }

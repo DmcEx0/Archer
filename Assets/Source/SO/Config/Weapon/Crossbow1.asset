@@ -15,9 +15,9 @@ MonoBehaviour:
   _presenter: {fileID: 985207276768041489, guid: 0a4f44707e8eebb47b2f030ae44ac608, type: 3}
   _name: Crossbow1
   _icon: {fileID: 21300000, guid: 09e97aab174f6854596bd10f52923b4a, type: 3}
-  _price: 10
+  _price: 0
   _wasBought: 1
   _id: 1
   _shotPower: 5.7
-  _cooldown: 2.02
-  _speedChangedAngle: 18.2
+  _cooldown: 2.18
+  _speedChangedAngle: 22.5

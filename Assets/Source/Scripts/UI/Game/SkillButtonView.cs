@@ -1,7 +1,9 @@
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class SkillButtonView : MonoBehaviour
+public class SkillButtonView : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
     private const float Step = 0.34f;
     private const float MinValue = 0f;
@@ -15,18 +17,10 @@ public class SkillButtonView : MonoBehaviour
     private Color _activateColor;
     private Color _deactivateColor;
 
-    private float _value = 1f;
+    private float _defaultFillAmount = 1f;
     private bool _isSkillActivated = false;
 
-    private void OnEnable()
-    {
-        _button.onClick.AddListener(ActivateSkill);
-    }
-
-    private void OnDisable()
-    {
-        _button.onClick.RemoveListener(ActivateSkill);
-    }
+    public event UnityAction<bool> OnUIPressed;
 
     private void Start()
     {
@@ -38,8 +32,8 @@ public class SkillButtonView : MonoBehaviour
 
     public void OnCooldownChanged()
     {
-        _value = Mathf.Clamp(_value - Step, MinValue, MaxValue);
-        _cooldownImage.fillAmount = _value;
+        _defaultFillAmount = Mathf.Clamp(_defaultFillAmount - Step, MinValue, MaxValue);
+        _cooldownImage.fillAmount = _defaultFillAmount;
 
         if (_cooldownImage.fillAmount == 0)
         {
@@ -50,8 +44,8 @@ public class SkillButtonView : MonoBehaviour
 
     public void ResetButton()
     {
-        _value = 1f;
-        _cooldownImage.fillAmount = _value;
+        _defaultFillAmount = 1f;
+        _cooldownImage.fillAmount = _defaultFillAmount;
 
         _mainImage.color = _deactivateColor;
 
@@ -71,10 +65,23 @@ public class SkillButtonView : MonoBehaviour
             _isSkillActivated = false;
             _mainImage.color = _deactivateColor;
         }
-        else if (_isSkillActivated == false)
+
+        if (_isSkillActivated == false && _cooldownImage.fillAmount == 0)
         {
+            Debug.Log("!!!");
             _isSkillActivated = true;
             _mainImage.color = _activateColor;
         }
+    }
+
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        OnUIPressed?.Invoke(true);
+    }
+
+    public void OnPointerUp(PointerEventData eventData)
+    {
+        OnUIPressed?.Invoke(false);
+        ActivateSkill();
     }
 }

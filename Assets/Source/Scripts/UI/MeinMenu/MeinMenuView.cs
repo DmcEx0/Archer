@@ -1,4 +1,6 @@
+using Assets.Source.Scripts.UI.Liderboard;
 using IJunior.TypedScenes;
+using Lean.Localization;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -7,7 +9,8 @@ using UnityEngine.UI;
 
 public class MeinMenuView : MonoBehaviour
 {
-    [SerializeField] private EquipmentListSO _itemsData;
+    [SerializeField] private Leaderboard _leaderboard;
+    [SerializeField] private EquipmentListSO _equipmentsData;
 
     [Space]
     [SerializeField] private TMP_Text _textCoin;
@@ -24,33 +27,27 @@ public class MeinMenuView : MonoBehaviour
 
     [Space, Header("Settings")]
     [SerializeField] private Button _settingsButton;
-    [SerializeField] private SettingsWindowView _settingsWindowView;
+    [SerializeField] private SettingsWindowView _menuSettingsWindowView;
+
+    [Space]
+    [SerializeField] private LeaderboardView _leaderboardView;
+    [SerializeField] private Button _leadernoardButton;
 
     private EquipmentListView _equipmentListView;
-
-    private Config _config;
-    private LevelManager _levelManager;
 
     private WeaponDataSO _currentWeaponData;
     private ArrowDataSO _currentArrowData;
 
-    private int _weaponIndex = 0;
-    private int _arrowIndex = 0;
-
     public event UnityAction<EquipmentDataSO> EquipmentChenged;
-
-    public SettingsWindowView SettingsWindowView => _settingsWindowView;
 
     private void Awake()
     {
         _equipmentListView = GetComponent<EquipmentListView>();
-        _levelManager = new();
     }
 
     private void OnEnable()
     {
         _startButton.onClick.AddListener(StartGame);
-        _settingsButton.onClick.AddListener(OnShowSettnigsWindow);
 
         _equipmentListView.EquipmentSelected += OnShowBigIconEquipment;
 
@@ -59,13 +56,14 @@ public class MeinMenuView : MonoBehaviour
 
         _equpmentBigIcon.EquipmentSelected += OnEquipmentSelected;
 
-        _equpmentBigIcon.WindowClose += IsEnabledUIElements;
+        _equpmentBigIcon.OnOpened += EnabledUIElements;
+        _menuSettingsWindowView.OnOpened += EnabledUIElements;
+        _leaderboardView.OnOpened += EnabledUIElements;
     }
 
     private void OnDisable()
     {
         _startButton.onClick.RemoveListener(StartGame);
-        _settingsButton.onClick.RemoveListener(OnShowSettnigsWindow);
 
         _equipmentListView.EquipmentSelected -= OnShowBigIconEquipment;
 
@@ -74,25 +72,45 @@ public class MeinMenuView : MonoBehaviour
 
         _equpmentBigIcon.EquipmentSelected -= OnEquipmentSelected;
 
-        _equpmentBigIcon.WindowClose -= IsEnabledUIElements;
+        _equpmentBigIcon.OnOpened -= EnabledUIElements;
+        _menuSettingsWindowView.OnOpened -= EnabledUIElements;
     }
 
     private void Start()
     {
-        _equipmentListView.Render(_weaponContainerScrollView, _itemsData.WeaponsData);
-        _equipmentListView.Render(_arrowContainerScrollView, _itemsData.ArrowsData);
+        LeanLocalization.SetCurrentLanguageAll(PlayerData.Instance.CurrentLanguage);
 
-        //_currentWeaponData = _itemsData.WeaponsData[_weaponIndex];
-        _currentWeaponData = _itemsData.WeaponsData.FirstOrDefault(w => w.ID == PlayerData.Instance.CrossbowID);
+#if UNITY_WEBGL && !UNITY_EDITOR
+        _leaderboard.SetPlayerScore();
+#endif
+        _equipmentListView.Render(_weaponContainerScrollView, _equipmentsData.WeaponsData);
+        _equipmentListView.Render(_arrowContainerScrollView, _equipmentsData.ArrowsData);
 
-        //_currentArrowData = _itemsData.ArrowsData[_arrowIndex];
-        _currentArrowData = _itemsData.ArrowsData.FirstOrDefault(a => a.ID == PlayerData.Instance.ArrowID);
+        _currentWeaponData = _equipmentsData.WeaponsData.FirstOrDefault(w => w.ID == PlayerData.Instance.CrossbowID);
+
+        _currentArrowData = _equipmentsData.ArrowsData.FirstOrDefault(a => a.ID == PlayerData.Instance.ArrowID);
 
         EquipmentChenged?.Invoke(_currentWeaponData);
         EquipmentChenged?.Invoke(_currentArrowData);
 
         RenderEquimpemnt(_currentWeaponData);
         RenderEquimpemnt(_currentArrowData);
+    }
+
+    public void EnabledUIElements(bool enabled)
+    {
+        if (enabled == false)
+        {
+            _arrowScrollView.gameObject.SetActive(enabled);
+            _weaponScrollView.gameObject.SetActive(enabled);
+        }
+
+        _selectArrowButton.gameObject.SetActive(enabled);
+        _selectWeaponButton.gameObject.SetActive(enabled);
+
+        _startButton.gameObject.SetActive(enabled);
+        _settingsButton.gameObject.SetActive(enabled);
+        _leadernoardButton.gameObject.SetActive(enabled);
     }
 
     private void RenderEquimpemnt(EquipmentDataSO equipmentData)
@@ -106,15 +124,13 @@ public class MeinMenuView : MonoBehaviour
 
     private void StartGame()
     {
-        _config = new Config(_currentWeaponData, _currentArrowData);
+        if (PlayerData.Instance.TutorialIsComplete == false)
+        {
+            Tutorial.Load();
+            return;
+        }
 
-        //_levelManager.LoadNextLevel();
-        Level1.Load();
-    }
-
-    private void OnShowSettnigsWindow()
-    {
-        _settingsWindowView.gameObject.SetActive(true);
+        LevelManager.LoadNextLevel();
     }
 
     private void OpenEquipmentsWindowShow(EquipmentDataSO equipmentDataSO)
@@ -153,22 +169,6 @@ public class MeinMenuView : MonoBehaviour
         _equpmentBigIcon.Render(equipmentData);
 
         _arrowScrollView.SetActive(false);
-
-        IsEnabledUIElements(false);
-    }
-
-    private void IsEnabledUIElements(bool enabled)
-    {
-        if (enabled == false)
-        {
-            _arrowScrollView.gameObject.SetActive(enabled);
-            _weaponScrollView.gameObject.SetActive(enabled);
-        }
-
-        _selectArrowButton.gameObject.SetActive(enabled);
-        _selectWeaponButton.gameObject.SetActive(enabled);
-
-        _startButton.gameObject.SetActive(enabled);
     }
 
     private void OnEquipmentSelected(EquipmentDataSO equipmentData)

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace Assets.Source.Scripts.UI.Liderboard
@@ -10,16 +11,26 @@ namespace Assets.Source.Scripts.UI.Liderboard
         [SerializeField] private Transform _container;
         [SerializeField] private LeaderboardElement _leaderboardElementPrefab;
 
+        [SerializeField] private MeinMenuView _meinMenuView;
+
         private List<LeaderboardElement> _spawnedElements = new();
+
+        public event UnityAction<bool> OnOpened;
 
         private void OnEnable()
         {
             _exitButton.onClick.AddListener(Close);
+            _meinMenuView.EnabledUIElements(false);
+
+            OnOpened?.Invoke(false);
         }
 
         private void OnDisable()
         {
             _exitButton.onClick.RemoveListener(Close);
+            _meinMenuView.EnabledUIElements(true);
+
+            OnOpened?.Invoke(true);
         }
 
         public void ConstructLeaderboard(List<LeaderboardPlayer> leaderboardPlayers)

@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+﻿using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace Archer.Model.FSM
@@ -16,7 +16,6 @@ namespace Archer.Model.FSM
         {
             _stateMachine.Character.Key.AnimationController.PlayDeaht();
             _stateMachine.OnDied();
-            _stateMachine.Character.Key.GetComponentInChildren<HealthBarView>().gameObject.SetActive(false);
 
             _stateMachine.Weapon.Value.DestroyAll();
 
@@ -25,18 +24,15 @@ namespace Archer.Model.FSM
 
         public void Exit()
         {
-
         }
 
         public void Update(float deltaTime)
         {
-
         }
 
         private async void WaitForDiskard()
         {
-            float randomOffsetX = Random.Range(2f, 4f);
-            float offsetX = 1;
+            float offsetX = 13;
 
             if (_stateMachine.Character.Key is PlayerPresenter)
                 offsetX *= -1;
@@ -47,11 +43,10 @@ namespace Archer.Model.FSM
             {
                 _stateMachine.Character.Value.MoveTo(_stateMachine.Character.Key.AnimationController.Diskard(_stateMachine.Character.Value.Position, endPositon, Time.deltaTime));
 
-                await Task.Yield();
+                await UniTask.Yield();
             }
 
             _stateMachine.Character.Value.Destroy();
-
         }
     }
 }

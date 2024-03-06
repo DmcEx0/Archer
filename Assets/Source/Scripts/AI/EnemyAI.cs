@@ -1,4 +1,4 @@
-using Unity.VisualScripting;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -6,7 +6,10 @@ namespace Archer.AI
 {
     public class EnemyAI
     {
-        private const float DelayBeforeFiring = 0.2f;
+        private const int MaxRayDistanse = 100;
+        private const int MaxNumberOfTargets = 4;
+        private const float AngleRange = 0.2f;
+
         private const int PalyerLayer = 6;
         private const int TargetLayer = 9;
 
@@ -18,13 +21,20 @@ namespace Archer.AI
         private float _accumulatedPowerOfShot;
         private float _distanceToTarget;
 
-        private float _accumulatedTime;
+        private float _minAngleRange;
+        private float _maxAngleRange;
 
         private Collider _target;
+        private float _weaponRotationXToShot = 100;
+
+        private List<Collider> _colliders;
+
+        private bool _isChosenFirstTarget = false;
 
         public EnemyAI()
         {
             _targetRouter = new();
+            _colliders = new();
         }
 
         public event UnityAction Shot;
@@ -36,60 +46,62 @@ namespace Archer.AI
 
         public void SetTarget()
         {
-            _target = _targetRouter.Target;
+            var target = _targetRouter.Target;
+            _weaponRotationXToShot = target.Value;
+            _minAngleRange = _weaponRotationXToShot - AngleRange;
+            _maxAngleRange = _weaponRotationXToShot + AngleRange;
         }
 
-        public void SaveWeaponRotation(float rotationX)
+        public void CheckTargetInDirection(Vector3 position, Vector3 forward, float rotationX)
         {
-            _targetRouter.SaveWeaponRotation(rotationX);
-        }
-
-        public void CheckTargetInDirection(Vector3 position, Vector3 forward, float deltaTime)
-        {
-            if (_target == null)
+            if (_targetRouter.CurrentNumberOfTargets < MaxNumberOfTargets)
             {
-                if (Physics.Raycast(position, forward, out RaycastHit hitInfo1))
+                if (Physics.Raycast(position, forward, out RaycastHit hitInfo1, MaxRayDistanse, _targetsLayerMask) && _target == null)
                 {
-                    if (hitInfo1.collider.TryGetComponent(out HitBodyDetector body))
+                    if (_colliders.Count == 0 || _colliders.Contains(hitInfo1.collider) == false)
                     {
+                        _colliders.Add(hitInfo1.collider);
                         _target = hitInfo1.collider;
+                        _distanceToTarget = (_target.transform.position - position).magnitude;
                     }
                 }
 
-                return;
-            }
-
-            _distanceToTarget = (_target.transform.position - position).magnitude;
-            //закэшировать позицию таргетов
-
-            if (Physics.Linecast(position, CalculateEndPointAfterTime(position, forward), out RaycastHit hitInfo2, _targetsLayerMask))
-            {
-                _targetRouter.TryAddColliderInList(hitInfo2.collider);
-
-                if (hitInfo2.collider == _target)
+                if (Physics.Linecast(position, CalculateEndPointAfterTime(position, forward), out RaycastHit hitInfo2, _targetsLayerMask))
                 {
-                    _accumulatedTime += deltaTime;
-
-                    if (_accumulatedTime >= DelayBeforeFiring)
+                    if (hitInfo2.collider == _target)
                     {
-                        Shot?.Invoke();
-                        _accumulatedTime = 0f;
+                        _targetRouter.TryAddTargets(hitInfo2.collider, RoundValue(rotationX));
+
+                        if (_isChosenFirstTarget == false)
+                            SetTarget();
+
+                        _target = null;
                     }
                 }
             }
+
+            float roundCurrentRotationX = RoundValue(rotationX);
+
+            if (roundCurrentRotationX > _minAngleRange && roundCurrentRotationX < _maxAngleRange)
+                Shot?.Invoke();
+        }
+
+        private float RoundValue(float value)
+        {
+            return Mathf.Round(value * 10.0f) * 0.1f;
         }
 
         private Vector3 CalculateEndPointAfterTime(Vector3 position, Vector3 forward)
         {
-            float addDistanceToTarget = 1f;
+            float addDistanceToTarget = 2.4f;
             _velocity = forward * _accumulatedPowerOfShot;
 
             float time = (_distanceToTarget + addDistanceToTarget) / _velocity.magnitude;
 
             Vector3 endPoint = position + BallisticsRouter.GetCalculatedPositionAfterTime(_velocity, time);
 
-            Debug.DrawLine(position, endPoint, Color.green, 0.01f);
-            Debug.DrawRay(position, forward * 10, Color.red, 0.01f);
+            Debug.DrawLine(position, endPoint, Color.green, 0.001f);
+            Debug.DrawRay(position, forward * 20, Color.red, 0.001f);
 
             return endPoint;
         }

@@ -25,6 +25,5 @@ public class ArrowPresenter : Presenter
             return;
 
         ArrowModel.DestroyAll();
-        //transform.SetParent(other.transform);
     }
 }

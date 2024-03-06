@@ -24,9 +24,13 @@ public class EnemyInputRouter : IInputRouter
         return this;
     }
 
+    public void CanGainingPower(bool isCanNot)
+    {
+    }
+
     public void Update(float deltaTime)
     {
-        _enemyAI.CheckTargetInDirection(_weapon.ArrowSpawnPosition, _weapon.Forward, deltaTime);
+        _enemyAI.CheckTargetInDirection(_weapon.ArrowSpawnPosition, _weapon.Forward, _weapon.Rotation.eulerAngles.x);
     }
 
     public void OnEnable()
@@ -55,7 +59,6 @@ public class EnemyInputRouter : IInputRouter
 
             _animationController.PlayShoot(weapon.Cooldown);
             _enemyAI.SetTarget();
-            _enemyAI.SaveWeaponRotation(weapon.Rotation.eulerAngles.x);
         }
     }
 }

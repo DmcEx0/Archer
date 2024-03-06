@@ -1,5 +1,3 @@
-using UnityEngine;
-
 public static class Language
 {
     public const string ENG = "English";

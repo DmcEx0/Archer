@@ -6,72 +6,24 @@ namespace Archer.AI
 {
     public class TargetRouter
     {
-        private List<Collider> _colliders;
-
-        private List<float> _rotationsX;
-
-        private Targets _target;
+        private Dictionary<Collider, float> _targets;
 
         public TargetRouter()
         {
-            _colliders = new List<Collider>();
-            _rotationsX = new List<float>();
+            _targets = new();
         }
 
-        public Collider Target => GetTarget();
+        public KeyValuePair<Collider, float> Target => _targets.ElementAt(Random.Range(0, _targets.Count));
 
-        public void TryAddColliderInList(Collider collider)
+
+        public int CurrentNumberOfTargets => _targets.Count;
+
+        public void TryAddTargets(Collider targetCollider, float rotationX)
         {
-            if (_colliders.Contains(collider))
+            if (_targets.ContainsKey(targetCollider))
                 return;
 
-            _colliders.Add(collider);
-        }
-
-        public void SaveWeaponRotation(float rotationX)
-        {
-            _rotationsX.Add(rotationX);
-        }
-
-        private void SelectRandomTarget()
-        {
-            int randomIndex = Random.Range(0, 100);
-
-            if (randomIndex <= 50)
-            {
-                _target = Targets.Body;
-            }
-
-            if (randomIndex >= 50 && randomIndex <= 66)
-            {
-                _target = Targets.Head;
-            }
-
-            if (randomIndex >= 66 && randomIndex <= 83)
-            {
-                _target = Targets.Target1;
-            }
-
-            if (randomIndex >= 83 && randomIndex <= 100)
-            {
-                _target = Targets.Target2;
-            }
-        }
-
-        private Collider GetTarget()
-        {
-            SelectRandomTarget();
-
-            Collider collider1 = _target switch
-            {
-                Targets.Body => _colliders.FirstOrDefault(col => col.TryGetComponent(out HitBodyDetector body)),
-                Targets.Head => _colliders.FirstOrDefault(col => col.TryGetComponent(out HitHeadDetector head)),
-                Targets.Target1 => _colliders.FirstOrDefault(col => col.TryGetComponent(out Target1 target1)),
-                Targets.Target2 => _colliders.FirstOrDefault(col => col.TryGetComponent(out Target2 target2)),
-                _ => _colliders[Random.Range(0, _colliders.Count)]
-            };
-
-            return _colliders[Random.Range(0, _colliders.Count)];
+            _targets.Add(targetCollider, rotationX);
         }
     }
 }

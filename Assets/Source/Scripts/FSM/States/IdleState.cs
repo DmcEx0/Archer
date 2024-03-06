@@ -1,11 +1,9 @@
-using Archer.Model;
-using UnityEngine;
-
 namespace Archer.Model.FSM
 {
     public class IdleState : IState
     {
         private readonly CharacterStateMachine _stateMachine;
+        private HealthBarView _healthBarView;
 
         public IdleState(CharacterStateMachine stateMachine)
         {
@@ -14,10 +12,13 @@ namespace Archer.Model.FSM
 
         public void Enter()
         {
-            HealthBarView enemyHealthBart = _stateMachine.Character.Key.GetComponentInChildren<HealthBarView>();
-            enemyHealthBart.Init(_stateMachine.Character.Value.Health);
+            if (_healthBarView == null)
+            {
+                _healthBarView = _stateMachine.Character.Key.GetComponentInChildren<HealthBarView>();
+                _healthBarView.Init(_stateMachine.Character.Value.Health);
+            }
 
-            enemyHealthBart.gameObject.SetActive(false);
+            _healthBarView.gameObject.SetActive(false);
         }
 
         public void Exit()

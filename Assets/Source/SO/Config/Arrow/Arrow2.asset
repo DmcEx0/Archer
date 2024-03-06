@@ -15,9 +15,9 @@ MonoBehaviour:
   _presenter: {fileID: 4111675787293914251, guid: 8a3eaae844afb944daa7f40a616782ea, type: 3}
   _name: Arrow2
   _icon: {fileID: 21300000, guid: 533612e30f33abf4d84726bf918173b8, type: 3}
-  _price: 10
+  _price: 20
   _wasBought: 1
   _id: 2
-  _mainDamage: 15
-  _additionalDamage: 5
+  _mainDamage: 14
+  _additionalDamage: 4
   _skillType: 2

@@ -1,5 +1,3 @@
-using UnityEngine;
-
 namespace Archer.Model
 {
     public class PlayerSpawner : CharactersSpawner

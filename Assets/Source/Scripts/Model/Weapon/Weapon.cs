@@ -6,13 +6,12 @@ namespace Archer.Model
 {
     public class Weapon : Transformable, IUpdatetable
     {
-
         private readonly float _cooldown;
         private readonly float _startedPowerOfShot;
         private readonly float _speedChangedAngle;
 
-        private readonly float _minAngle = -30;
-        private readonly float _maxAngle = 30;
+        private readonly float _upAngle = -40;
+        private readonly float _downAngle = 20;
 
         private float _accumulatedTime;
 
@@ -31,6 +30,8 @@ namespace Archer.Model
         public event UnityAction<Arrow> Shoted;
         public event UnityAction ActivatedSkill;
         public event Func<bool> GetActivatedSkillStatus;
+
+        public event UnityAction<bool> isUIPressed;
 
         public Vector3 ArrowSpawnPosition { get; private set; }
         public bool CanShoot { get; private set; } = false;
@@ -62,24 +63,30 @@ namespace Archer.Model
             CanShoot = false;
         }
 
+        public void GetUIPressStatus(bool isCanNot)
+        {
+            isUIPressed?.Invoke(isCanNot);
+        }
+
         public void Update(float deltaTime)
         {
             Reload(deltaTime);
             MoveTo(Position);
 
-            if (_changedUp == true)
+            if (_changedUp == false)
             {
-                ChangeAngle(deltaTime, _maxAngle);
-
-                if ((int)Rotation.eulerAngles.x == (int)_maxAngle)
-                    _changedUp = false;
-            }
-            else if (_changedUp == false)
-            {
-                ChangeAngle(deltaTime, _minAngle);
-
-                if ((int)Rotation.eulerAngles.x == (int)_minAngle + 360)
+                if ((int)Rotation.eulerAngles.x == (int)_downAngle)
                     _changedUp = true;
+
+                ChangeAngle(deltaTime, _downAngle);
+            }
+            else if (_changedUp == true)
+            {
+                if ((int)Rotation.eulerAngles.x == 360 - Mathf.Abs((int)_upAngle))
+                    _changedUp = false;
+
+
+                ChangeAngle(deltaTime, _upAngle);
             }
         }
 
@@ -112,7 +119,6 @@ namespace Archer.Model
         private void ChangeAngle(float deltaTime, float angle)
         {
             Quaternion nextRotation = Quaternion.RotateTowards(Rotation, Quaternion.Euler(GetTargetDirection(angle)), _speedChangedAngle * deltaTime);
-
             Rotate(nextRotation);
         }
     }

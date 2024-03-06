@@ -1,6 +1,3 @@
-using Archer.AI;
-using UnityEngine;
-
 namespace Archer.Model
 {
     public class EnemySpawner : CharactersSpawner

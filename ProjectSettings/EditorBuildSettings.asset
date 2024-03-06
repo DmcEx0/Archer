@@ -11,9 +11,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Menu.unity
     guid: 418e2052f658808419cdd94000a80a10
-  - enabled: 0
-    path: Assets/Scenes/Game.unity
-    guid: 9fc0d4010bbf28b4594072e72b8655ab
   - enabled: 1
     path: Assets/Scenes/Level1.unity
     guid: e0aae94a575a08e4498df31f523c9af9
@@ -24,22 +21,12 @@ EditorBuildSettings:
     path: Assets/Scenes/Level3.unity
     guid: b7ea0777d6c92cc4cb6c5df823f04644
   - enabled: 0
-    path: Assets/Models/Default/Selcuk Gerceker/Toon Environments - World Creator
-      Pack Lite/Scenes/TEWCPL_Scene.unity
-    guid: 134571def16f29841904a1a0f660ce04
-  - enabled: 1
     path: Assets/Scenes/Level4.unity
     guid: 146fbaa54e711da4fa695432300f48a5
   - enabled: 1
     path: Assets/Scenes/Level5.unity
     guid: 604696089f81a844b94af26212357f9f
-  - enabled: 0
-    path: Assets/Plugins/CW/LeanLocalization/Examples/_13_Debug.unity
-    guid: 2e07f6399d162774eb3334d2fc132cc2
-  - enabled: 0
-    path: Assets/Plugins 1/TypedScenes/Samples/SampleScene.unity
-    guid: d81f1b342cfe47942a123c407d46415c
-  - enabled: 0
-    path: Assets/Epic Toon FX/Demo/Scenes/etfx_wind.unity
-    guid: 565750a970c487a4280f95fd0ed4f9fc
+  - enabled: 1
+    path: Assets/Scenes/Tutorial.unity
+    guid: d450cf7b9a2edb84ba07cae364ccbc7c
   m_configObjects: {}

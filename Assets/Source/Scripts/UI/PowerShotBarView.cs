@@ -8,11 +8,10 @@ public class PowerShotBarView : MonoBehaviour
 
     private PlayerInputRouter _playerInputRouter;
 
-    private float _value;
-
     private void OnDisable()
     {
-        _playerInputRouter.PowerChanged -= OnPowerChanged;
+        if (_playerInputRouter != null)
+            _playerInputRouter.PowerChanged -= OnPowerChanged;
     }
 
     private void Awake()

@@ -39,16 +39,33 @@
     };
 
     const progressBar = document.querySelector("#progress-bar");
+	
+	DisableSelecting();
 
-    setTimeout(() => {
-      createUnityInstance(document.querySelector("#unity-canvas"), settings, (progress) => {
-        progressBar.style.right = 100 * (1 - progress) + "%";
-      }).then(() => {
-        progressBar.style.display = "none";
-      }).catch((message) => {
-        alert(message);
-      });
-    }, 500); // Wait half a second before loading. Makes page more responsive on reload.
+    createUnityInstance(document.querySelector("#unity-canvas"), settings, (progress) => {
+      progressBar.style.right = 100 * (1 - progress) + "%";
+    }).then(() => {
+      progressBar.style.display = "none";
+    }).catch((message) => {
+      alert(message);
+    });
+	
+	function DisableSelecting(){
+		const style = window.document.createElement('style');
+	
+		style.textContent = `
+			* {
+				-webkit-touch-callout: none;
+				-webkit-user-select: none;
+				-khtml-user-select: none;
+				-moz-user-select: none;
+				-ms-user-select: none;
+				user-select: none;
+			}
+		`;
+
+		window.document.head.appendChild(style);
+	}
   </script>
 </body>
 

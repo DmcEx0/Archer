@@ -5,15 +5,19 @@ using UnityEngine;
 
 public class Yandex : MonoBehaviour
 {
+    private Localization _localization;
+
     private void Awake()
     {
         YandexGamesSdk.CallbackLogging = true;
+        _localization = new();
     }
 
     private IEnumerator Start()
     {
         yield return YandexGamesSdk.Initialize(LoadPlayerData);
 
+        _localization.ChangeLanguage();
         Menu.Load();
     }
 

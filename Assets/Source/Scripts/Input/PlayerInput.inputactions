@@ -18,11 +18,22 @@
             "bindings": [
                 {
                     "name": "",
-                    "id": "ca7a48ed-0650-4bfd-901e-7bb47858cfc9",
-                    "path": "<Keyboard>/space",
+                    "id": "d9b2016a-1451-4d62-991d-27173ad47b4a",
+                    "path": "<Touchscreen>/Press",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "PC;Phone",
+                    "action": "Shoot",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "70afd430-242d-4027-a30d-0ced19b31f43",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "PC;Phone",
                     "action": "Shoot",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -30,5 +41,16 @@
             ]
         }
     ],
-    "controlSchemes": []
+    "controlSchemes": [
+        {
+            "name": "PC",
+            "bindingGroup": "PC",
+            "devices": []
+        },
+        {
+            "name": "Phone",
+            "bindingGroup": "Phone",
+            "devices": []
+        }
+    ]
 }

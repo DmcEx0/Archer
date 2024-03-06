@@ -1,26 +1,21 @@
-using Lean.Localization;
-using System;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-public class SettingsWindowView : MonoBehaviour
+public class SettingsWindowView : MonoBehaviour, ITimeControllable
 {
+    [SerializeField] private TimeScaleSetter _timeScaleSetter;
+
     [SerializeField] private AudioDataSO _audioData;
 
     [Space]
     [SerializeField] private Button _closeButton;
 
     [Space]
-    [SerializeField] private Button _languageButtonRus;
-    [SerializeField] private Button _languageButtonEng;
-    [SerializeField] private Button _languageButtonTur;
-
-    [Space]
     [SerializeField] private Toggle _sfxToggle;
     [SerializeField] private Toggle _musicToggle;
 
-    public bool MusicToggleIsOn => _musicToggle.isOn;
+    public event UnityAction<bool> OnOpened;
 
     private void OnEnable()
     {
@@ -32,9 +27,7 @@ public class SettingsWindowView : MonoBehaviour
         _sfxToggle.onValueChanged.AddListener(ChangeStatusSFX);
         _musicToggle.onValueChanged.AddListener(ChangeStatusMusic);
 
-        _languageButtonEng.onClick.AddListener(SelectEngLanguage);
-        _languageButtonRus.onClick.AddListener(SelectRusLanguage);
-        _languageButtonTur.onClick.AddListener(SelectTurLanguage);
+        OnOpened?.Invoke(false);
     }
 
     private void OnDisable()
@@ -43,15 +36,20 @@ public class SettingsWindowView : MonoBehaviour
 
         _sfxToggle.onValueChanged.RemoveListener(ChangeStatusSFX);
         _musicToggle.onValueChanged.RemoveListener(ChangeStatusMusic);
+    }
 
-        _languageButtonEng.onClick.RemoveListener(SelectEngLanguage);
-        _languageButtonRus.onClick.RemoveListener(SelectRusLanguage);
-        _languageButtonTur.onClick.RemoveListener(SelectTurLanguage);
+    public void SetTimeScale(bool isPause)
+    {
+        _timeScaleSetter.SetGamePause(isPause, this);
     }
 
     private void Close()
     {
+        OnOpened?.Invoke(true);
+
         gameObject.SetActive(false);
+
+        SetTimeScale(false);
     }
 
     private void ChangeStatusSFX(bool isSFXOn)
@@ -62,20 +60,5 @@ public class SettingsWindowView : MonoBehaviour
     private void ChangeStatusMusic(bool isMusicOn)
     {
         _audioData.SetActiveMusic(isMusicOn);
-    }
-
-    private void SelectRusLanguage()
-    {
-        LeanLocalization.SetCurrentLanguageAll(Language.RUS.ToString());
-    }
-
-    private void SelectEngLanguage()
-    {
-        LeanLocalization.SetCurrentLanguageAll(Language.ENG.ToString());
-    }
-
-    private void SelectTurLanguage()
-    {
-        LeanLocalization.SetCurrentLanguageAll(Language.TUR.ToString());
     }
 }

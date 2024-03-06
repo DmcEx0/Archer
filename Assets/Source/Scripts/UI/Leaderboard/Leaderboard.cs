@@ -7,8 +7,12 @@ namespace Assets.Source.Scripts.UI.Liderboard
 {
     public class Leaderboard : MonoBehaviour
     {
-        private const string AnunymousName = "Anonymous";
+        private const string AnunymousNameENG = "Anonymous";
+        private const string AnunymousNameRUS = "Анонимус";
+        private const string AnunymousNameTUR = "Anonim";
         private const string LeaderboardName = "ArcherLeaderboard";
+
+        [SerializeField] private LeaderboardAuthorizedView _authorizedView;
 
         [SerializeField] private LeaderboardView _leaderboardView;
         [SerializeField] private Button _showLeaderboard;
@@ -16,33 +20,41 @@ namespace Assets.Source.Scripts.UI.Liderboard
         private List<LeaderboardPlayer> _leaderboardPlayers = new();
         private readonly int _numberOfPlayerInLeaderboard = 4;
 
+
         private void OnEnable()
         {
-            _showLeaderboard.onClick.AddListener(Show);
+            _showLeaderboard.onClick.AddListener(OnShow);
         }
 
         private void OnDisable()
         {
-            _showLeaderboard.onClick.RemoveListener(Show);
+            _showLeaderboard.onClick.RemoveListener(OnShow);
         }
 
-        public void SetPlayer()
+        public void SetPlayerScore()
         {
             if (PlayerAccount.IsAuthorized == false)
                 return;
 
-            Agava.YandexGames.Leaderboard.GetPlayerEntry(LeaderboardName, _ =>
+            Agava.YandexGames.Leaderboard.GetPlayerEntry(LeaderboardName, result =>
             {
-                Agava.YandexGames.Leaderboard.SetScore(LeaderboardName, PlayerData.Instance.Score);
+                if (PlayerData.Instance.Score >= result.score)
+                    Agava.YandexGames.Leaderboard.SetScore(LeaderboardName, PlayerData.Instance.Score);
+
+                if (PlayerData.Instance.Score < result.score)
+                {
+                    PlayerData.Instance.Score += result.score;
+                    Agava.YandexGames.Leaderboard.SetScore(LeaderboardName, PlayerData.Instance.Score);
+                }
             });
         }
 
         private void Fill()
         {
-            _leaderboardPlayers.Clear();
-
             if (PlayerAccount.IsAuthorized == false)
                 return;
+
+            _leaderboardPlayers.Clear();
 
             Agava.YandexGames.Leaderboard.GetEntries(LeaderboardName, result =>
             {
@@ -57,7 +69,7 @@ namespace Assets.Source.Scripts.UI.Liderboard
                     var name = entry.player.publicName;
 
                     if (string.IsNullOrEmpty(name))
-                        name = AnunymousName;
+                        name = GetAnunymousName(PlayerData.Instance.CurrentLanguage);
 
                     _leaderboardPlayers.Add(new LeaderboardPlayer(rank, name, score));
                 }
@@ -66,26 +78,39 @@ namespace Assets.Source.Scripts.UI.Liderboard
             });
         }
 
-        private void Show()
+        private void OnShow()
         {
-            _leaderboardView.gameObject.SetActive(true);
-
             Authorized();
         }
 
         private void Authorized()
         {
-            PlayerAccount.Authorize(
-                onSuccessCallback: () =>
-                {
-                    PlayerAccount.RequestPersonalProfileDataPermission();
-                    SetPlayer();
-                    Fill();
-                },
-                onErrorCallback: (error) =>
-                {
-                    _leaderboardView.gameObject.SetActive(false);
-                });
+            if (PlayerAccount.IsAuthorized)
+            {
+                PlayerAccount.RequestPersonalProfileDataPermission();
+                Fill();
+                _leaderboardView.gameObject.SetActive(true);
+            }
+
+            if (PlayerAccount.IsAuthorized == false)
+            {
+                _authorizedView.gameObject.SetActive(true);
+            }
+        }
+
+        private string GetAnunymousName(string language)
+        {
+            switch (language)
+            {
+                case Language.ENG:
+                    return AnunymousNameENG;
+                case Language.RUS:
+                    return AnunymousNameRUS;
+                case Language.TUR:
+                    return AnunymousNameTUR;
+                default:
+                    return AnunymousNameENG;
+            }
         }
     }
 }

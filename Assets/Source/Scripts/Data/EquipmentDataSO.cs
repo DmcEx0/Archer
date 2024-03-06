@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class EquipmentDataSO : ScriptableObject
@@ -20,6 +18,7 @@ public abstract class EquipmentDataSO : ScriptableObject
     public Sprite Icon => _icon;
     public bool WasBought => _wasBought;
     public int ID => _id;
+    public int Price => _price;
 
     public bool TryBuy()
     {
@@ -27,8 +26,6 @@ public abstract class EquipmentDataSO : ScriptableObject
         {
             _wasBought = true;
             PlayerData.Instance.Coins -= _price;
-
-            return _wasBought;
         }
 
         return _wasBought;

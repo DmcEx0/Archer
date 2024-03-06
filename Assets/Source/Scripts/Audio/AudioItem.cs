@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
@@ -15,5 +13,4 @@ public class AudioItem
     public SoundType Type => _type;
     public Sounds Sound => _sound;
     public AudioClip Clip => _clip;
-    public float Volume => _volume;
 }

@@ -1,9 +1,15 @@
 using Archer.Model;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Root : MonoBehaviour
 {
+    private const string TutorialSceneName = "Tutorial";
+
+    [SerializeField] private InterstitialAd _interstitialAd;
+
+    [SerializeField] private ConfigCurrentLvl _configCurrentLvl;
     [SerializeField] private EquipmentListSO _equipmentListData;
     [SerializeField] private PresenterFactory _factory;
     [SerializeField] private Transform _startPlayerPosition;
@@ -20,14 +26,22 @@ public class Root : MonoBehaviour
     [SerializeField] private AudioSource _musicAudioSource;
     [SerializeField] private AudioDataSO _audioData;
 
-    private GameSession _gameSession;
+    private IGameSession _gameSession;
 
     private RevardSystem _revardSystem;
 
     private void Awake()
     {
-        _gameSession = new GameSession(_factory, _audioData, _startPlayerPosition, _mainPlayerPosition,
-            _enemiesSpawnPoints, _mainEmemyPosition, _equipmentListData, _skillButtonView);
+        if (CheckCurrentScene().name == TutorialSceneName)
+        {
+            _gameSession = new TutorialGameSession(_factory, _audioData, _startPlayerPosition, _mainPlayerPosition,
+            _enemiesSpawnPoints, _mainEmemyPosition, _equipmentListData, _skillButtonView, _configCurrentLvl);
+        }
+        else
+        {
+            _gameSession = new GameSession(_factory, _audioData, _startPlayerPosition, _mainPlayerPosition,
+    _enemiesSpawnPoints, _mainEmemyPosition, _equipmentListData, _skillButtonView, _configCurrentLvl);
+        }
 
         _revardSystem = new RevardSystem();
 
@@ -57,21 +71,36 @@ public class Root : MonoBehaviour
         _gameSession.Update();
     }
 
-    private void AddRevardOnEnemyKill()
+    public void OnExitGame()
     {
-        _revardSystem.AddCoinsOnKill(Config.Instance.CoinsForEnemy);
-        _revardSystem.AddScoreOnKill(Config.Instance.ScoreForEnemy);
+        _gameSession.OnExitGame();
     }
 
-    private void ShowEndGameWindow()
+    private void AddRevardOnEnemyKill()
+    {
+        _revardSystem.AddCoinsOnKill(_configCurrentLvl.CoinsForEnemy);
+        _revardSystem.AddScoreOnKill(_configCurrentLvl.ScoreForEnemy);
+    }
+
+    private Scene CheckCurrentScene()
+    {
+        return SceneManager.GetActiveScene();
+    }
+
+    private void ShowEndGameWindow(bool isPlayerWin)
     {
         AddCoins();
         AddScore();
 
+        _endGameWindow.SetActiveNextLevelButton(isPlayerWin);
         _endGameWindow.SetAmountCoins(_revardSystem.AmountCoins);
         _endGameWindow.gameObject.SetActive(true);
 
         _revardSystem.Reset();
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+        _interstitialAd.Show();
+#endif
     }
 
     private void AddCoins()

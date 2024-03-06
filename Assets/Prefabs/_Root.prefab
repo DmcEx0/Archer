@@ -12,6 +12,9 @@ GameObject:
   - component: {fileID: 3080020627290202721}
   - component: {fileID: 246234746528856149}
   - component: {fileID: 9002499651922621265}
+  - component: {fileID: 336117495750824023}
+  - component: {fileID: 6654720696827542188}
+  - component: {fileID: 5617107745594341852}
   m_Layer: 0
   m_Name: _Root
   m_TagString: Untagged
@@ -26,13 +29,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3259702298063071963}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3080020627290202721
 MonoBehaviour:
@@ -62,13 +65,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 551c52b6d15925b4695a462cde2b1ffa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _interstitialAd: {fileID: 5617107745594341852}
+  _configCurrentLvl: {fileID: 336117495750824023}
   _equipmentListData: {fileID: 11400000, guid: 98839b9ca45fd6a43ab7f3f7cfddaba9, type: 2}
   _factory: {fileID: 3080020627290202721}
   _startPlayerPosition: {fileID: 0}
   _mainPlayerPosition: {fileID: 0}
   _mainEmemyPosition: {fileID: 0}
   _enemiesSpawnPoints:
-  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   _endGameWindow: {fileID: 0}
@@ -89,3 +93,47 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _audioData: {fileID: 11400000, guid: 78d2b584b41f2974e821616f7d803fa7, type: 2}
+  _timeScaleSetter: {fileID: 6654720696827542188}
+--- !u!114 &336117495750824023
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3259702298063071963}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f892d60de0c4cf8428cddf96110b0468, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _coinsForEnemy: 10
+  _scoreForEnemy: 10
+  _minHealthEnemy: 1
+  _maxHealthEnemy: 3
+  _playerHealth: 100
+--- !u!114 &6654720696827542188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3259702298063071963}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8639f7285f6be0741bab61dc80e08aab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &5617107745594341852
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3259702298063071963}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11b30671eeadc2d478a6817abfa85dd1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _audioData: {fileID: 11400000, guid: 78d2b584b41f2974e821616f7d803fa7, type: 2}
+  _timeScaleSetter: {fileID: 6654720696827542188}
