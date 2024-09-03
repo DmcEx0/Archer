@@ -1,5 +1,8 @@
-﻿public enum SoundType
+﻿namespace Archer.Audio
 {
-    SFX = 0,
-    Music = 1
+    public enum SoundType
+    {
+        SFX = 0,
+        Music = 1
+    }
 }

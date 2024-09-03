@@ -1,5 +1,8 @@
 using UnityEngine;
 
-public class Target1 : MonoBehaviour
+namespace Archer.TargetComponent
 {
+    public class Target1 : MonoBehaviour
+    {
+    }
 }

@@ -1,20 +1,23 @@
 using UnityEngine;
 
-public struct BallisticsRouter
+namespace Archer.Utils
 {
-    private const float Gravity = 9.8f;
-
-    public static Vector3 GetCalculatedPosition(ref Vector3 velocity, float deltaTime)
+    public struct BallisticsRouter
     {
-        velocity += Vector3.down * Gravity * deltaTime;
+        private const float Gravity = 9.8f;
 
-        return velocity * deltaTime;
-    }
+        public static Vector3 GetCalculatedPosition(ref Vector3 velocity, float deltaTime)
+        {
+            velocity += Vector3.down * Gravity * deltaTime;
 
-    public static Vector3 GetCalculatedPositionAfterTime(Vector3 velocity, float time)
-    {
-        velocity = velocity * time + Vector3.down * Gravity * time * time / 2f;
+            return velocity * deltaTime;
+        }
 
-        return velocity;
+        public static Vector3 GetCalculatedPositionAfterTime(Vector3 velocity, float time)
+        {
+            velocity = velocity * time + Vector3.down * Gravity * time * time / 2f;
+
+            return velocity;
+        }
     }
 }

@@ -1,13 +1,18 @@
+using Archer.Model;
+using Archer.Presenters;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class HitBodyDetector : MonoBehaviour
+namespace Archer.TargetComponent
 {
-    public event UnityAction<int, int, ArrowSkillType> Hit;
-
-    private void OnTriggerEnter(Collider other)
+    public class HitBodyDetector : MonoBehaviour
     {
-        if (other.TryGetComponent(out ArrowPresenter arrow))
-            Hit?.Invoke(arrow.ArrowModel.Damage, arrow.ArrowModel.AdditionalDamage, arrow.ArrowModel.SkillType);
+        public event UnityAction<int, int, ArrowSkillType> Hit;
+
+        private void OnTriggerEnter(Collider other)
+        {
+            if (other.TryGetComponent(out ArrowPresenter arrow))
+                Hit?.Invoke(arrow.ArrowModel.Damage, arrow.ArrowModel.AdditionalDamage, arrow.ArrowModel.SkillType);
+        }
     }
 }

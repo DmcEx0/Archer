@@ -1,51 +1,55 @@
+using Archer.Utils;
 using IJunior.TypedScenes;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class EndGameWindowView : MonoBehaviour
+namespace Archer.UI
 {
-    [SerializeField] private Button _meinMenuButton;
-    [SerializeField] private Button _nextLevelButton;
-    [SerializeField] private TMP_Text _goldText;
-
-    [SerializeField] private GameObject _victoryImage;
-    [SerializeField] private GameObject _defeatImage;
-
-    private void OnEnable()
+    public class EndGameWindowView : MonoBehaviour
     {
-        _meinMenuButton.onClick.AddListener(LoadMenuScene);
-        _nextLevelButton.onClick.AddListener(LoadNextLevel);
-    }
+        [SerializeField] private Button _meinMenuButton;
+        [SerializeField] private Button _nextLevelButton;
+        [SerializeField] private TMP_Text _goldText;
 
-    private void OnDisable()
-    {
-        _meinMenuButton.onClick.RemoveListener(LoadMenuScene);
-        _nextLevelButton.onClick.RemoveListener(LoadNextLevel);
-    }
+        [SerializeField] private GameObject _victoryImage;
+        [SerializeField] private GameObject _defeatImage;
 
-    public void SetActiveNextLevelButton(bool isGoToNextLevel)
-    {
-        _nextLevelButton.gameObject.SetActive(isGoToNextLevel);
+        private void OnEnable()
+        {
+            _meinMenuButton.onClick.AddListener(LoadMenuScene);
+            _nextLevelButton.onClick.AddListener(LoadNextLevel);
+        }
 
-        if (isGoToNextLevel)
-            _victoryImage.SetActive(true);
-        else
-            _defeatImage.SetActive(true);
-    }
+        private void OnDisable()
+        {
+            _meinMenuButton.onClick.RemoveListener(LoadMenuScene);
+            _nextLevelButton.onClick.RemoveListener(LoadNextLevel);
+        }
 
-    public void SetAmountCoins(int amountCoins)
-    {
-        _goldText.text = $"+{amountCoins}";
-    }
+        public void SetActiveNextLevelButton(bool isGoToNextLevel)
+        {
+            _nextLevelButton.gameObject.SetActive(isGoToNextLevel);
 
-    private void LoadNextLevel()
-    {
-        LevelManager.LoadNextLevel();
-    }
+            if (isGoToNextLevel)
+                _victoryImage.SetActive(true);
+            else
+                _defeatImage.SetActive(true);
+        }
 
-    private void LoadMenuScene()
-    {
-        Menu.Load();
+        public void SetAmountCoins(int amountCoins)
+        {
+            _goldText.text = $"+{amountCoins}";
+        }
+
+        private void LoadNextLevel()
+        {
+            LevelManager.LoadNextLevel();
+        }
+
+        private void LoadMenuScene()
+        {
+            Menu.Load();
+        }
     }
 }

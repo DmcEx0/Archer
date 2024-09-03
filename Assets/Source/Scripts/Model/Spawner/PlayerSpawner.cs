@@ -1,3 +1,6 @@
+using Archer.Audio;
+using Archer.Presenters;
+
 namespace Archer.Model
 {
     public class PlayerSpawner : CharactersSpawner
@@ -8,6 +11,7 @@ namespace Archer.Model
 
         protected override Presenter CreateCharacter(Character characterModel) => Factory.CreatePlayer(characterModel);
 
-        protected override WeaponPresenter CreateWeapon(WeaponPresenter weaponTemplate, Weapon weaponModel) => Factory.CreateWeapon(weaponTemplate, weaponModel) as WeaponPresenter;
+        protected override WeaponPresenter CreateWeapon(WeaponPresenter weaponTemplate, Weapon weaponModel) =>
+            Factory.CreateWeapon(weaponTemplate, weaponModel) as WeaponPresenter;
     }
 }

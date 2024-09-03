@@ -1,48 +1,50 @@
 using UnityEngine;
 using Agava.WebUtility;
+using Archer.Audio;
+using Archer.Utils;
 
-public class LossFocus : MonoBehaviour, ITimeControllable
+namespace Archer.Yandex
 {
-    [SerializeField] private AudioDataSO _audioData;
-    [SerializeField] private TimeScaleSetter _timeScaleSetter;
-
-    private void OnEnable()
+    public class LossFocus : MonoBehaviour, ITimeControllable
     {
-        Application.focusChanged += OnInBackgroundChangeApp;
-        WebApplication.InBackgroundChangeEvent += OnInBackgroundChangeWeb;
-    }
+        [SerializeField] private AudioDataSO _audioData;
+        [SerializeField] private TimeScaleSetter _timeScaleSetter;
 
-    private void OnDisable()
-    {
-        Application.focusChanged -= OnInBackgroundChangeApp;
-        WebApplication.InBackgroundChangeEvent -= OnInBackgroundChangeWeb;
-    }
+        private void OnEnable()
+        {
+            Application.focusChanged += OnInBackgroundChangeApp;
+            WebApplication.InBackgroundChangeEvent += OnInBackgroundChangeWeb;
+        }
 
-    private void OnInBackgroundChangeApp(bool inApp)
-    {
-        PauseGame(!inApp);
-        //Debug.Log("inApp = " + inApp);
-        if (inApp)
-            _audioData.UnPause(this);
-        else
-            _audioData.Pause(this);
-    }
+        private void OnDisable()
+        {
+            Application.focusChanged -= OnInBackgroundChangeApp;
+            WebApplication.InBackgroundChangeEvent -= OnInBackgroundChangeWeb;
+        }
 
-    private void OnInBackgroundChangeWeb(bool isBackground)
-    {
-        PauseGame(isBackground);
-        //Debug.Log("isBackground = " + isBackground);
+        private void OnInBackgroundChangeApp(bool inApp)
+        {
+            PauseGame(!inApp);
+            
+            if (inApp)
+                _audioData.UnPause(this);
+            else
+                _audioData.Pause(this);
+        }
 
-        if (isBackground)
-            _audioData.Pause(this);
-        else
-            _audioData.UnPause(this);
-    }
+        private void OnInBackgroundChangeWeb(bool isBackground)
+        {
+            PauseGame(isBackground);
 
-    private void PauseGame(bool value)
-    {
+            if (isBackground)
+                _audioData.Pause(this);
+            else
+                _audioData.UnPause(this);
+        }
 
-        //Debug.Log(value);
-        _timeScaleSetter.SetGamePause(value, this);
+        private void PauseGame(bool value)
+        {
+            _timeScaleSetter.SetGamePause(value, this);
+        }
     }
 }

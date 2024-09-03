@@ -1,7 +1,7 @@
 using TMPro;
 using UnityEngine;
 
-namespace Assets.Source.Scripts.UI.Liderboard
+namespace Archer.UI
 {
     public class LeaderboardElement : MonoBehaviour
     {

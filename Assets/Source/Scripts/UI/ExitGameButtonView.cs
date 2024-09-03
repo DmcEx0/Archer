@@ -1,36 +1,40 @@
+using Archer.Utils;
 using IJunior.TypedScenes;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ExitGameButtonView : MonoBehaviour
+namespace Archer.UI
 {
-    [SerializeField] private Button _exitGameButton;
-    [SerializeField] private Root _root;
-
-    [SerializeField] private TimeScaleSetter _timeScaleSetter;
-
-    private SettingsWindowView _settingWindowView;
-
-    private void OnEnable()
+    public class ExitGameButtonView : MonoBehaviour
     {
-        _exitGameButton.onClick.AddListener(LoadMeinMenuScene);
-    }
+        [SerializeField] private Button _exitGameButton;
+        [SerializeField] private Root _root;
 
-    private void OnDisable()
-    {
-        _exitGameButton.onClick.RemoveListener(LoadMeinMenuScene);
-    }
+        [SerializeField] private TimeScaleSetter _timeScaleSetter;
 
-    private void Awake()
-    {
-        _settingWindowView = GetComponent<SettingsWindowView>();
-    }
+        private SettingsWindowView _settingWindowView;
 
-    private void LoadMeinMenuScene()
-    {
-        _root.OnExitGame();
-        _settingWindowView.SetTimeScale(false);
+        private void OnEnable()
+        {
+            _exitGameButton.onClick.AddListener(LoadMeinMenuScene);
+        }
 
-        Menu.Load();
+        private void OnDisable()
+        {
+            _exitGameButton.onClick.RemoveListener(LoadMeinMenuScene);
+        }
+
+        private void Awake()
+        {
+            _settingWindowView = GetComponent<SettingsWindowView>();
+        }
+
+        private void LoadMeinMenuScene()
+        {
+            _root.OnExitGame();
+            _settingWindowView.SetTimeScale(false);
+
+            Menu.Load();
+        }
     }
 }

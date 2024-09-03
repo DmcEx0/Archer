@@ -1,12 +1,15 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class SettingButtonDownHandler : MonoBehaviour, IPointerDownHandler
+namespace Archer.UI
 {
-    [SerializeField] private SettingsWindowView _settingsWindowView;
-    public void OnPointerDown(PointerEventData eventData)
+    public class SettingButtonDownHandler : MonoBehaviour, IPointerDownHandler
     {
-        _settingsWindowView.SetTimeScale(true);
-        _settingsWindowView.gameObject.SetActive(true);
+        [SerializeField] private SettingsWindowView _settingsWindowView;
+        public void OnPointerDown(PointerEventData eventData)
+        {
+            _settingsWindowView.SetTimeScale(true);
+            _settingsWindowView.gameObject.SetActive(true);
+        }
     }
 }

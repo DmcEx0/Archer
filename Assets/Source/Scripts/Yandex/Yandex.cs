@@ -1,28 +1,32 @@
 using Agava.YandexGames;
 using IJunior.TypedScenes;
 using System.Collections;
+using Archer.Data;
 using UnityEngine;
 
-public class Yandex : MonoBehaviour
+namespace Archer.Yandex
 {
-    private Localization _localization;
-
-    private void Awake()
+    public class Yandex : MonoBehaviour
     {
-        YandexGamesSdk.CallbackLogging = true;
-        _localization = new();
-    }
+        private Localization _localization;
 
-    private IEnumerator Start()
-    {
-        yield return YandexGamesSdk.Initialize(LoadPlayerData);
+        private void Awake()
+        {
+            YandexGamesSdk.CallbackLogging = true;
+            _localization = new();
+        }
 
-        _localization.ChangeLanguage();
-        Menu.Load();
-    }
+        private IEnumerator Start()
+        {
+            yield return YandexGamesSdk.Initialize(LoadPlayerData);
 
-    private void LoadPlayerData()
-    {
-        PlayerData.Initialize();
+            _localization.ChangeLanguage();
+            Menu.Load();
+        }
+
+        private void LoadPlayerData()
+        {
+            PlayerData.Initialize();
+        }
     }
 }

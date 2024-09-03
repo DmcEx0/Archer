@@ -1,8 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
+using Archer.Utils;
 using UnityEngine;
 
-[CreateAssetMenu]
+namespace Archer.Audio
+{
+    [CreateAssetMenu]
 public class AudioDataSO : ScriptableObject
 {
     [SerializeField] private List<AudioItem> _audioItems;
@@ -110,4 +113,5 @@ public class AudioDataSO : ScriptableObject
             _SFXAudioSource.PlayOneShot(audio.Clip);
         }
     }
+}
 }

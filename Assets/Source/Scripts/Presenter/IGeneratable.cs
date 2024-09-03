@@ -1,6 +1,9 @@
 using UnityEngine;
 
-public interface IGeneratable
+namespace Archer.Presenters
 {
-    public Transform GeneratingPoint { get; }
+    public interface IGeneratable
+    {
+        public Transform GeneratingPoint { get; }
+    }
 }

@@ -1,3 +1,6 @@
-public interface ITimeControllable
+namespace Archer.Utils
 {
+    public interface ITimeControllable
+    {
+    }
 }

@@ -1,8 +1,11 @@
-public enum Sounds
+namespace Archer.Audio
 {
-    Shot1 = 0,
-    Shot2 = 1,
-    Reload = 2,
-    MeinMenu = 3,
-    Game = 4
+    public enum Sounds
+    {
+        Shot1 = 0,
+        Shot2 = 1,
+        Reload = 2,
+        MeinMenu = 3,
+        Game = 4
+    }
 }

@@ -1,11 +1,14 @@
 using UnityEngine.Events;
 
-public interface IGameSession
+namespace  Archer.Utils
 {
-    public void Init();
-    public void Update();
-    public void OnExitGame();
+    public interface IGameSession
+    {
+        public void Init();
+        public void Update();
+        public void OnExitGame();
 
-    public event UnityAction EnemyDied;
-    public event UnityAction<bool> LevelCompete;
+        public event UnityAction EnemyDied;
+        public event UnityAction<bool> LevelCompete;
+    }
 }

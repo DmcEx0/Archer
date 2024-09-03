@@ -2,66 +2,69 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ObjectPool<T> where T : MonoBehaviour
+namespace Archer.Utils
 {
-    private T _prefab;
-    private bool _isAutoExpand = true;
-    private Transform _container;
-
-    private Queue<T> _pool;
-
-    public ObjectPool(T prefab, int count, Transform container)
+    public class ObjectPool<T> where T : MonoBehaviour
     {
-        _prefab = prefab;
-        _container = container;
-        FirstElement = prefab;
-
-        CreatePool(count);
-    }
-
-    public T FirstElement {  get; private set; }
-
-    public T GetFreeElement()
-    {
-        if (HasFreeElement(out var element))
-            return element;
-
-        if (_isAutoExpand)
-            return CreateObject(true);
-
-        throw new Exception($"There is no free element in pool of type {typeof(T)}");
-    }
-
-    private void CreatePool(int count)
-    {
-        _pool = new Queue<T>();
-
-        for (int i = 0; i < count; i++)
-            CreateObject();
-    }
-
-    private bool HasFreeElement(out T element)
-    {
-        foreach (var elementInPool in _pool)
+        private T _prefab;
+        private bool _isAutoExpand = true;
+        private Transform _container;
+    
+        private Queue<T> _pool;
+    
+        public ObjectPool(T prefab, int count, Transform container)
         {
-            if (elementInPool.isActiveAndEnabled == false)
-            {
-                element = elementInPool;
-                elementInPool.gameObject.SetActive(true);
-                return true;
-            }
+            _prefab = prefab;
+            _container = container;
+            FirstElement = prefab;
+    
+            CreatePool(count);
         }
-
-        element = null;
-        return false;
-    }
-
-    private T CreateObject(bool isActiveByDefault = false)
-    {
-        var createdObject = GameObject.Instantiate(_prefab, _container);
-        createdObject.gameObject.SetActive(isActiveByDefault);
-
-        _pool.Enqueue(createdObject);
-        return createdObject;
+    
+        public T FirstElement {  get; private set; }
+    
+        public T GetFreeElement()
+        {
+            if (HasFreeElement(out var element))
+                return element;
+    
+            if (_isAutoExpand)
+                return CreateObject(true);
+    
+            throw new Exception($"There is no free element in pool of type {typeof(T)}");
+        }
+    
+        private void CreatePool(int count)
+        {
+            _pool = new Queue<T>();
+    
+            for (int i = 0; i < count; i++)
+                CreateObject();
+        }
+    
+        private bool HasFreeElement(out T element)
+        {
+            foreach (var elementInPool in _pool)
+            {
+                if (elementInPool.isActiveAndEnabled == false)
+                {
+                    element = elementInPool;
+                    elementInPool.gameObject.SetActive(true);
+                    return true;
+                }
+            }
+    
+            element = null;
+            return false;
+        }
+    
+        private T CreateObject(bool isActiveByDefault = false)
+        {
+            var createdObject = GameObject.Instantiate(_prefab, _container);
+            createdObject.gameObject.SetActive(isActiveByDefault);
+    
+            _pool.Enqueue(createdObject);
+            return createdObject;
+        }
     }
 }

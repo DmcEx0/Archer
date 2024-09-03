@@ -1,24 +1,27 @@
 using UnityEngine;
 
-public class TimeScaleSetter : MonoBehaviour
+namespace Archer.Utils
 {
-    private bool _isPause;
-
-    private ITimeControllable _currentController = null;
-
-    public void SetGamePause(bool isPause, ITimeControllable controller)
+    public class TimeScaleSetter : MonoBehaviour
     {
-        if (_currentController == null)
-            _currentController = controller;
+        private bool _isPause;
 
-        if (controller != _currentController)
-            return;
+        private ITimeControllable _currentController = null;
 
-        Time.timeScale = isPause ? 0 : 1;
+        public void SetGamePause(bool isPause, ITimeControllable controller)
+        {
+            if (_currentController == null)
+                _currentController = controller;
 
-        if (_isPause == true && isPause == false)
-            _currentController = null;
+            if (controller != _currentController)
+                return;
 
-        _isPause = isPause;
+            Time.timeScale = isPause ? 0 : 1;
+
+            if (_isPause == true && isPause == false)
+                _currentController = null;
+
+            _isPause = isPause;
+        }
     }
 }

@@ -1,4 +1,7 @@
-public interface IUpdatetable 
+namespace Archer.Model
 {
-    public void Update(float deltaTime);
+    public interface IUpdatetable 
+    {
+        public void Update(float deltaTime);
+    }
 }

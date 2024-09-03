@@ -1,37 +1,39 @@
-using System;
-using TMPro;
+using Archer.Data;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-public class EquipmentSmallIconView : MonoBehaviour
+namespace Archer.UI
 {
-    [SerializeField] private Button _button;
-    [SerializeField] private Image _image;
-
-    private EquipmentDataSO _equipmentData;
-
-    public event UnityAction<EquipmentDataSO> EquipmentSelected;
-
-    private void OnEnable()
+    public class EquipmentSmallIconView : MonoBehaviour
     {
-        _button.onClick.AddListener(OnEquipmentSelected);
-    }
+        [SerializeField] private Button _button;
+        [SerializeField] private Image _image;
 
-    private void OnDisable()
-    {
-        _button.onClick.RemoveListener(OnEquipmentSelected);
-    }
+        private EquipmentDataSO _equipmentData;
 
-    private void OnEquipmentSelected()
-    {
-        EquipmentSelected?.Invoke(_equipmentData);
-    }
+        public event UnityAction<EquipmentDataSO> EquipmentSelected;
 
-    public void Render(EquipmentDataSO equipmentData)
-    {
-        _equipmentData = equipmentData;
+        private void OnEnable()
+        {
+            _button.onClick.AddListener(OnEquipmentSelected);
+        }
 
-        _image.sprite = _equipmentData.Icon;
+        private void OnDisable()
+        {
+            _button.onClick.RemoveListener(OnEquipmentSelected);
+        }
+
+        private void OnEquipmentSelected()
+        {
+            EquipmentSelected?.Invoke(_equipmentData);
+        }
+
+        public void Render(EquipmentDataSO equipmentData)
+        {
+            _equipmentData = equipmentData;
+
+            _image.sprite = _equipmentData.Icon;
+        }
     }
 }
