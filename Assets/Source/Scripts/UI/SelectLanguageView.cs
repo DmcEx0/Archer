@@ -1,45 +1,50 @@
+using Archer.Data;
+using Archer.Yandex;
 using Lean.Localization;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SelectLanguageView : MonoBehaviour
+namespace Archer.UI
 {
-    [SerializeField] private Button _languageButtonRus;
-    [SerializeField] private Button _languageButtonEng;
-    [SerializeField] private Button _languageButtonTur;
-
-    private void OnEnable()
+    public class SelectLanguageView : MonoBehaviour
     {
-        _languageButtonEng.onClick.AddListener(SelectEngLanguage);
-        _languageButtonRus.onClick.AddListener(SelectRusLanguage);
-        _languageButtonTur.onClick.AddListener(SelectTurLanguage);
-    }
+        [SerializeField] private Button _languageButtonRus;
+        [SerializeField] private Button _languageButtonEng;
+        [SerializeField] private Button _languageButtonTur;
 
-    private void OnDisable()
-    {
-        _languageButtonEng.onClick.RemoveListener(SelectEngLanguage);
-        _languageButtonRus.onClick.RemoveListener(SelectRusLanguage);
-        _languageButtonTur.onClick.RemoveListener(SelectTurLanguage);
-    }
+        private void OnEnable()
+        {
+            _languageButtonEng.onClick.AddListener(SelectEngLanguage);
+            _languageButtonRus.onClick.AddListener(SelectRusLanguage);
+            _languageButtonTur.onClick.AddListener(SelectTurLanguage);
+        }
 
-    private void SelectRusLanguage()
-    {
-        SetLanguage(Language.RUS.ToString());
-    }
+        private void OnDisable()
+        {
+            _languageButtonEng.onClick.RemoveListener(SelectEngLanguage);
+            _languageButtonRus.onClick.RemoveListener(SelectRusLanguage);
+            _languageButtonTur.onClick.RemoveListener(SelectTurLanguage);
+        }
 
-    private void SelectEngLanguage()
-    {
-        SetLanguage(Language.ENG.ToString());
-    }
+        private void SelectRusLanguage()
+        {
+            SetLanguage(Language.RUS.ToString());
+        }
 
-    private void SelectTurLanguage()
-    {
-        SetLanguage(Language.TUR.ToString());
-    }
+        private void SelectEngLanguage()
+        {
+            SetLanguage(Language.ENG.ToString());
+        }
 
-    private void SetLanguage(string language)
-    {
-        PlayerData.Instance.CurrentLanguage = language;
-        LeanLocalization.SetCurrentLanguageAll(language);
+        private void SelectTurLanguage()
+        {
+            SetLanguage(Language.TUR.ToString());
+        }
+
+        private void SetLanguage(string language)
+        {
+            PlayerData.Instance.CurrentLanguage = language;
+            LeanLocalization.SetCurrentLanguageAll(language);
+        }
     }
 }

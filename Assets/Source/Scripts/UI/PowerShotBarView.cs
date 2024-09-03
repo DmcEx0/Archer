@@ -1,32 +1,36 @@
+using Archer.Input;
 using Archer.Model;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PowerShotBarView : MonoBehaviour
+namespace Archer.UI
 {
-    [SerializeField] private Image _powerShotSlider;
-
-    private PlayerInputRouter _playerInputRouter;
-
-    private void OnDisable()
+    public class PowerShotBarView : MonoBehaviour
     {
-        if (_playerInputRouter != null)
-            _playerInputRouter.PowerChanged -= OnPowerChanged;
-    }
+        [SerializeField] private Image _powerShotSlider;
 
-    private void Awake()
-    {
-        _powerShotSlider.fillAmount = 0;
-    }
+        private PlayerInputRouter _playerInputRouter;
 
-    private void OnPowerChanged(float value, float maxValue)
-    {
-        _powerShotSlider.fillAmount = value / maxValue;
-    }
+        private void OnDisable()
+        {
+            if (_playerInputRouter != null)
+                _playerInputRouter.PowerChanged -= OnPowerChanged;
+        }
 
-    public void Init(PlayerInputRouter playerInputRouter)
-    {
-        _playerInputRouter = playerInputRouter;
-        _playerInputRouter.PowerChanged += OnPowerChanged;
+        private void Awake()
+        {
+            _powerShotSlider.fillAmount = 0;
+        }
+
+        private void OnPowerChanged(float value, float maxValue)
+        {
+            _powerShotSlider.fillAmount = value / maxValue;
+        }
+
+        public void Init(PlayerInputRouter playerInputRouter)
+        {
+            _playerInputRouter = playerInputRouter;
+            _playerInputRouter.PowerChanged += OnPowerChanged;
+        }
     }
 }

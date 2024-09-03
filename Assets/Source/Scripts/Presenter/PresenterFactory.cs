@@ -1,64 +1,67 @@
 using System.Collections.Generic;
 using System.Linq;
-using Agava.YandexGames;
 using Archer.Model;
+using Archer.Utils;
 using UnityEngine;
 
-public class PresenterFactory : MonoBehaviour
+namespace Archer.Presenters
 {
-    [SerializeField] private Presenter _playerTempalte;
-    [SerializeField] private List<Presenter> _enemiesTemplates;
-
-    private readonly int _poolCount = 30;
-
-    private List<ObjectPool<Presenter>> _pools = new List<ObjectPool<Presenter>>();
-
-    public Presenter CreatePlayer(Character player)
+    public class PresenterFactory : MonoBehaviour
     {
-        return CreatePresenter(_playerTempalte, player);
-    }
+        [SerializeField] private Presenter _playerTempalte;
+        [SerializeField] private List<Presenter> _enemiesTemplates;
 
-    public Presenter CreateEnemy(Character enemy)
-    {
-        int randomEnemy = Random.Range(0, _enemiesTemplates.Count);
+        private readonly int _poolCount = 30;
 
-        return CreatePresenter(_enemiesTemplates[randomEnemy], enemy);
-    }
+        private List<ObjectPool<Presenter>> _pools = new List<ObjectPool<Presenter>>();
 
-    public Presenter CreateWeapon(Presenter weaponTemplate, Weapon weapon)
-    {
-        return CreatePresenter(weaponTemplate, weapon);
-    }
+        public Presenter CreatePlayer(Character player)
+        {
+            return CreatePresenter(_playerTempalte, player);
+        }
 
-    public Presenter CreateArrow(Presenter arrowPresenter, Arrow arrow)
-    {
-        return GetPresenterInPool(arrowPresenter, arrow);
-    }
+        public Presenter CreateEnemy(Character enemy)
+        {
+            int randomEnemy = Random.Range(0, _enemiesTemplates.Count);
 
-    public void CreatePoolOfPresenters(Presenter template)
-    {
-        if (_pools.Contains(_pools.FirstOrDefault(p => p.FirstElement == template)))
-            return;
+            return CreatePresenter(_enemiesTemplates[randomEnemy], enemy);
+        }
 
-        ObjectPool<Presenter> pool = new ObjectPool<Presenter>(template, _poolCount, this.transform);
-        _pools.Add(pool);
-    }
+        public Presenter CreateWeapon(Presenter weaponTemplate, Weapon weapon)
+        {
+            return CreatePresenter(weaponTemplate, weapon);
+        }
 
-    private Presenter CreatePresenter(Presenter template, Transformable model)
-    {
-        Presenter presenter = Instantiate(template, model.Position, model.Rotation);
-        presenter.Init(model);
+        public Presenter CreateArrow(Presenter arrowPresenter, Arrow arrow)
+        {
+            return GetPresenterInPool(arrowPresenter, arrow);
+        }
 
-        return presenter;
-    }
+        public void CreatePoolOfPresenters(Presenter template)
+        {
+            if (_pools.Contains(_pools.FirstOrDefault(p => p.FirstElement == template)))
+                return;
 
-    private Presenter GetPresenterInPool(Presenter template, Transformable model)
-    {
-        ObjectPool<Presenter> currentPool = _pools.FirstOrDefault(pool => pool.FirstElement == template);
-        Presenter presenter = currentPool.GetFreeElement();
+            ObjectPool<Presenter> pool = new ObjectPool<Presenter>(template, _poolCount, this.transform);
+            _pools.Add(pool);
+        }
 
-        presenter.Init(model);
+        private Presenter CreatePresenter(Presenter template, Transformable model)
+        {
+            Presenter presenter = Instantiate(template, model.Position, model.Rotation);
+            presenter.Init(model);
 
-        return presenter;
+            return presenter;
+        }
+
+        private Presenter GetPresenterInPool(Presenter template, Transformable model)
+        {
+            ObjectPool<Presenter> currentPool = _pools.FirstOrDefault(pool => pool.FirstElement == template);
+            Presenter presenter = currentPool.GetFreeElement();
+
+            presenter.Init(model);
+
+            return presenter;
+        }
     }
 }

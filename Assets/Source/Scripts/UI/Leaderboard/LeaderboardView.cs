@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-namespace Assets.Source.Scripts.UI.Liderboard
+namespace Archer.UI
 {
     public class LeaderboardView : MonoBehaviour
     {

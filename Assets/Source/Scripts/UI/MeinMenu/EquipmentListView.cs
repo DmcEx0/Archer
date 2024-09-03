@@ -1,27 +1,31 @@
 using System.Collections.Generic;
+using Archer.Data;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class EquipmentListView : MonoBehaviour
+namespace Archer.UI
 {
-    [SerializeField] private EquipmentSmallIconView _template;
-
-    public event UnityAction<EquipmentDataSO> EquipmentSelected;
-
-    public void Render(Transform container ,IEnumerable<EquipmentDataSO> equipmentsData)
+    public class EquipmentListView : MonoBehaviour
     {
-        foreach (var equipment in equipmentsData)
+        [SerializeField] private EquipmentSmallIconView _template;
+
+        public event UnityAction<EquipmentDataSO> EquipmentSelected;
+
+        public void Render(Transform container, IEnumerable<EquipmentDataSO> equipmentsData)
         {
-            var presenter = Instantiate(_template, container);
+            foreach (var equipment in equipmentsData)
+            {
+                var presenter = Instantiate(_template, container);
 
-            presenter.EquipmentSelected += OnEquipmentSelected;
+                presenter.EquipmentSelected += OnEquipmentSelected;
 
-            presenter.Render(equipment);
+                presenter.Render(equipment);
+            }
         }
-    }
 
-    private void OnEquipmentSelected(EquipmentDataSO equipmentData)
-    {
-        EquipmentSelected?.Invoke(equipmentData);
+        private void OnEquipmentSelected(EquipmentDataSO equipmentData)
+        {
+            EquipmentSelected?.Invoke(equipmentData);
+        }
     }
 }

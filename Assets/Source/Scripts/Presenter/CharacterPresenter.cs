@@ -1,8 +1,12 @@
-﻿using Archer.Model;
+﻿using Archer.Animations;
+using Archer.Model;
+using Archer.TargetComponent;
 using UnityEngine;
 using UnityEngine.Events;
 
-[RequireComponent(typeof(AnimationController))]
+namespace Archer.Presenters
+{
+    [RequireComponent(typeof(AnimationController))]
 public class CharacterPresenter : Presenter, IGeneratable
 {
     [SerializeField] private Transform _weaponPosition;
@@ -67,7 +71,7 @@ public class CharacterPresenter : Presenter, IGeneratable
 
     private void OnHitInBody(int mainDamage, int additionalDamage, ArrowSkillType skillType)
     {
-        _animationController.PlayeHitA();
+        _animationController.PlayerHitA();
 
         _model.TakeDamage(mainDamage, additionalDamage, skillType);
     }
@@ -75,7 +79,7 @@ public class CharacterPresenter : Presenter, IGeneratable
     private void OnHitInHead(int damage, int additionalDamage, ArrowSkillType skillType)
     {
         HitInHead?.Invoke();
-        _animationController.PlayeHitB();
+        _animationController.PlayerHitB();
 
         _model.TakeDamage(damage, additionalDamage, skillType);
     }
@@ -111,4 +115,5 @@ public class CharacterPresenter : Presenter, IGeneratable
     {
         _currentParticle.Stop();
     }
+}
 }

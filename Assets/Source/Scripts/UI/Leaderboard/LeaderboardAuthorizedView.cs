@@ -2,36 +2,39 @@ using Agava.YandexGames;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class LeaderboardAuthorizedView : MonoBehaviour
+namespace Archer.UI
 {
-    [SerializeField] private Button _exit;
-    [SerializeField] private Button _authorized;
-
-    [SerializeField] private MeinMenuView _meinMenuView;
-
-    private void OnEnable()
+    public class LeaderboardAuthorizedView : MonoBehaviour
     {
-        _exit.onClick.AddListener(Exit);
-        _authorized.onClick.AddListener(Authorized);
-        _meinMenuView.EnabledUIElements(false);
-    }
+        [SerializeField] private Button _exit;
+        [SerializeField] private Button _authorized;
 
-    private void OnDisable()
-    {
-        _exit.onClick.RemoveListener(Exit);
-        _authorized.onClick.RemoveListener(Authorized);
-        _meinMenuView.EnabledUIElements(true);
-    }
+        [SerializeField] private MeinMenuView _meinMenuView;
 
-    private void Exit()
-    {
-        gameObject.SetActive(false);
-    }
+        private void OnEnable()
+        {
+            _exit.onClick.AddListener(Exit);
+            _authorized.onClick.AddListener(Authorized);
+            _meinMenuView.EnabledUIElements(false);
+        }
 
-    private void Authorized()
-    {
-        gameObject.SetActive(false);
+        private void OnDisable()
+        {
+            _exit.onClick.RemoveListener(Exit);
+            _authorized.onClick.RemoveListener(Authorized);
+            _meinMenuView.EnabledUIElements(true);
+        }
 
-        PlayerAccount.Authorize();
+        private void Exit()
+        {
+            gameObject.SetActive(false);
+        }
+
+        private void Authorized()
+        {
+            gameObject.SetActive(false);
+
+            PlayerAccount.Authorize();
+        }
     }
 }

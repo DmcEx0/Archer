@@ -1,4 +1,5 @@
-﻿using Cysharp.Threading.Tasks;
+﻿using Archer.Presenters;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace Archer.Model.FSM
@@ -14,7 +15,7 @@ namespace Archer.Model.FSM
 
         public void Enter()
         {
-            _stateMachine.Character.Key.AnimationController.PlayDeaht();
+            _stateMachine.Character.Key.AnimationController.PlayDeath();
             _stateMachine.OnDied();
 
             _stateMachine.Weapon.Value.DestroyAll();

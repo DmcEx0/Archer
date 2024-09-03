@@ -1,4 +1,4 @@
-﻿namespace Assets.Source.Scripts.UI.Liderboard
+﻿namespace Archer.UI
 {
     public class LeaderboardPlayer
     {

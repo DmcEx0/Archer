@@ -1,66 +1,69 @@
 using Archer.Model;
 using UnityEngine;
 
-public class Presenter : MonoBehaviour
+namespace Archer.Presenters
 {
-    private Transformable _model;
-
-    private IUpdatetable _updatetable = null;
-
-    protected Transformable Model => _model;
-
-    private void Update() => _updatetable?.Update(Time.deltaTime);
-
-    public void Init(Transformable model)
+    public class Presenter : MonoBehaviour
     {
-        _model = model;
+        private Transformable _model;
 
-        if (_model is IUpdatetable)
-            _updatetable = (IUpdatetable)_model;
+        private IUpdatetable _updatetable = null;
 
-        OnInitialized();
+        protected Transformable Model => _model;
 
-        OnRotated();
-        OnMoved();
-    }
+        private void Update() => _updatetable?.Update(Time.deltaTime);
 
-    protected virtual void OnInitialized()
-    {
-        _model.Rotated += OnRotated;
-        _model.Moved += OnMoved;
-        _model.Destroying += OnDestroying;
-        _model.DestroyingAll += OnDestroyingAll;
-    }
+        public void Init(Transformable model)
+        {
+            _model = model;
 
-    protected virtual void OnDestroying()
-    {
-        _model.Rotated -= OnRotated;
-        _model.Moved -= OnMoved;
-        _model.Destroying -= OnDestroying;
-    }
+            if (_model is IUpdatetable)
+                _updatetable = (IUpdatetable)_model;
 
-    private void DestroyCompose()
-    {
-        gameObject.SetActive(false);
-        gameObject.transform.position = Vector3.zero;
-    }
+            OnInitialized();
 
-    private void OnRotated()
-    {
-        transform.rotation = _model.Rotation;
-    }
+            OnRotated();
+            OnMoved();
+        }
 
-    private void OnMoved()
-    {
-        if (this != null)
-            transform.position = _model.Position;
-    }
+        protected virtual void OnInitialized()
+        {
+            _model.Rotated += OnRotated;
+            _model.Moved += OnMoved;
+            _model.Destroying += OnDestroying;
+            _model.DestroyingAll += OnDestroyingAll;
+        }
 
-    private void OnDestroyingAll()
-    {
-        OnDestroying();
-        DestroyCompose();
+        protected virtual void OnDestroying()
+        {
+            _model.Rotated -= OnRotated;
+            _model.Moved -= OnMoved;
+            _model.Destroying -= OnDestroying;
+        }
 
-        _model.DestroyingAll -= OnDestroyingAll;
+        private void DestroyCompose()
+        {
+            gameObject.SetActive(false);
+            gameObject.transform.position = Vector3.zero;
+        }
+
+        private void OnRotated()
+        {
+            transform.rotation = _model.Rotation;
+        }
+
+        private void OnMoved()
+        {
+            if (this != null)
+                transform.position = _model.Position;
+        }
+
+        private void OnDestroyingAll()
+        {
+            OnDestroying();
+            DestroyCompose();
+
+            _model.DestroyingAll -= OnDestroyingAll;
+        }
     }
 }

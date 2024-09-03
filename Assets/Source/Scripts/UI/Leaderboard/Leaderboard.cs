@@ -1,9 +1,11 @@
 ﻿using Agava.YandexGames;
 using System.Collections.Generic;
+using Archer.Data;
+using Archer.Yandex;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Assets.Source.Scripts.UI.Liderboard
+namespace Archer.UI
 {
     public class Leaderboard : MonoBehaviour
     {

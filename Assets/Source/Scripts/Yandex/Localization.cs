@@ -1,28 +1,32 @@
 using Agava.YandexGames;
+using Archer.Data;
 
-public class Localization
+namespace Archer.Yandex
 {
-    private const string EnglishCode = "en";
-    private const string RussianCode = "ru";
-    private const string TurkishCode = "tr";
-
-    public void ChangeLanguage()
+    public class Localization
     {
-        PlayerData.Instance.CurrentLanguage = IdentifyLanguage();
-    }
+        private const string EnglishCode = "en";
+        private const string RussianCode = "ru";
+        private const string TurkishCode = "tr";
 
-    private string IdentifyLanguage()
-    {
-        string languageCode = YandexGamesSdk.Environment.i18n.lang;
-
-        string language = languageCode switch
+        public void ChangeLanguage()
         {
-            EnglishCode => Language.ENG.ToString(),
-            RussianCode => Language.RUS.ToString(),
-            TurkishCode => Language.TUR.ToString(),
-            _ => Language.ENG.ToString()
-        };
+            PlayerData.Instance.CurrentLanguage = IdentifyLanguage();
+        }
 
-        return language;
+        private string IdentifyLanguage()
+        {
+            string languageCode = YandexGamesSdk.Environment.i18n.lang;
+
+            string language = languageCode switch
+            {
+                EnglishCode => Language.ENG.ToString(),
+                RussianCode => Language.RUS.ToString(),
+                TurkishCode => Language.TUR.ToString(),
+                _ => Language.ENG.ToString()
+            };
+
+            return language;
+        }
     }
 }

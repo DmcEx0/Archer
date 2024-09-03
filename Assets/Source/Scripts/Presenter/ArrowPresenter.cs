@@ -1,29 +1,32 @@
 using Archer.Model;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody), typeof(BoxCollider))]
-public class ArrowPresenter : Presenter
+namespace Archer.Presenters
 {
-    private Collider _collider;
-    public Arrow ArrowModel => base.Model is Arrow ? base.Model as Arrow : null;
-
-    private void Awake()
+    [RequireComponent(typeof(Rigidbody), typeof(BoxCollider))]
+    public class ArrowPresenter : Presenter
     {
-        _collider = GetComponent<Collider>();
-    }
+        private Collider _collider;
+        public Arrow ArrowModel => base.Model is Arrow ? base.Model as Arrow : null;
 
-    private void OnEnable()
-    {
-        _collider.enabled = true;
-    }
+        private void Awake()
+        {
+            _collider = GetComponent<Collider>();
+        }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        _collider.enabled = false;
+        private void OnEnable()
+        {
+            _collider.enabled = true;
+        }
 
-        if (other.isTrigger)
-            return;
+        private void OnTriggerEnter(Collider other)
+        {
+            _collider.enabled = false;
 
-        ArrowModel.DestroyAll();
+            if (other.isTrigger)
+                return;
+
+            ArrowModel.DestroyAll();
+        }
     }
 }

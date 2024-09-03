@@ -1,3 +1,6 @@
-public class EnemyPresenter : CharacterPresenter
+namespace Archer.Presenters
 {
+    public class EnemyPresenter : CharacterPresenter
+    {
+    }
 }
