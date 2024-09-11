@@ -1,4 +1,4 @@
-using UnityEngine.Events;
+using System;
 
 namespace  Archer.Utils
 {
@@ -8,7 +8,7 @@ namespace  Archer.Utils
         public void Update();
         public void OnExitGame();
 
-        public event UnityAction EnemyDied;
-        public event UnityAction<bool> LevelCompete;
+        public event Action EnemyDied;
+        public event Action<bool> LevelCompeted;
     }
 }

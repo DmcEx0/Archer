@@ -15,7 +15,7 @@ namespace Archer.Model.FSM
 
         public void Enter()
         {
-            _stateMachine.Character.Key.AnimationController.PlayDeath();
+            _stateMachine.Character.Key.AnimationHandler.PlayDeath();
             _stateMachine.OnDied();
 
             _stateMachine.Weapon.Value.DestroyAll();
@@ -40,9 +40,9 @@ namespace Archer.Model.FSM
 
             Vector3 endPositon = new Vector3(_stateMachine.Character.Value.Position.x + offsetX, _stateMachine.Character.Value.Position.y, _stateMachine.Character.Value.Position.z);
 
-            while (_stateMachine.Character.Key.AnimationController.IsDiskard == false)
+            while (_stateMachine.Character.Key.AnimationHandler.IsDiscard == false)
             {
-                _stateMachine.Character.Value.MoveTo(_stateMachine.Character.Key.AnimationController.Diskard(_stateMachine.Character.Value.Position, endPositon, Time.deltaTime));
+                _stateMachine.Character.Value.MoveTo(_stateMachine.Character.Key.AnimationHandler.GetDiscardPosition(_stateMachine.Character.Value.Position, endPositon, Time.deltaTime));
 
                 await UniTask.Yield();
             }

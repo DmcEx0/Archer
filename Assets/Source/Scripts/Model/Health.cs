@@ -1,5 +1,5 @@
+using System;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace Archer.Model
 {
@@ -16,15 +16,15 @@ namespace Archer.Model
             _maxValue = maxValue;
         }
 
-        public event UnityAction<int, int> ValueChanged;
-        public event UnityAction Died;
+        public event Action<int, int> ValueChanged;
+        public event Action Died;
 
         public int Value => _currentValue;
 
         public void TakeDamage(int damage)
         {
             if (damage < 0)
-                throw new System.ArgumentOutOfRangeException(nameof(damage));
+                throw new ArgumentOutOfRangeException(nameof(damage));
 
             _currentValue = Mathf.Clamp(_currentValue - damage, _minValue, _maxValue);
 

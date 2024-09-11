@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Archer.Data
 {
-    public class ConfigCurrentLvl : MonoBehaviour
+    public class CurrentLevelConfig : MonoBehaviour
     {
         [SerializeField] private int _coinsForEnemy;
         [SerializeField] private int _scoreForEnemy;

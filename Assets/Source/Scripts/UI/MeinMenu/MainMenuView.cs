@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Archer.Data;
 using Archer.Presenters;
@@ -6,12 +7,11 @@ using Lean.Localization;
 using Archer.Utils;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace Archer.UI
 {
-    public class MeinMenuView : MonoBehaviour
+    public class MainMenuView : MonoBehaviour
     {
         [SerializeField] private Leaderboard _leaderboard;
         [SerializeField] private EquipmentListSO _equipmentsData;
@@ -20,7 +20,7 @@ namespace Archer.UI
         [SerializeField] private Button _startButton;
 
         [Space, Header("Equipment")] [SerializeField]
-        private EquipmentBigIconView _equpmentBigIcon;
+        private EquipmentBigIconView _equipmentBigIcon;
 
         [SerializeField] private EquipmentSmallIconView _selectArrowButton;
         [SerializeField] private EquipmentSmallIconView _selectWeaponButton;
@@ -35,14 +35,14 @@ namespace Archer.UI
         [SerializeField] private SettingsWindowView _menuSettingsWindowView;
 
         [Space] [SerializeField] private LeaderboardView _leaderboardView;
-        [SerializeField] private Button _leadernoardButton;
+        [SerializeField] private Button _leaderboardButton;
 
         private EquipmentListView _equipmentListView;
 
-        private WeaponDataSO _currentWeaponData;
-        private ArrowDataSO _currentArrowData;
+        private WeaponDataConfig _currentWeaponData;
+        private ArrowDataConfig _currentArrowData;
 
-        public event UnityAction<EquipmentDataSO> EquipmentChenged;
+        public event Action<EquipmentDataConfig> EquipmentChanged;
 
         private void Awake()
         {
@@ -51,33 +51,33 @@ namespace Archer.UI
 
         private void OnEnable()
         {
-            _startButton.onClick.AddListener(StartGame);
+            _startButton.onClick.AddListener(OnStartGame);
 
             _equipmentListView.EquipmentSelected += OnShowBigIconEquipment;
 
-            _selectWeaponButton.EquipmentSelected += OpenEquipmentsWindowShow;
-            _selectArrowButton.EquipmentSelected += OpenEquipmentsWindowShow;
+            _selectWeaponButton.EquipmentSelected += OnOpenEquipmentsWindowShow;
+            _selectArrowButton.EquipmentSelected += OnOpenEquipmentsWindowShow;
 
-            _equpmentBigIcon.EquipmentSelected += OnEquipmentSelected;
+            _equipmentBigIcon.EquipmentSelected += OnEquipmentSelected;
 
-            _equpmentBigIcon.OnOpened += EnabledUIElements;
-            _menuSettingsWindowView.OnOpened += EnabledUIElements;
-            _leaderboardView.OnOpened += EnabledUIElements;
+            _equipmentBigIcon.Opening += OnEnabledUIElements;
+            _menuSettingsWindowView.Opening += OnEnabledUIElements;
+            _leaderboardView.Opening += OnEnabledUIElements;
         }
 
         private void OnDisable()
         {
-            _startButton.onClick.RemoveListener(StartGame);
+            _startButton.onClick.RemoveListener(OnStartGame);
 
             _equipmentListView.EquipmentSelected -= OnShowBigIconEquipment;
 
-            _selectWeaponButton.EquipmentSelected -= OpenEquipmentsWindowShow;
-            _selectArrowButton.EquipmentSelected -= OpenEquipmentsWindowShow;
+            _selectWeaponButton.EquipmentSelected -= OnOpenEquipmentsWindowShow;
+            _selectArrowButton.EquipmentSelected -= OnOpenEquipmentsWindowShow;
 
-            _equpmentBigIcon.EquipmentSelected -= OnEquipmentSelected;
+            _equipmentBigIcon.EquipmentSelected -= OnEquipmentSelected;
 
-            _equpmentBigIcon.OnOpened -= EnabledUIElements;
-            _menuSettingsWindowView.OnOpened -= EnabledUIElements;
+            _equipmentBigIcon.Opening -= OnEnabledUIElements;
+            _menuSettingsWindowView.Opening -= OnEnabledUIElements;
         }
 
         private void Start()
@@ -95,14 +95,14 @@ namespace Archer.UI
 
             _currentArrowData = _equipmentsData.ArrowsData.FirstOrDefault(a => a.ID == PlayerData.Instance.ArrowID);
 
-            EquipmentChenged?.Invoke(_currentWeaponData);
-            EquipmentChenged?.Invoke(_currentArrowData);
+            EquipmentChanged?.Invoke(_currentWeaponData);
+            EquipmentChanged?.Invoke(_currentArrowData);
 
-            RenderEquimpemnt(_currentWeaponData);
-            RenderEquimpemnt(_currentArrowData);
+            RenderEquipment(_currentWeaponData);
+            RenderEquipment(_currentArrowData);
         }
 
-        public void EnabledUIElements(bool enabled)
+        public void OnEnabledUIElements(bool enabled)
         {
             if (enabled == false)
             {
@@ -115,19 +115,19 @@ namespace Archer.UI
 
             _startButton.gameObject.SetActive(enabled);
             _settingsButton.gameObject.SetActive(enabled);
-            _leadernoardButton.gameObject.SetActive(enabled);
+            _leaderboardButton.gameObject.SetActive(enabled);
         }
 
-        private void RenderEquimpemnt(EquipmentDataSO equipmentData)
+        private void RenderEquipment(EquipmentDataConfig equipmentData)
         {
-            if (equipmentData is WeaponDataSO)
+            if (equipmentData is WeaponDataConfig)
                 _selectWeaponButton.Render(equipmentData);
 
-            else if (equipmentData is ArrowDataSO)
+            else if (equipmentData is ArrowDataConfig)
                 _selectArrowButton.Render(equipmentData);
         }
 
-        private void StartGame()
+        private void OnStartGame()
         {
             if (PlayerData.Instance.TutorialIsComplete == false)
             {
@@ -135,17 +135,17 @@ namespace Archer.UI
                 return;
             }
 
-            LevelManager.LoadNextLevel();
+            LevelSwitcher.LoadNextLevel();
         }
 
-        private void OpenEquipmentsWindowShow(EquipmentDataSO equipmentDataSO)
+        private void OnOpenEquipmentsWindowShow(EquipmentDataConfig equipmentDataConfig)
         {
-            if (equipmentDataSO.Presenter is WeaponPresenter)
+            if (equipmentDataConfig.Presenter is WeaponPresenter)
             {
                 EnabledSelectedScrollView(_weaponScrollView, _arrowScrollView);
             }
 
-            else if (equipmentDataSO.Presenter is ArrowPresenter)
+            else if (equipmentDataConfig.Presenter is ArrowPresenter)
             {
                 EnabledSelectedScrollView(_arrowScrollView, _weaponScrollView);
             }
@@ -168,40 +168,40 @@ namespace Archer.UI
             selectedScrollView.SetActive(true);
         }
 
-        private void OnShowBigIconEquipment(EquipmentDataSO equipmentData)
+        private void OnShowBigIconEquipment(EquipmentDataConfig equipmentData)
         {
-            _equpmentBigIcon.gameObject.SetActive(true);
-            _equpmentBigIcon.Render(equipmentData);
+            _equipmentBigIcon.gameObject.SetActive(true);
+            _equipmentBigIcon.Render(equipmentData);
 
             _arrowScrollView.SetActive(false);
         }
 
-        private void OnEquipmentSelected(EquipmentDataSO equipmentData)
+        private void OnEquipmentSelected(EquipmentDataConfig equipmentData)
         {
-            if (equipmentData is WeaponDataSO)
+            if (equipmentData is WeaponDataConfig)
             {
-                _currentWeaponData = equipmentData as WeaponDataSO;
+                _currentWeaponData = equipmentData as WeaponDataConfig;
                 PlayerData.Instance.CrossbowID = _currentWeaponData.ID;
 
                 RenderSelectedEquipment(equipmentData, _weaponScrollView);
             }
 
-            else if (equipmentData is ArrowDataSO)
+            else if (equipmentData is ArrowDataConfig)
             {
-                _currentArrowData = equipmentData as ArrowDataSO;
+                _currentArrowData = equipmentData as ArrowDataConfig;
                 PlayerData.Instance.ArrowID = _currentArrowData.ID;
 
                 RenderSelectedEquipment(equipmentData, _arrowScrollView);
             }
         }
 
-        private void RenderSelectedEquipment(EquipmentDataSO equipmentData, GameObject scrollView)
+        private void RenderSelectedEquipment(EquipmentDataConfig equipmentData, GameObject scrollView)
         {
             if (equipmentData.WasBought)
             {
-                EquipmentChenged?.Invoke(equipmentData);
+                EquipmentChanged?.Invoke(equipmentData);
 
-                RenderEquimpemnt(equipmentData);
+                RenderEquipment(equipmentData);
 
                 scrollView.SetActive(false);
             }

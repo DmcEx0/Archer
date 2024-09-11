@@ -1,5 +1,5 @@
+using System;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -22,14 +22,14 @@ namespace Archer.UI
         private float _defaultFillAmount = 1f;
         private bool _isSkillActivated = false;
 
-        public event UnityAction<bool> OnUIPressed;
+        public event Action<bool> OnUIPressing;
 
         private void Start()
         {
             _deactivateColor = _mainImage.color;
             _activateColor = new Color(_mainImage.color.r, _mainImage.color.g, _mainImage.color.b, AlphaValue);
 
-            ResetButton();
+            OnResetButton();
         }
 
         public void OnCooldownChanged()
@@ -44,7 +44,7 @@ namespace Archer.UI
             }
         }
 
-        public void ResetButton()
+        public void OnResetButton()
         {
             _defaultFillAmount = 1f;
             _cooldownImage.fillAmount = _defaultFillAmount;
@@ -60,6 +60,17 @@ namespace Archer.UI
             return _isSkillActivated;
         }
 
+        public void OnPointerDown(PointerEventData eventData)
+        {
+            OnUIPressing?.Invoke(true);
+        }
+
+        public void OnPointerUp(PointerEventData eventData)
+        {
+            OnUIPressing?.Invoke(false);
+            ActivateSkill();
+        }
+        
         private void ActivateSkill()
         {
             if (_isSkillActivated == true)
@@ -73,17 +84,6 @@ namespace Archer.UI
                 _isSkillActivated = true;
                 _mainImage.color = _activateColor;
             }
-        }
-
-        public void OnPointerDown(PointerEventData eventData)
-        {
-            OnUIPressed?.Invoke(true);
-        }
-
-        public void OnPointerUp(PointerEventData eventData)
-        {
-            OnUIPressed?.Invoke(false);
-            ActivateSkill();
         }
     }
 }

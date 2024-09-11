@@ -1,8 +1,8 @@
+using System;
 using Archer.Data;
 using Lean.Localization;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace Archer.UI
@@ -18,37 +18,37 @@ namespace Archer.UI
 
         [Space] [SerializeField] private TMP_Text _equipmentPrice;
 
-        [Space] [SerializeField] private LeanLocalizedTextMeshProUGUI _TMPLocalization;
+        [Space] [SerializeField] private LeanLocalizedTextMeshProUGUI _tmpLocalization;
 
-        private EquipmentDataSO _equipmentData;
+        private EquipmentDataConfig _equipmentData;
 
-        public event UnityAction<EquipmentDataSO> EquipmentSelected;
-        public event UnityAction<bool> OnOpened;
+        public event Action<EquipmentDataConfig> EquipmentSelected;
+        public event Action<bool> Opening;
 
         private void OnEnable()
         {
             _equipButton.onClick.AddListener(OnEquipmentSelected);
-            _buyButton.onClick.AddListener(TryBuy);
+            _buyButton.onClick.AddListener(OnTryBuy);
 
-            _closeButton.onClick.AddListener(Close);
-            OnOpened?.Invoke(false);
+            _closeButton.onClick.AddListener(OnClose);
+            Opening?.Invoke(false);
         }
 
         private void OnDisable()
         {
             _equipButton.onClick.RemoveListener(OnEquipmentSelected);
-            _buyButton.onClick.RemoveListener(TryBuy);
+            _buyButton.onClick.RemoveListener(OnTryBuy);
 
-            _closeButton.onClick.RemoveListener(Close);
+            _closeButton.onClick.RemoveListener(OnClose);
         }
 
-        public void Render(EquipmentDataSO equipmentData)
+        public void Render(EquipmentDataConfig equipmentData)
         {
             _equipmentData = equipmentData;
 
             EnableRequiredButton();
 
-            _TMPLocalization.TranslationName = LeanLocalization.CurrentTranslations[_equipmentData.Name].Name;
+            _tmpLocalization.TranslationName = LeanLocalization.CurrentTranslations[_equipmentData.Name].Name;
             _image.sprite = _equipmentData.Icon;
 
             _lockImage.gameObject.SetActive(true);
@@ -75,25 +75,25 @@ namespace Archer.UI
             }
         }
 
-        private void Close()
+        private void OnClose()
         {
             gameObject.SetActive(false);
-            OnOpened?.Invoke(true);
+            Opening?.Invoke(true);
         }
 
         private void OnEquipmentSelected()
         {
             EquipmentSelected?.Invoke(_equipmentData);
 
-            Close();
+            OnClose();
         }
 
-        private void TryBuy()
+        private void OnTryBuy()
         {
             if (_equipmentData.WasBought == false)
             {
                 if (_equipmentData.TryBuy())
-                    Close();
+                    OnClose();
             }
         }
     }

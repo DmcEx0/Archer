@@ -11,6 +11,6 @@ namespace Archer.Input
         public void OnDisable();
         public void Update(float deltaTime);
 
-        public void CanGainingPower(bool isCanNot);
+        public void SetGainingPowerState(bool isCanNot);
     }
 }

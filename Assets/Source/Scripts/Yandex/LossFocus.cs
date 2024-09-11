@@ -7,7 +7,7 @@ namespace Archer.Yandex
 {
     public class LossFocus : MonoBehaviour, ITimeControllable
     {
-        [SerializeField] private AudioDataSO _audioData;
+        [SerializeField] private AudioDataConfig _audioData;
         [SerializeField] private TimeScaleSetter _timeScaleSetter;
 
         private void OnEnable()

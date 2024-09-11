@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Archer.Yandex
 {
-    public class Yandex : MonoBehaviour
+    public class YandexHandler : MonoBehaviour
     {
         private Localization _localization;
 

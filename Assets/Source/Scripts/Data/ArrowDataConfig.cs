@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Archer.Data
 {
     [CreateAssetMenu]
-    public class ArrowDataSO : EquipmentDataSO
+    public class ArrowDataConfig : EquipmentDataConfig
     {
         [Space]
         [Range(1, 50)]

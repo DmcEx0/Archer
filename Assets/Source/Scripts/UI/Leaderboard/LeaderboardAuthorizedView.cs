@@ -6,31 +6,31 @@ namespace Archer.UI
 {
     public class LeaderboardAuthorizedView : MonoBehaviour
     {
-        [SerializeField] private Button _exit;
-        [SerializeField] private Button _authorized;
+        [SerializeField] private Button _exitButton;
+        [SerializeField] private Button _authorizeButton;
 
-        [SerializeField] private MeinMenuView _meinMenuView;
+        [SerializeField] private MainMenuView _mainMenuView;
 
         private void OnEnable()
         {
-            _exit.onClick.AddListener(Exit);
-            _authorized.onClick.AddListener(Authorized);
-            _meinMenuView.EnabledUIElements(false);
+            _exitButton.onClick.AddListener(CloseWindow);
+            _authorizeButton.onClick.AddListener(Authorize);
+            _mainMenuView.OnEnabledUIElements(false);
         }
 
         private void OnDisable()
         {
-            _exit.onClick.RemoveListener(Exit);
-            _authorized.onClick.RemoveListener(Authorized);
-            _meinMenuView.EnabledUIElements(true);
+            _exitButton.onClick.RemoveListener(CloseWindow);
+            _authorizeButton.onClick.RemoveListener(Authorize);
+            _mainMenuView.OnEnabledUIElements(true);
         }
 
-        private void Exit()
+        private void CloseWindow()
         {
             gameObject.SetActive(false);
         }
 
-        private void Authorized()
+        private void Authorize()
         {
             gameObject.SetActive(false);
 

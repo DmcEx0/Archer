@@ -1,10 +1,9 @@
 ﻿using System;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace Archer.Model
 {
-    public class Character : Transformable, IUpdatetable
+    public class Character : SpawnedObject, ITickable
     {
         private readonly DamageProvider _damageProvider;
 
@@ -16,17 +15,15 @@ namespace Archer.Model
 
             Health = health;
             Health.Died += OnDied;
-            _damageProvider.DamageReceived += ApplyDamage;
+            _damageProvider.DamageReceived += OnApplyDamage;
 
             MoveTo(position);
             Rotate(rotation);
         }
 
-        public event UnityAction<int, int, ArrowSkillType> DamageReceived;
-
-        public event UnityAction<float, ArrowSkillType> SkillImpacted;
-
-        public event UnityAction Died;
+        public event Action<int, int, ArrowSkillType> DamageReceived;
+        public event Action<float, ArrowSkillType> SkillImpacted;
+        public event Action Died;
 
         public void TakeDamage(int mainDamage, int additionalDamage, ArrowSkillType skillType)
         {
@@ -36,7 +33,7 @@ namespace Archer.Model
             DamageReceived?.Invoke(mainDamage, additionalDamage, skillType);
         }
 
-        public void Update(float deltaTime)
+        public void Tick(float deltaTime)
         {
             MoveTo(Position);
             Rotate(Rotation);
@@ -47,10 +44,10 @@ namespace Archer.Model
             Died?.Invoke();
             Health.Died -= OnDied;
             _damageProvider.OnDestroy();
-            _damageProvider.DamageReceived -= ApplyDamage;
+            _damageProvider.DamageReceived -= OnApplyDamage;
         }
 
-        private void ApplyDamage(int damage, bool isSkillImpact, float playingEffectTime, ArrowSkillType skillType)
+        private void OnApplyDamage(int damage, bool isSkillImpact, float playingEffectTime, ArrowSkillType skillType)
         {
             Health.TakeDamage(damage);
 

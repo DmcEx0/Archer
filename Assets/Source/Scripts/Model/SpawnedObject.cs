@@ -1,20 +1,20 @@
+using System;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace Archer.Model
 {
-    public abstract class Transformable
+    public abstract class SpawnedObject
     {
-        public Transformable(Vector3 position, Quaternion rotation)
+        public SpawnedObject(Vector3 position, Quaternion rotation)
         {
             Rotation = rotation;
             Position = position;
         }
 
-        public event UnityAction Rotated;
-        public event UnityAction Moved;
-        public event UnityAction Destroying;
-        public event UnityAction DestroyingAll;
+        public event Action Rotating;
+        public event Action Moving;
+        public event Action Destroying;
+        public event Action DestroyingAll;
 
         public Quaternion Rotation { get; private set; }
         public Vector3 Position { get; private set; }
@@ -23,13 +23,13 @@ namespace Archer.Model
         public void Rotate(Quaternion rotation)
         {
             Rotation = rotation;
-            Rotated?.Invoke();
+            Rotating?.Invoke();
         }
 
         public void MoveTo(Vector3 position)
         {
             Position = position;
-            Moved?.Invoke();
+            Moving?.Invoke();
         }
 
         public void Destroy()

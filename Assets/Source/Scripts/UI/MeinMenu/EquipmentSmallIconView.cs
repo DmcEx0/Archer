@@ -1,6 +1,6 @@
+using System;
 using Archer.Data;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace Archer.UI
@@ -10,9 +10,9 @@ namespace Archer.UI
         [SerializeField] private Button _button;
         [SerializeField] private Image _image;
 
-        private EquipmentDataSO _equipmentData;
+        private EquipmentDataConfig _equipmentData;
 
-        public event UnityAction<EquipmentDataSO> EquipmentSelected;
+        public event Action<EquipmentDataConfig> EquipmentSelected;
 
         private void OnEnable()
         {
@@ -29,7 +29,7 @@ namespace Archer.UI
             EquipmentSelected?.Invoke(_equipmentData);
         }
 
-        public void Render(EquipmentDataSO equipmentData)
+        public void Render(EquipmentDataConfig equipmentData)
         {
             _equipmentData = equipmentData;
 

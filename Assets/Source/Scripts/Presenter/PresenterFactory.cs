@@ -45,7 +45,7 @@ namespace Archer.Presenters
             _pools.Add(pool);
         }
 
-        private Presenter CreatePresenter(Presenter template, Transformable model)
+        private Presenter CreatePresenter(Presenter template, SpawnedObject model)
         {
             Presenter presenter = Instantiate(template, model.Position, model.Rotation);
             presenter.Init(model);
@@ -53,7 +53,7 @@ namespace Archer.Presenters
             return presenter;
         }
 
-        private void GetPresenterInPool(Presenter template, Transformable model)
+        private void GetPresenterInPool(Presenter template, SpawnedObject model)
         {
             ObjectPool<Presenter> currentPool = _pools.FirstOrDefault(pool => pool.FirstElement == template);
             Presenter presenter = currentPool.GetFreeElement();

@@ -3,13 +3,12 @@ using UnityEngine;
 using System;
 using Archer.Animations;
 using static UnityEngine.InputSystem.InputAction;
-using UnityEngine.Events;
 
 namespace Archer.Input
 {
     public class PlayerInputRouter : IInputRouter
     {
-        private readonly AnimationController _animationController;
+        private readonly AnimationHandler _animationHandler;
 
         private readonly PlayerInput _input;
 
@@ -19,31 +18,31 @@ namespace Archer.Input
         private Weapon _weapon;
 
         private float _power = 1;
-        private bool _isUIPressed = false;
+        private bool _isPressedUI = false;
 
-        public PlayerInputRouter(AnimationController animationController)
+        public PlayerInputRouter(AnimationHandler animationHandler)
         {
             _input = new PlayerInput();
-            _animationController = animationController;
+            _animationHandler = animationHandler;
         }
 
-        public event UnityAction<float, float> PowerChanged;
+        public event Action<float, float> PowerChanged;
 
         public void BindWeapon(Weapon weapon)
         {
             _weapon = weapon;
         }
 
-        public void CanGainingPower(bool isCanNot)
+        public void SetGainingPowerState(bool isCanNot)
         {
             PowerChanged?.Invoke(_power, _maxPower);
 
-            _isUIPressed = isCanNot;
+            _isPressedUI = isCanNot;
         }
 
         public void Update(float deltaTime)
         {
-            if (_isUIPressed == true)
+            if (_isPressedUI == true)
             {
                 return;
             }
@@ -60,7 +59,7 @@ namespace Archer.Input
             _power = 1;
         }
 
-        private void Shoot(CallbackContext ctx)
+        private void OnShoot(CallbackContext ctx)
         {
             float minPowerToShot = 1.2f;
             float power = (float)ctx.time - (float)ctx.startTime;
@@ -74,13 +73,13 @@ namespace Archer.Input
         public void OnEnable()
         {
             _input.Enable();
-            _input.Player.Shoot.canceled += Shoot;
+            _input.Player.Shoot.canceled += OnShoot;
         }
 
         public void OnDisable()
         {
             _input.Disable();
-            _input.Player.Shoot.canceled -= Shoot;
+            _input.Player.Shoot.canceled -= OnShoot;
         }
 
         private void TryShoot(Weapon weapon, float power)
@@ -90,7 +89,7 @@ namespace Archer.Input
 
             if (weapon.CanShoot)
             {
-                _animationController.PlayShoot(weapon.Cooldown);
+                _animationHandler.PlayShoot(weapon.Cooldown);
                 weapon.Shoot(power);
             }
         }

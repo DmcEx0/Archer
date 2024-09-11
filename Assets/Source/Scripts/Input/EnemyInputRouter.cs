@@ -9,14 +9,14 @@ namespace Archer.Input
         private const float MaxPower = 3f;
         
         private readonly EnemyAI _enemyAI;
-        private readonly AnimationController _animationController;
+        private readonly AnimationHandler _animationHandler;
         
         private Weapon _weapon;
 
-        public EnemyInputRouter(EnemyAI enemyAI, AnimationController animationController)
+        public EnemyInputRouter(EnemyAI enemyAI, AnimationHandler animationHandler)
         {
             _enemyAI = enemyAI;
-            _animationController = animationController;
+            _animationHandler = animationHandler;
         }
 
         public void BindWeapon(Weapon weapon)
@@ -26,7 +26,7 @@ namespace Archer.Input
             _enemyAI.SetStartVelocityOfFirstShoot(MaxPower * _weapon.StartedPowerOfShot);
         }
 
-        public void CanGainingPower(bool isCanNot)
+        public void SetGainingPowerState(bool isCanNot)
         {
         }
 
@@ -38,15 +38,15 @@ namespace Archer.Input
 
         public void OnEnable()
         {
-            _enemyAI.Shot += Shoot;
+            _enemyAI.Shot += OnShoot;
         }
 
         public void OnDisable()
         {
-            _enemyAI.Shot -= Shoot;
+            _enemyAI.Shot -= OnShoot;
         }
 
-        private void Shoot()
+        private void OnShoot()
         {
             TryShoot(_weapon, MaxPower);
         }
@@ -60,8 +60,8 @@ namespace Archer.Input
             {
                 weapon.Shoot(power);
 
-                _animationController.PlayShoot(weapon.Cooldown);
-                _enemyAI.SetTarget();
+                _animationHandler.PlayShoot(weapon.Cooldown);
+                _enemyAI.ConfigureTarget();
             }
         }
     }

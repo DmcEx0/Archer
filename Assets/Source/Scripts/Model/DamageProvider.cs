@@ -1,4 +1,3 @@
-using UnityEngine.Events;
 using Cysharp.Threading.Tasks;
 using System;
 using UnityEngine.LowLevel;
@@ -10,10 +9,10 @@ namespace Archer.Model
         private const int DelayDefaultType = 0;
         private const int NumberOfIterationDefaultType = 1;
 
-        private const float DelayFireTypeMillisecons = 0.4f;
+        private const float DelayFireTypeMilliseconds = 0.4f;
         private const int NumberOfIterationFireType = 4;
 
-        private const float DelayPoisonTypeMillisecons = 0.3f;
+        private const float DelayPoisonTypeMilliseconds = 0.3f;
         private const int NumberOfIterationPoisonType = 6;
 
         private readonly Character _character;
@@ -23,23 +22,24 @@ namespace Archer.Model
         public DamageProvider(Character character)
         {
             _character = character;
-            _character.DamageReceived += TakeDamage;
+            _character.DamageReceived += OnTakeDamage;
             var loop = PlayerLoop.GetCurrentPlayerLoop();
             PlayerLoopHelper.Initialize(ref loop, InjectPlayerLoopTimings.Minimum);
         }
 
-        public event UnityAction<int, bool, float, ArrowSkillType> DamageReceived;
+        public event Action<int, bool, float, ArrowSkillType> DamageReceived;
 
         public void OnDestroy()
         {
-            _character.DamageReceived -= TakeDamage;
+            _character.DamageReceived -= OnTakeDamage;
         }
 
-        private async void ApplyPeriodicDamage(int damagePerIteration, int nuberOfIteration, float delay, ArrowSkillType skillType)
+        private async void ApplyPeriodicDamage(int damagePerIteration, int numberOfIteration, float delay,
+            ArrowSkillType skillType)
         {
-            float playingEffectTime = (nuberOfIteration * delay);
+            float playingEffectTime = (numberOfIteration * delay);
 
-            for (int i = 0; i < nuberOfIteration; i++)
+            for (int i = 0; i < numberOfIteration; i++)
             {
                 await UniTask.Delay(TimeSpan.FromSeconds(delay), DelayType.DeltaTime, PlayerLoopTiming.Update);
 
@@ -54,7 +54,7 @@ namespace Archer.Model
             DamageReceived?.Invoke(damage, _isSkillImpact, 0, ArrowSkillType.None);
         }
 
-        private void TakeDamage(int mainDamage, int additionalDamage, ArrowSkillType arrowSkillType)
+        private void OnTakeDamage(int mainDamage, int additionalDamage, ArrowSkillType arrowSkillType)
         {
             switch (arrowSkillType)
             {
@@ -63,15 +63,18 @@ namespace Archer.Model
                     break;
 
                 case ArrowSkillType.Default:
-                    ApplyPeriodicDamage(additionalDamage, NumberOfIterationDefaultType, DelayDefaultType, ArrowSkillType.Default);
+                    ApplyPeriodicDamage(additionalDamage, NumberOfIterationDefaultType, DelayDefaultType,
+                        ArrowSkillType.Default);
                     break;
 
                 case ArrowSkillType.Fire:
-                    ApplyPeriodicDamage(additionalDamage, NumberOfIterationFireType, DelayFireTypeMillisecons, ArrowSkillType.Fire);
+                    ApplyPeriodicDamage(additionalDamage, NumberOfIterationFireType, DelayFireTypeMilliseconds,
+                        ArrowSkillType.Fire);
                     break;
 
                 case ArrowSkillType.Poison:
-                    ApplyPeriodicDamage(additionalDamage, NumberOfIterationPoisonType, DelayPoisonTypeMillisecons, ArrowSkillType.Poison);
+                    ApplyPeriodicDamage(additionalDamage, NumberOfIterationPoisonType, DelayPoisonTypeMilliseconds,
+                        ArrowSkillType.Poison);
                     break;
             }
         }

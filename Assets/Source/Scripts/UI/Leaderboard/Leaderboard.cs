@@ -32,24 +32,6 @@ namespace Archer.UI
             _showLeaderboard.onClick.RemoveListener(OnShow);
         }
 
-        public void SetPlayerScore()
-        {
-            if (PlayerAccount.IsAuthorized == false)
-                return;
-
-            Agava.YandexGames.Leaderboard.GetPlayerEntry(LeaderboardName, result =>
-            {
-                if (PlayerData.Instance.Score >= result.score)
-                    Agava.YandexGames.Leaderboard.SetScore(LeaderboardName, PlayerData.Instance.Score);
-
-                if (PlayerData.Instance.Score < result.score)
-                {
-                    PlayerData.Instance.Score += result.score;
-                    Agava.YandexGames.Leaderboard.SetScore(LeaderboardName, PlayerData.Instance.Score);
-                }
-            });
-        }
-
         private void Fill()
         {
             if (PlayerAccount.IsAuthorized == false)
@@ -70,7 +52,7 @@ namespace Archer.UI
                     var name = entry.player.publicName;
 
                     if (string.IsNullOrEmpty(name))
-                        name = GetAnunymousName(PlayerData.Instance.CurrentLanguage);
+                        name = GetAnonymousNameOnCurrentLanguage(PlayerData.Instance.CurrentLanguage);
 
                     _leaderboardPlayers.Add(new LeaderboardPlayer(rank, name, score));
                 }
@@ -81,10 +63,10 @@ namespace Archer.UI
 
         private void OnShow()
         {
-            Authorized();
+            Authorize();
         }
 
-        private void Authorized()
+        private void Authorize()
         {
             if (PlayerAccount.IsAuthorized)
             {
@@ -99,7 +81,7 @@ namespace Archer.UI
             }
         }
 
-        private string GetAnunymousName(string language)
+        private string GetAnonymousNameOnCurrentLanguage(string language)
         {
             switch (language)
             {

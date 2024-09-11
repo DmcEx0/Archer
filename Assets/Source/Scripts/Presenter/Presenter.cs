@@ -5,39 +5,39 @@ namespace Archer.Presenters
 {
     public class Presenter : MonoBehaviour
     {
-        private Transformable _model;
+        private SpawnedObject _model;
 
-        private IUpdatetable _updatetable = null;
+        private ITickable _tickable = null;
 
-        protected Transformable Model => _model;
+        protected SpawnedObject Model => _model;
 
-        private void Update() => _updatetable?.Update(Time.deltaTime);
+        private void Update() => _tickable?.Tick(Time.deltaTime);
 
-        public void Init(Transformable model)
+        public void Init(SpawnedObject model)
         {
             _model = model;
 
-            if (_model is IUpdatetable)
-                _updatetable = (IUpdatetable)_model;
+            if (_model is ITickable)
+                _tickable = (ITickable)_model;
 
             OnInitialized();
 
-            OnRotated();
-            OnMoved();
+            OnRotating();
+            OnMoving();
         }
 
         protected virtual void OnInitialized()
         {
-            _model.Rotated += OnRotated;
-            _model.Moved += OnMoved;
+            _model.Rotating += OnRotating;
+            _model.Moving += OnMoving;
             _model.Destroying += OnDestroying;
             _model.DestroyingAll += OnDestroyingAll;
         }
 
         protected virtual void OnDestroying()
         {
-            _model.Rotated -= OnRotated;
-            _model.Moved -= OnMoved;
+            _model.Rotating -= OnRotating;
+            _model.Moving -= OnMoving;
             _model.Destroying -= OnDestroying;
         }
 
@@ -47,12 +47,12 @@ namespace Archer.Presenters
             gameObject.transform.position = Vector3.zero;
         }
 
-        private void OnRotated()
+        private void OnRotating()
         {
             transform.rotation = _model.Rotation;
         }
 
-        private void OnMoved()
+        private void OnMoving()
         {
             if (this != null)
                 transform.position = _model.Position;

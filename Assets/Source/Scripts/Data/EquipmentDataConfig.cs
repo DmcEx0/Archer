@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Archer.Data
 {
-    public abstract class EquipmentDataSO : ScriptableObject
+    public abstract class EquipmentDataConfig : ScriptableObject
     {
         [SerializeField] private Presenter _presenter;
 

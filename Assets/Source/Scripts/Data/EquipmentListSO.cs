@@ -6,10 +6,10 @@ namespace Archer.Data
     [CreateAssetMenu]
     public class EquipmentListSO : ScriptableObject
     {
-        [SerializeField] private List<WeaponDataSO> _weaponsData;
-        [SerializeField] private List<ArrowDataSO> _arrowsData;
+        [SerializeField] private List<WeaponDataConfig> _weaponsData;
+        [SerializeField] private List<ArrowDataConfig> _arrowsData;
 
-        public IReadOnlyList<WeaponDataSO> WeaponsData => _weaponsData;
-        public IReadOnlyList<ArrowDataSO> ArrowsData => _arrowsData;
+        public IReadOnlyList<WeaponDataConfig> WeaponsData => _weaponsData;
+        public IReadOnlyList<ArrowDataConfig> ArrowsData => _arrowsData;
     }
 }

@@ -6,7 +6,7 @@ namespace Archer.Yandex
 {
     public class InterstitialAd : MonoBehaviour, ITimeControllable
     {
-        [SerializeField] private AudioDataSO _audioData;
+        [SerializeField] private AudioDataConfig _audioData;
         [SerializeField] private TimeScaleSetter _timeScaleSetter;
 
         public void Show()

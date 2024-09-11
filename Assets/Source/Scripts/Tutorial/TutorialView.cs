@@ -34,24 +34,22 @@ namespace Archer.Tutor
         private Image _currentTutorial;
         private int _currentImageNumber = 0;
 
-        public bool IsPause { get; private set; }
-
         private void OnEnable()
         {
-            _nextTutorialButton.onClick.AddListener(ShowNextTutorial);
-            _previousTutorialButton.onClick.AddListener(ShowPreviousTutorial);
-            _readyButton.onClick.AddListener(CloseWindow);
+            _nextTutorialButton.onClick.AddListener(OnShowNextTutorial);
+            _previousTutorialButton.onClick.AddListener(OnShowPreviousTutorial);
+            _readyButton.onClick.AddListener(OnCloseWindow);
 
-            LeanLocalization.OnLocalizationChanged += ChangeWord;
+            LeanLocalization.OnLocalizationChanged += OnChangeWord;
         }
 
         private void OnDisable()
         {
-            _nextTutorialButton.onClick.RemoveListener(ShowNextTutorial);
-            _previousTutorialButton.onClick.RemoveListener(ShowPreviousTutorial);
-            _readyButton.onClick.RemoveListener(CloseWindow);
+            _nextTutorialButton.onClick.RemoveListener(OnShowNextTutorial);
+            _previousTutorialButton.onClick.RemoveListener(OnShowPreviousTutorial);
+            _readyButton.onClick.RemoveListener(OnCloseWindow);
 
-            LeanLocalization.OnLocalizationChanged -= ChangeWord;
+            LeanLocalization.OnLocalizationChanged -= OnChangeWord;
         }
 
         private void Awake()
@@ -61,7 +59,7 @@ namespace Archer.Tutor
 
         private void Start()
         {
-            ChangeWord();
+            OnChangeWord();
 
             _readyButton.gameObject.SetActive(false);
             _settingButton.gameObject.SetActive(false);
@@ -77,7 +75,7 @@ namespace Archer.Tutor
             ActivateButton(_currentImageNumber);
         }
 
-        private void ChangeWord()
+        private void OnChangeWord()
         {
             string output;
 
@@ -89,11 +87,11 @@ namespace Archer.Tutor
             LeanLocalization.GetTranslation(TranslationName).Data = output;
         }
 
-        private string IdentifyWord(bool isMibilePlatform)
+        private string IdentifyWord(bool isMobilePlatform)
         {
             string word;
 
-            if (isMibilePlatform)
+            if (isMobilePlatform)
             {
                 word = PlayerData.Instance.CurrentLanguage switch
                 {
@@ -119,20 +117,20 @@ namespace Archer.Tutor
             }
         }
 
-        private void CloseWindow()
+        private void OnCloseWindow()
         {
             SetTimeScale(false);
             gameObject.SetActive(false);
             _settingButton.gameObject.SetActive(true);
         }
 
-        private void ShowNextTutorial()
+        private void OnShowNextTutorial()
         {
             int positiveIndex = 1;
             EnableTutorial(positiveIndex);
         }
 
-        private void ShowPreviousTutorial()
+        private void OnShowPreviousTutorial()
         {
             int negativeIndex = -1;
             EnableTutorial(negativeIndex);

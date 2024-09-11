@@ -1,19 +1,19 @@
+using System;
 using IJunior.TypedScenes;
 using System.Collections.Generic;
 using Archer.Data;
-using UnityEngine;
-using UnityEngine.Events;
+using Random = UnityEngine.Random;
 
 namespace Archer.Utils
 {
-    public static class LevelManager
+    public static class LevelSwitcher
     {
         private const int FirstLevelKey = 0;
     
         private static readonly List<int> _levelsKeys = new();
         private static int _currentIndexLevelKey = FirstLevelKey;
     
-        private static readonly Dictionary<int, UnityAction> _levels = new Dictionary<int, UnityAction>
+        private static readonly Dictionary<int, Action> _levels = new Dictionary<int, Action>
         {
             { 1, () => Level1.Load() },
             { 2, () => Level2.Load() },

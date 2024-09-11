@@ -1,13 +1,12 @@
 using System;
 using Archer.Yandex;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace Archer.Data
 {
     public class PlayerData : MonoBehaviour
     {
-        private static PlayerData s_instance;
+        private static PlayerData _instance;
 
         private const string CoinKey = "Coin";
         private const string ScoreKey = "Score";
@@ -127,21 +126,21 @@ namespace Archer.Data
         {
             get
             {
-                if (s_instance == null)
+                if (_instance == null)
                     Initialize();
 
-                return s_instance;
+                return _instance;
             }
         }
 
-        public event UnityAction<int> CoinChanged;
+        public event Action<int> CoinChanged;
 
         public static void Initialize()
         {
-            s_instance = new GameObject("PlayerData").AddComponent<PlayerData>();
-            s_instance.transform.SetParent(null);
-            DontDestroyOnLoad(s_instance);
-            s_instance.LoadData();
+            _instance = new GameObject("PlayerData").AddComponent<PlayerData>();
+            _instance.transform.SetParent(null);
+            DontDestroyOnLoad(_instance);
+            _instance.LoadData();
         }
 
         public void CompleteLevel()

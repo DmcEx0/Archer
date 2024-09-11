@@ -1,7 +1,7 @@
+using System;
 using System.Collections.Generic;
 using Archer.Presenters;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace Archer.Model.FSM
 {
@@ -10,7 +10,9 @@ namespace Archer.Model.FSM
         private Dictionary<StatesType, IState> _states;
         private IState _currentState;
 
-        public CharacterStateMachine(KeyValuePair<CharacterPresenter, Character> character, KeyValuePair<WeaponPresenter, Weapon> weapon, CharactersSpawner charactersSpawner, Vector3 startPosition, Transform endPoint)
+        public CharacterStateMachine(KeyValuePair<CharacterPresenter, Character> character,
+            KeyValuePair<WeaponPresenter, Weapon> weapon, CharacterSpawner characterSpawner, Vector3 startPosition,
+            Transform endPoint)
         {
             _states = new Dictionary<StatesType, IState>()
             {
@@ -19,18 +21,18 @@ namespace Archer.Model.FSM
                 [StatesType.Die] = new DieState(this),
             };
 
-            CharactersSpawner = charactersSpawner;
+            CharacterSpawner = characterSpawner;
             Character = character;
             Weapon = weapon;
             StartPosition = startPosition;
             EndPoint = endPoint;
         }
 
-        public event UnityAction Died;
+        public event Action Died;
 
         public Vector3 StartPosition { get; private set; }
         public Transform EndPoint { get; private set; }
-        public CharactersSpawner CharactersSpawner { get; private set; }
+        public CharacterSpawner CharacterSpawner { get; private set; }
         public KeyValuePair<CharacterPresenter, Character> Character { get; private set; }
         public KeyValuePair<WeaponPresenter, Weapon> Weapon { get; private set; }
 

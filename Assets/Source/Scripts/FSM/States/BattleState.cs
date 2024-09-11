@@ -30,7 +30,7 @@ namespace Archer.Model.FSM
         public void Exit()
         {
             DisableWeapon();
-            _stateMachine.Character.Value.Died -= OnDied;
+            _stateMachine.Character.Value.Died -= ChangeStateToDie;
         }
 
         public void Update(float deltaTime)
@@ -39,14 +39,15 @@ namespace Archer.Model.FSM
             {
                 IGeneratable weaponGeneratable = _stateMachine.Weapon.Key;
                 _stateMachine.Weapon.Value.SetArrowSpawnPoint(weaponGeneratable.GeneratingPoint.position);
-                _stateMachine.Character.Key.AnimationController.EnabledIK(_stateMachine.Weapon.Key.RightHandTarget, _stateMachine.Weapon.Key.LeftHandTarget, _stateMachine.Weapon.Key.ChestTarget);
+                _stateMachine.Character.Key.AnimationHandler.EnableIK(_stateMachine.Weapon.Key.RightHandTarget,
+                    _stateMachine.Weapon.Key.LeftHandTarget, _stateMachine.Weapon.Key.ChestTarget);
                 _inputRouter.Update(deltaTime);
             }
         }
 
         private void InitPlayer()
         {
-            Initialized(new PlayerInputRouter(_stateMachine.Character.Key.AnimationController));
+            Initialize(new PlayerInputRouter(_stateMachine.Character.Key.AnimationHandler));
 
             _powerShotBarView = _stateMachine.Character.Key.GetComponentInChildren<PowerShotBarView>();
             _powerShotBarView.Init(_inputRouter as PlayerInputRouter);
@@ -54,18 +55,18 @@ namespace Archer.Model.FSM
 
         private void InitEnemy()
         {
-            Initialized(new EnemyInputRouter(new EnemyAI(), _stateMachine.Character.Key.AnimationController));
+            Initialize(new EnemyInputRouter(new EnemyAI(), _stateMachine.Character.Key.AnimationHandler));
         }
 
-        private void Initialized(IInputRouter inputRouter)
+        private void Initialize(IInputRouter inputRouter)
         {
             _isInitialized = true;
             _inputRouter = inputRouter;
             _inputRouter.BindWeapon(_stateMachine.Weapon.Value);
-            _stateMachine.Weapon.Value.PressedUI += _inputRouter.CanGainingPower;
+            _stateMachine.Weapon.Value.PressingUI += _inputRouter.SetGainingPowerState;
         }
 
-        private void Activate()
+        private void StartBattle()
         {
             _stateMachine.Character.Value.Rotate(_stateMachine.EndPoint.rotation);
 
@@ -75,11 +76,11 @@ namespace Archer.Model.FSM
             _stateMachine.Weapon.Value.MoveTo(characterGeneratable.GeneratingPoint.position);
             _stateMachine.Weapon.Value.Rotate(characterGeneratable.GeneratingPoint.rotation);
 
-            _stateMachine.Weapon.Value.Shoted += _stateMachine.CharactersSpawner.OnShot;
+            _stateMachine.Weapon.Value.Shooting += _stateMachine.CharacterSpawner.OnShot;
             _inputRouter.OnEnable();
 
             _stateMachine.Character.Key.GetComponentInChildren<HealthBarView>(true).gameObject.SetActive(true);
-            _stateMachine.Character.Value.Died += OnDied;
+            _stateMachine.Character.Value.Died += ChangeStateToDie;
         }
 
         private async void WaitForTakenPosition()
@@ -87,28 +88,30 @@ namespace Archer.Model.FSM
             if (_stateMachine.Character.Value == null)
                 return;
 
-            _stateMachine.Character.Key.AnimationController.PlaySitIdle();
+            _stateMachine.Character.Key.AnimationHandler.PlaySitIdle();
 
-            if (_stateMachine.CharactersSpawner is PlayerSpawner)
+            if (_stateMachine.CharacterSpawner is Player)
                 InitPlayer();
 
-            if (_stateMachine.CharactersSpawner is EnemySpawner)
+            if (_stateMachine.CharacterSpawner is Enemy)
                 InitEnemy();
 
-            while (_stateMachine.Character.Key.AnimationController.IsTakenPosition == false)
+            while (_stateMachine.Character.Key.AnimationHandler.IsTakenPosition == false)
             {
                 if (_stateMachine.Character.Key != null)
-                    _stateMachine.Character.Value.MoveTo(_stateMachine.Character.Key.AnimationController.TakenPosition(_stateMachine.StartPosition, _stateMachine.EndPoint.position, Time.deltaTime));
+                    _stateMachine.Character.Value.MoveTo(
+                        _stateMachine.Character.Key.AnimationHandler.GetTakenPosition(_stateMachine.StartPosition,
+                            _stateMachine.EndPoint.position, Time.deltaTime));
 
                 await UniTask.Yield();
             }
 
-            Activate();
+            StartBattle();
 
             _isTakenPosition = true;
         }
 
-        private void OnDied()
+        private void ChangeStateToDie()
         {
             _stateMachine.EnterIn(StatesType.Die);
         }
@@ -117,14 +120,14 @@ namespace Archer.Model.FSM
         {
             if (_isInitialized)
             {
-                _stateMachine.Weapon.Value.PressedUI -= _inputRouter.CanGainingPower;
+                _stateMachine.Weapon.Value.PressingUI -= _inputRouter.SetGainingPowerState;
                 _inputRouter.OnDisable();
 
                 if (_stateMachine.Character.Key is PlayerPresenter)
                     _powerShotBarView.gameObject.SetActive(false);
             }
 
-            _stateMachine.Weapon.Value.Shoted -= _stateMachine.CharactersSpawner.OnShot;
+            _stateMachine.Weapon.Value.Shooting -= _stateMachine.CharacterSpawner.OnShot;
             _stateMachine.Weapon.Value.Destroy();
         }
     }

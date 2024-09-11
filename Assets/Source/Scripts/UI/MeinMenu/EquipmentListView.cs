@@ -1,7 +1,7 @@
+using System;
 using System.Collections.Generic;
 using Archer.Data;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace Archer.UI
 {
@@ -9,9 +9,9 @@ namespace Archer.UI
     {
         [SerializeField] private EquipmentSmallIconView _template;
 
-        public event UnityAction<EquipmentDataSO> EquipmentSelected;
+        public event Action<EquipmentDataConfig> EquipmentSelected;
 
-        public void Render(Transform container, IEnumerable<EquipmentDataSO> equipmentsData)
+        public void Render(Transform container, IEnumerable<EquipmentDataConfig> equipmentsData)
         {
             foreach (var equipment in equipmentsData)
             {
@@ -23,7 +23,7 @@ namespace Archer.UI
             }
         }
 
-        private void OnEquipmentSelected(EquipmentDataSO equipmentData)
+        private void OnEquipmentSelected(EquipmentDataConfig equipmentData)
         {
             EquipmentSelected?.Invoke(equipmentData);
         }

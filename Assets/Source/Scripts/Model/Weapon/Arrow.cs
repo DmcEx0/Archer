@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Archer.Model
 {
-    public class Arrow : Transformable, IUpdatetable
+    public class Arrow : SpawnedObject, ITickable
     {
         private readonly float _lifetime = 4f;
         private readonly bool _isActivatedSkill;
@@ -36,7 +36,7 @@ namespace Archer.Model
                 SkillType = skillType;
         }
 
-        public void Update(float deltaTime)
+        public void Tick(float deltaTime)
         {
             MoveTo(Position + BallisticsRouter.GetCalculatedPosition(ref _velocity, deltaTime));
 

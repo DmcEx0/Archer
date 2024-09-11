@@ -1,3 +1,4 @@
+using System;
 using Archer.Model.FSM;
 using Archer.Model;
 using System.Collections.Generic;
@@ -7,16 +8,16 @@ using Archer.Audio;
 using Archer.Data;
 using Archer.Presenters;
 using Archer.UI;
-using UnityEngine.Events;
+using Random = UnityEngine.Random;
 
 namespace Archer.Utils
 {
     public class GameSession : IGameSession
     {
-        private readonly ConfigCurrentLvl _configCurrentLvl;
+        private readonly CurrentLevelConfig _currentLevelConfig;
 
         private readonly PresenterFactory _presenterFactory;
-        private readonly AudioDataSO _audioData;
+        private readonly AudioDataConfig _audioData;
 
         private readonly Transform _startPlayerPosition;
         private readonly Transform _mainPlayerPosition;
@@ -30,8 +31,8 @@ namespace Archer.Utils
         private CharacterStateMachine _playerStateMachine;
         private CharacterStateMachine _enemyStateMachine;
 
-        private CharactersSpawner _playerSpawner;
-        private CharactersSpawner _enemySpawner;
+        private CharacterSpawner _player;
+        private CharacterSpawner _enemy;
 
         private Dictionary<KeyValuePair<CharacterPresenter, Character>, CharacterStateMachine> _enemies;
 
@@ -39,12 +40,12 @@ namespace Archer.Utils
 
         private bool _isPlayerVictory;
 
-        public event UnityAction EnemyDied;
-        public event UnityAction<bool> LevelCompete;
+        public event Action EnemyDied;
+        public event Action<bool> LevelCompeted;
 
-        public GameSession(PresenterFactory presenterFactory, AudioDataSO audioData, Transform startPlayerPos,
+        public GameSession(PresenterFactory presenterFactory, AudioDataConfig audioData, Transform startPlayerPos,
             Transform mainPlayerPos, List<Transform> enemySpawnPoints, Transform mainEnemyPos,
-            EquipmentListSO equipmentListData, SkillButtonView skillButtonView, ConfigCurrentLvl configCurrentLvl)
+            EquipmentListSO equipmentListData, SkillButtonView skillButtonView, CurrentLevelConfig currentLevelConfig)
         {
             _presenterFactory = presenterFactory;
             _audioData = audioData;
@@ -54,18 +55,18 @@ namespace Archer.Utils
             _mainEnemyPosition = mainEnemyPos;
             _equipmentListData = equipmentListData;
             _skillButtonView = skillButtonView;
-            _configCurrentLvl = configCurrentLvl;
+            _currentLevelConfig = currentLevelConfig;
         }
 
         public void Init()
         {
             _enemies = new();
 
-            _playerSpawner = new PlayerSpawner(_presenterFactory, _audioData);
-            _enemySpawner = new EnemySpawner(_presenterFactory, _audioData);
+            _player = new Player(_presenterFactory, _audioData);
+            _enemy = new Enemy(_presenterFactory, _audioData);
 
-            CreatePlayer();
-            CreateEnemies();
+            ConfigurePlayer();
+            ConfigureEnemies();
 
             _playerStateMachine.EnterIn(StatesType.Battle);
 
@@ -88,55 +89,55 @@ namespace Archer.Utils
             _playerStateMachine.EnterIn(StatesType.Idle);
         }
 
-        private void CreatePlayer()
+        private void ConfigurePlayer()
         {
-            Health health = new(_configCurrentLvl.PlayerHealth);
+            Health health = new(_currentLevelConfig.PlayerHealth);
 
-            WeaponDataSO weaponData =
+            WeaponDataConfig weaponData =
                 _equipmentListData.WeaponsData.FirstOrDefault(w => w.ID == PlayerData.Instance.CrossbowID);
-            ArrowDataSO arrowData =
+            ArrowDataConfig arrowData =
                 _equipmentListData.ArrowsData.FirstOrDefault(a => a.ID == PlayerData.Instance.ArrowID);
 
             _presenterFactory.CreatePoolOfPresenters(arrowData.Presenter);
 
             KeyValuePair<CharacterPresenter, Character> player =
-                _playerSpawner.SpawnCharacter(health, _startPlayerPosition);
+                _player.SpawnCharacter(health, _startPlayerPosition);
 
             KeyValuePair<WeaponPresenter, Weapon>
-                weapon = _playerSpawner.SpawnWeapon(player.Key, weaponData, arrowData);
+                weapon = _player.SpawnWeapon(player.Key, weaponData, arrowData);
             weapon.Key.gameObject.SetActive(false);
 
             _playerWeapon = weapon.Value;
             _playerWeapon.GetActivatedSkillStatus += _skillButtonView.GetActivatedStatus;
-            _playerWeapon.ActivatedSkill += _skillButtonView.ResetButton;
+            _playerWeapon.ActivatingSkill += _skillButtonView.OnResetButton;
 
-            _skillButtonView.OnUIPressed += _playerWeapon.GetUIPressStatus;
+            _skillButtonView.OnUIPressing += _playerWeapon.GetUIPressStatus;
 
-            _playerStateMachine = new CharacterStateMachine(player, weapon, _playerSpawner,
+            _playerStateMachine = new CharacterStateMachine(player, weapon, _player,
                 _startPlayerPosition.position, _mainPlayerPosition);
             _playerStateMachine.Died += OnPlayerDied;
             _playerStateMachine.EnterIn(StatesType.Idle);
         }
 
-        private void CreateEnemies()
+        private void ConfigureEnemies()
         {
             for (int i = 0; i < _enemiesSpawnPoints.Count; i++)
             {
                 int randomIndexArrow = Random.Range(0, _equipmentListData.ArrowsData.Count);
                 int randomIndexWeapon = Random.Range(0, _equipmentListData.WeaponsData.Count);
 
-                int healthValue = Random.Range(_configCurrentLvl.MinHealthEnemy, _configCurrentLvl.MaxHealthEnemy);
+                int healthValue = Random.Range(_currentLevelConfig.MinHealthEnemy, _currentLevelConfig.MaxHealthEnemy);
                 Health health = new(healthValue);
 
                 KeyValuePair<CharacterPresenter, Character> newEnemy =
-                    _enemySpawner.SpawnCharacter(health, _enemiesSpawnPoints[i]);
-                newEnemy.Key.HitInHead += OnHitInHead;
+                    _enemy.SpawnCharacter(health, _enemiesSpawnPoints[i]);
+                newEnemy.Key.GettingHitInHead += OnGettingHitInHead;
 
-                KeyValuePair<WeaponPresenter, Weapon> weapon = _enemySpawner.SpawnWeapon(newEnemy.Key,
+                KeyValuePair<WeaponPresenter, Weapon> weapon = _enemy.SpawnWeapon(newEnemy.Key,
                     _equipmentListData.WeaponsData[randomIndexWeapon], _equipmentListData.ArrowsData[randomIndexArrow]);
                 weapon.Key.gameObject.SetActive(false);
 
-                CharacterStateMachine newStateMachine = new CharacterStateMachine(newEnemy, weapon, _enemySpawner,
+                CharacterStateMachine newStateMachine = new CharacterStateMachine(newEnemy, weapon, _enemy,
                     newEnemy.Value.Position, _mainEnemyPosition);
                 newStateMachine.Died += OnEnemyDied;
 
@@ -153,7 +154,7 @@ namespace Archer.Utils
                 _isPlayerVictory = true;
 
                 _playerStateMachine.EnterIn(StatesType.Idle);
-                LevelCompete?.Invoke(_isPlayerVictory);
+                LevelCompeted?.Invoke(_isPlayerVictory);
                 PlayerData.Instance.CompleteLevel();
 
                 Unsubscribe();
@@ -172,7 +173,7 @@ namespace Archer.Utils
         {
             EnemyDied?.Invoke();
 
-            _enemyStateMachine.Character.Key.HitInHead -= OnHitInHead;
+            _enemyStateMachine.Character.Key.GettingHitInHead -= OnGettingHitInHead;
             _enemyStateMachine.Died -= OnEnemyDied;
 
             ActivateNextEnemy();
@@ -185,18 +186,18 @@ namespace Archer.Utils
             Unsubscribe();
 
             _enemyStateMachine.EnterIn(StatesType.Idle);
-            LevelCompete?.Invoke(_isPlayerVictory);
+            LevelCompeted?.Invoke(_isPlayerVictory);
         }
 
         private void Unsubscribe()
         {
-            _skillButtonView.OnUIPressed -= _playerWeapon.GetUIPressStatus;
+            _skillButtonView.OnUIPressing -= _playerWeapon.GetUIPressStatus;
             _playerWeapon.GetActivatedSkillStatus -= _skillButtonView.GetActivatedStatus;
-            _playerWeapon.ActivatedSkill -= _skillButtonView.ResetButton;
+            _playerWeapon.ActivatingSkill -= _skillButtonView.OnResetButton;
             _playerStateMachine.Died -= OnPlayerDied;
         }
 
-        private void OnHitInHead()
+        private void OnGettingHitInHead()
         {
             _skillButtonView.OnCooldownChanged();
         }

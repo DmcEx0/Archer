@@ -1,7 +1,7 @@
+using System;
 using Archer.Audio;
 using Archer.Utils;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace Archer.UI
@@ -10,34 +10,34 @@ namespace Archer.UI
     {
         [SerializeField] private TimeScaleSetter _timeScaleSetter;
 
-        [SerializeField] private AudioDataSO _audioData;
+        [SerializeField] private AudioDataConfig _audioData;
 
         [Space] [SerializeField] private Button _closeButton;
 
         [Space] [SerializeField] private Toggle _sfxToggle;
         [SerializeField] private Toggle _musicToggle;
 
-        public event UnityAction<bool> OnOpened;
+        public event Action<bool> Opening;
 
         private void OnEnable()
         {
             _sfxToggle.isOn = _audioData.SfxIsOn;
             _musicToggle.isOn = _audioData.MusicIsOn;
 
-            _closeButton.onClick.AddListener(Close);
+            _closeButton.onClick.AddListener(OnClose);
 
-            _sfxToggle.onValueChanged.AddListener(ChangeStatusSFX);
-            _musicToggle.onValueChanged.AddListener(ChangeStatusMusic);
+            _sfxToggle.onValueChanged.AddListener(OnChangeStatusSfx);
+            _musicToggle.onValueChanged.AddListener(OnChangeStatusMusic);
 
-            OnOpened?.Invoke(false);
+            Opening?.Invoke(false);
         }
 
         private void OnDisable()
         {
-            _closeButton.onClick.RemoveListener(Close);
+            _closeButton.onClick.RemoveListener(OnClose);
 
-            _sfxToggle.onValueChanged.RemoveListener(ChangeStatusSFX);
-            _musicToggle.onValueChanged.RemoveListener(ChangeStatusMusic);
+            _sfxToggle.onValueChanged.RemoveListener(OnChangeStatusSfx);
+            _musicToggle.onValueChanged.RemoveListener(OnChangeStatusMusic);
         }
 
         public void SetTimeScale(bool isPause)
@@ -45,21 +45,21 @@ namespace Archer.UI
             _timeScaleSetter.SetGamePause(isPause, this);
         }
 
-        private void Close()
+        private void OnClose()
         {
-            OnOpened?.Invoke(true);
+            Opening?.Invoke(true);
 
             gameObject.SetActive(false);
 
             SetTimeScale(false);
         }
 
-        private void ChangeStatusSFX(bool isSFXOn)
+        private void OnChangeStatusSfx(bool isSfxOn)
         {
-            _audioData.SetActiveSFX(isSFXOn);
+            _audioData.SetActiveSfx(isSfxOn);
         }
 
-        private void ChangeStatusMusic(bool isMusicOn)
+        private void OnChangeStatusMusic(bool isMusicOn)
         {
             _audioData.SetActiveMusic(isMusicOn);
         }

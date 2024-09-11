@@ -44,7 +44,7 @@ namespace Archer.UI
 
         private void LoadNextLevel()
         {
-            LevelManager.LoadNextLevel();
+            LevelSwitcher.LoadNextLevel();
         }
 
         private void LoadMenuScene()

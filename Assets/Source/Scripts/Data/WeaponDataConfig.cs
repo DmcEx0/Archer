@@ -3,7 +3,7 @@ using UnityEngine;
 namespace Archer.Data
 {
     [CreateAssetMenu]
-    public class WeaponDataSO : EquipmentDataSO
+    public class WeaponDataConfig : EquipmentDataConfig
     {
         [Space]
         [Range(1, 10)]

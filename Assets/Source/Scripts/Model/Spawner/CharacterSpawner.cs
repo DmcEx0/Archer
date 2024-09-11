@@ -7,18 +7,18 @@ using UnityEngine;
 
 namespace Archer.Model
 {
-    public abstract class CharactersSpawner
+    public abstract class CharacterSpawner
     {
-        private readonly AudioDataSO _audioData;
+        private readonly AudioDataConfig _audioData;
         
         private Weapon _weaponModel;
         private Character _characterModel;
         private CharacterPresenter _characterTemplate;
         private WeaponPresenter _weaponTemplate;
 
-        private ArrowDataSO _arrowData;
+        private ArrowDataConfig _arrowData;
 
-        protected CharactersSpawner(PresenterFactory factory, AudioDataSO audioData)
+        protected CharacterSpawner(PresenterFactory factory, AudioDataConfig audioData)
         {
             Factory = factory;
             _audioData = audioData;
@@ -40,8 +40,8 @@ namespace Archer.Model
             return character;
         }
 
-        public KeyValuePair<WeaponPresenter, Weapon> SpawnWeapon(Presenter tempalte, WeaponDataSO weaponData,
-            ArrowDataSO arrowData)
+        public KeyValuePair<WeaponPresenter, Weapon> SpawnWeapon(Presenter tempalte, WeaponDataConfig weaponData,
+            ArrowDataConfig arrowData)
         {
             _arrowData = arrowData;
 

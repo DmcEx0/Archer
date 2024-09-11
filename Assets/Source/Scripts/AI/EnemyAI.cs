@@ -1,22 +1,23 @@
+using System;
 using System.Collections.Generic;
 using Archer.Utils;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace Archer.AI
 {
     public class EnemyAI
     {
-        private const int MaxRayDistanse = 100;
+        private const int MaxRayDistance = 100;
         private const int MaxNumberOfTargets = 4;
         private const float AngleRange = 0.2f;
 
-        private const int PalyerLayer = 6;
+        private const int PlayerLayer = 6;
         private const int TargetLayer = 9;
+        private const bool IsChosenFirstTarget = false;
+        private const int TargetsLayerMask = (1 << PlayerLayer) | (1 << TargetLayer);
 
         private readonly TargetRouter _targetRouter;
-
-        private readonly int _targetsLayerMask = (1 << PalyerLayer) | (1 << TargetLayer);
+        private readonly List<Collider> _colliders;
 
         private Vector3 _velocity;
         private float _accumulatedPowerOfShot;
@@ -28,24 +29,20 @@ namespace Archer.AI
         private Collider _target;
         private float _weaponRotationXToShot = 100;
 
-        private List<Collider> _colliders;
-
-        private bool _isChosenFirstTarget = false;
-
         public EnemyAI()
         {
             _targetRouter = new();
             _colliders = new();
         }
 
-        public event UnityAction Shot;
+        public event Action Shot;
 
         public void SetStartVelocityOfFirstShoot(float accumulatedPowerOfShot)
         {
             _accumulatedPowerOfShot = accumulatedPowerOfShot;
         }
 
-        public void SetTarget()
+        public void ConfigureTarget()
         {
             var target = _targetRouter.Target;
             _weaponRotationXToShot = target.Value;
@@ -57,7 +54,7 @@ namespace Archer.AI
         {
             if (_targetRouter.CurrentNumberOfTargets < MaxNumberOfTargets)
             {
-                if (Physics.Raycast(position, forward, out RaycastHit hitInfo1, MaxRayDistanse, _targetsLayerMask) && _target == null)
+                if (Physics.Raycast(position, forward, out RaycastHit hitInfo1, MaxRayDistance, TargetsLayerMask) && _target == null)
                 {
                     if (_colliders.Count == 0 || _colliders.Contains(hitInfo1.collider) == false)
                     {
@@ -67,32 +64,34 @@ namespace Archer.AI
                     }
                 }
 
-                if (Physics.Linecast(position, CalculateEndPointAfterTime(position, forward), out RaycastHit hitInfo2, _targetsLayerMask))
+                if (Physics.Linecast(position, GetCalculatedEndPointAfterTime(position, forward), out RaycastHit hitInfo2, TargetsLayerMask))
                 {
                     if (hitInfo2.collider == _target)
                     {
-                        _targetRouter.TryAddTargets(hitInfo2.collider, RoundValue(rotationX));
+                        _targetRouter.TryAddTargets(hitInfo2.collider, GetRoundValue(rotationX));
 
-                        if (_isChosenFirstTarget == false)
-                            SetTarget();
+                        if (IsChosenFirstTarget == false)
+                            ConfigureTarget();
 
                         _target = null;
                     }
                 }
             }
 
-            float roundCurrentRotationX = RoundValue(rotationX);
+            float roundCurrentRotationX = GetRoundValue(rotationX);
 
             if (roundCurrentRotationX > _minAngleRange && roundCurrentRotationX < _maxAngleRange)
                 Shot?.Invoke();
         }
 
-        private float RoundValue(float value)
+        private float GetRoundValue(float value)
         {
-            return Mathf.Round(value * 10.0f) * 0.1f;
+            float additionalValue = 10f;
+            float defaultOffset = 0.1f;
+            return Mathf.Round(value * additionalValue) * defaultOffset;
         }
 
-        private Vector3 CalculateEndPointAfterTime(Vector3 position, Vector3 forward)
+        private Vector3 GetCalculatedEndPointAfterTime(Vector3 position, Vector3 forward)
         {
             float addDistanceToTarget = 2.4f;
             _velocity = forward * _accumulatedPowerOfShot;
@@ -100,9 +99,6 @@ namespace Archer.AI
             float time = (_distanceToTarget + addDistanceToTarget) / _velocity.magnitude;
 
             Vector3 endPoint = position + BallisticsRouter.GetCalculatedPositionAfterTime(_velocity, time);
-
-            Debug.DrawLine(position, endPoint, Color.green, 0.001f);
-            Debug.DrawRay(position, forward * 20, Color.red, 0.001f);
 
             return endPoint;
         }

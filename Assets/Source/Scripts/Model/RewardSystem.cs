@@ -1,6 +1,6 @@
 namespace Archer.Model
 {
-    public class RevardSystem
+    public class RewardSystem
     {
         public int AmountCoins { get; private set; } = 0;
         public int AmountScore { get; private set; } = 0;

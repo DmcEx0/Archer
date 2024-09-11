@@ -3,23 +3,24 @@ using Archer.Data;
 using Archer.Presenters;
 using Archer.UI;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Archer.Utils
 {
     public class PlayerConfigurationPresenter : MonoBehaviour
     {
-        [SerializeField] private MeinMenuView _meinMenuView;
+        [SerializeField] private MainMenuView _mainMenuView;
 
         [Space] [SerializeField] private PlayerPresenter _playerPresenter;
         [SerializeField] private Transform _rightHand;
         [SerializeField] private Transform _endPointPosition;
 
-        [Space] [SerializeField] private AudioDataSO _audioData;
-        [SerializeField] private AudioSource _SFXAudioSource;
+        [Space] [SerializeField] private AudioDataConfig _audioData;
+        [SerializeField] private AudioSource _sfxAudioSource;
         [SerializeField] private AudioSource _musicAudioSource;
 
-        private WeaponDataSO _currentWeaponData;
-        private ArrowDataSO _currentArrowData;
+        private WeaponDataConfig _currentWeaponData;
+        private ArrowDataConfig _currentArrowData;
 
         private WeaponPresenter _currentWeaponTemplate;
         private ArrowPresenter _currentArrowTemplate;
@@ -28,12 +29,12 @@ namespace Archer.Utils
 
         private void OnEnable()
         {
-            _meinMenuView.EquipmentChenged += OnEquipmentSelected;
+            _mainMenuView.EquipmentChanged += OnEquipmentSelected;
         }
 
         private void OnDisable()
         {
-            _meinMenuView.EquipmentChenged -= OnEquipmentSelected;
+            _mainMenuView.EquipmentChanged -= OnEquipmentSelected;
         }
 
         private void Awake()
@@ -46,33 +47,33 @@ namespace Archer.Utils
         private void Start()
         {
             _startPlayerPosition = _playerPresenter.transform.position;
-            _playerPresenter.AnimationController.PlaySitIdle();
+            _playerPresenter.AnimationHandler.PlaySitIdle();
 
-            _audioData.Init(_SFXAudioSource, _musicAudioSource);
+            _audioData.Init(_sfxAudioSource, _musicAudioSource);
             _audioData.Play(Sounds.MeinMenu);
         }
 
         private void Update()
         {
-            if (_playerPresenter.AnimationController.IsTakenPosition == true)
+            if (_playerPresenter.AnimationHandler.IsTakenPosition == true)
                 return;
 
             _playerPresenter.transform.position =
-                _playerPresenter.AnimationController.TakenPosition(_startPlayerPosition, _endPointPosition.position,
+                _playerPresenter.AnimationHandler.GetTakenPosition(_startPlayerPosition, _endPointPosition.position,
                     Time.deltaTime);
         }
 
-        private Presenter CreatePresenter(EquipmentDataSO equipmentData, Transform spawnPoint)
+        private Presenter CreatePresenter(EquipmentDataConfig equipmentData, Transform spawnPoint)
         {
             return Instantiate(equipmentData.Presenter, spawnPoint.position, spawnPoint.rotation);
         }
 
-        private void OnEquipmentSelected(EquipmentDataSO equipmentData)
+        private void OnEquipmentSelected(EquipmentDataConfig equipmentData)
         {
-            if (equipmentData is WeaponDataSO)
-                OnWeaponPresenterChanged(equipmentData as WeaponDataSO);
-            else if (equipmentData is ArrowDataSO)
-                OnArrowPresenterChanged(equipmentData as ArrowDataSO);
+            if (equipmentData is WeaponDataConfig)
+                OnWeaponPresenterChanged(equipmentData as WeaponDataConfig);
+            else if (equipmentData is ArrowDataConfig)
+                OnArrowPresenterChanged(equipmentData as ArrowDataConfig);
         }
 
         private void DestroyCurrentPresenter(Presenter currentTemplate)
@@ -81,7 +82,7 @@ namespace Archer.Utils
                 Destroy(currentTemplate.gameObject);
         }
 
-        private void OnWeaponPresenterChanged(WeaponDataSO weaponData)
+        private void OnWeaponPresenterChanged(WeaponDataConfig weaponData)
         {
             DestroyCurrentPresenter(_currentWeaponTemplate);
 
@@ -90,7 +91,7 @@ namespace Archer.Utils
             _currentWeaponTemplate.transform.SetParent(_rightHand);
         }
 
-        private void OnArrowPresenterChanged(ArrowDataSO arrowData)
+        private void OnArrowPresenterChanged(ArrowDataConfig arrowData)
         {
             DestroyCurrentPresenter(_currentArrowTemplate);
 

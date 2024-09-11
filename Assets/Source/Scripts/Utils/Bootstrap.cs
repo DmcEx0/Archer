@@ -8,62 +8,64 @@ using Archer.UI;
 using Archer.Yandex;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 namespace Archer.Utils
 {
-    public class Root : MonoBehaviour
+    public class Bootstrap : MonoBehaviour
     {
         private const string TutorialSceneName = "Tutorial";
 
         [SerializeField] private InterstitialAd _interstitialAd;
 
-        [SerializeField] private ConfigCurrentLvl _configCurrentLvl;
+        [SerializeField] private CurrentLevelConfig _currentLevelConfig;
         [SerializeField] private EquipmentListSO _equipmentListData;
         [SerializeField] private PresenterFactory _factory;
         [SerializeField] private Transform _startPlayerPosition;
         [SerializeField] private Transform _mainPlayerPosition;
-        [SerializeField] private Transform _mainEmemyPosition;
+        [SerializeField] private Transform _mainEnemyPosition;
         [SerializeField] private List<Transform> _enemiesSpawnPoints;
 
         [Space] [SerializeField] private EndGameWindowView _endGameWindow;
         [SerializeField] private SkillButtonView _skillButtonView;
 
-        [Space] [SerializeField] private AudioSource _SFXAudioSource;
+        [Space] 
+        [SerializeField] private AudioSource _sfxAudioSource;
         [SerializeField] private AudioSource _musicAudioSource;
-        [SerializeField] private AudioDataSO _audioData;
+        [SerializeField] private AudioDataConfig _audioData;
 
         private IGameSession _gameSession;
 
-        private RevardSystem _revardSystem;
+        private RewardSystem _rewardSystem;
 
         private void Awake()
         {
             if (CheckCurrentScene().name == TutorialSceneName)
             {
                 _gameSession = new TutorialGameSession(_factory, _audioData, _startPlayerPosition, _mainPlayerPosition,
-                    _enemiesSpawnPoints, _mainEmemyPosition, _equipmentListData, _skillButtonView, _configCurrentLvl);
+                    _enemiesSpawnPoints, _mainEnemyPosition, _equipmentListData, _skillButtonView, _currentLevelConfig);
             }
             else
             {
                 _gameSession = new GameSession(_factory, _audioData, _startPlayerPosition, _mainPlayerPosition,
-                    _enemiesSpawnPoints, _mainEmemyPosition, _equipmentListData, _skillButtonView, _configCurrentLvl);
+                    _enemiesSpawnPoints, _mainEnemyPosition, _equipmentListData, _skillButtonView, _currentLevelConfig);
             }
 
-            _revardSystem = new RevardSystem();
+            _rewardSystem = new RewardSystem();
 
-            _audioData.Init(_SFXAudioSource, _musicAudioSource);
+            _audioData.Init(_sfxAudioSource, _musicAudioSource);
         }
 
         private void OnEnable()
         {
-            _gameSession.LevelCompete += ShowEndGameWindow;
-            _gameSession.EnemyDied += AddRevardOnEnemyKill;
+            _gameSession.LevelCompeted += OnShowEndGameWindow;
+            _gameSession.EnemyDied += OnAddRewardOnEnemyKill;
         }
 
         private void OnDisable()
         {
-            _gameSession.LevelCompete -= ShowEndGameWindow;
-            _gameSession.EnemyDied -= AddRevardOnEnemyKill;
+            _gameSession.LevelCompeted -= OnShowEndGameWindow;
+            _gameSession.EnemyDied -= OnAddRewardOnEnemyKill;
         }
 
         private void Start()
@@ -82,10 +84,10 @@ namespace Archer.Utils
             _gameSession.OnExitGame();
         }
 
-        private void AddRevardOnEnemyKill()
+        private void OnAddRewardOnEnemyKill()
         {
-            _revardSystem.AddCoinsOnKill(_configCurrentLvl.CoinsForEnemy);
-            _revardSystem.AddScoreOnKill(_configCurrentLvl.ScoreForEnemy);
+            _rewardSystem.AddCoinsOnKill(_currentLevelConfig.CoinsForEnemy);
+            _rewardSystem.AddScoreOnKill(_currentLevelConfig.ScoreForEnemy);
         }
 
         private Scene CheckCurrentScene()
@@ -93,16 +95,16 @@ namespace Archer.Utils
             return SceneManager.GetActiveScene();
         }
 
-        private void ShowEndGameWindow(bool isPlayerWin)
+        private void OnShowEndGameWindow(bool isPlayerWin)
         {
             AddCoins();
             AddScore();
 
             _endGameWindow.SetActiveNextLevelButton(isPlayerWin);
-            _endGameWindow.SetAmountCoins(_revardSystem.AmountCoins);
+            _endGameWindow.SetAmountCoins(_rewardSystem.AmountCoins);
             _endGameWindow.gameObject.SetActive(true);
 
-            _revardSystem.Reset();
+            _rewardSystem.Reset();
 
 #if UNITY_WEBGL && !UNITY_EDITOR
         _interstitialAd.Show();
@@ -111,12 +113,12 @@ namespace Archer.Utils
 
         private void AddCoins()
         {
-            PlayerData.Instance.Coins += _revardSystem.AmountCoins;
+            PlayerData.Instance.Coins += _rewardSystem.AmountCoins;
         }
 
         private void AddScore()
         {
-            PlayerData.Instance.Score += _revardSystem.AmountScore;
+            PlayerData.Instance.Score += _rewardSystem.AmountScore;
         }
     }
 }

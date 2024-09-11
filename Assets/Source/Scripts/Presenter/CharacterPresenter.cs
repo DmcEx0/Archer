@@ -1,12 +1,12 @@
-﻿using Archer.Animations;
+﻿using System;
+using Archer.Animations;
 using Archer.Model;
 using Archer.TargetComponent;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace Archer.Presenters
 {
-    [RequireComponent(typeof(AnimationController))]
+    [RequireComponent(typeof(AnimationHandler))]
 public class CharacterPresenter : Presenter, IGeneratable
 {
     [SerializeField] private Transform _weaponPosition;
@@ -15,7 +15,7 @@ public class CharacterPresenter : Presenter, IGeneratable
 
     private ParticleSystem _currentParticle;
 
-    private AnimationController _animationController;
+    private AnimationHandler _animationHandler;
 
     private HitBodyDetector _hitBodyDetector;
     private HitHeadDetector _hitHeadDetector;
@@ -23,15 +23,15 @@ public class CharacterPresenter : Presenter, IGeneratable
     private float _playingEffectTime = 0;
     private float _accumulatedTime;
 
-    public event UnityAction HitInHead;
+    public event Action GettingHitInHead;
 
     private Character CharacterModel => Model is Character ? Model as Character : null;
     public Transform GeneratingPoint => _weaponPosition;
-    public AnimationController AnimationController => _animationController;
+    public AnimationHandler AnimationHandler => _animationHandler;
 
     private void Awake()
     {
-        _animationController = GetComponent<AnimationController>();
+        _animationHandler = GetComponent<AnimationHandler>();
         _hitBodyDetector = GetComponentInChildren<HitBodyDetector>();
         _hitHeadDetector = GetComponentInChildren<HitHeadDetector>();
     }
@@ -55,8 +55,8 @@ public class CharacterPresenter : Presenter, IGeneratable
     {
         base.OnInitialized();
 
-        _hitBodyDetector.Hit += OnHitInBody;
-        _hitHeadDetector.Hit += OnHitInHead;
+        _hitBodyDetector.GettingHit += OnGettingHitInBody;
+        _hitHeadDetector.GettingHit += OnGettingHitInHead;
         CharacterModel.SkillImpacted += OnActivateSkillImpact;
     }
 
@@ -64,22 +64,22 @@ public class CharacterPresenter : Presenter, IGeneratable
     {
         base.OnDestroying();
 
-        _hitBodyDetector.Hit -= OnHitInBody;
-        _hitHeadDetector.Hit -= OnHitInHead;
+        _hitBodyDetector.GettingHit -= OnGettingHitInBody;
+        _hitHeadDetector.GettingHit -= OnGettingHitInHead;
         CharacterModel.SkillImpacted -= OnActivateSkillImpact;
     }
 
-    private void OnHitInBody(int mainDamage, int additionalDamage, ArrowSkillType skillType)
+    private void OnGettingHitInBody(int mainDamage, int additionalDamage, ArrowSkillType skillType)
     {
-        _animationController.PlayerHitA();
+        _animationHandler.PlayHitA();
 
         CharacterModel.TakeDamage(mainDamage, additionalDamage, skillType);
     }
 
-    private void OnHitInHead(int damage, int additionalDamage, ArrowSkillType skillType)
+    private void OnGettingHitInHead(int damage, int additionalDamage, ArrowSkillType skillType)
     {
-        HitInHead?.Invoke();
-        _animationController.PlayerHitB();
+        GettingHitInHead?.Invoke();
+        _animationHandler.PlayHitB();
 
         CharacterModel.TakeDamage(damage, additionalDamage, skillType);
     }

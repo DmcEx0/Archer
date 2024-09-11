@@ -1,10 +1,9 @@
 using System;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace Archer.Model
 {
-    public class Weapon : Transformable, IUpdatetable
+    public class Weapon : SpawnedObject, ITickable
     {
         private readonly float _cooldown;
         private readonly float _startedPowerOfShot;
@@ -27,11 +26,10 @@ namespace Archer.Model
             Rotate(rotation);
         }
 
-        public event UnityAction<Arrow> Shoted;
-        public event UnityAction ActivatedSkill;
+        public event Action<Arrow> Shooting;
+        public event Action ActivatingSkill;
+        public event Action<bool> PressingUI;
         public event Func<bool> GetActivatedSkillStatus;
-
-        public event UnityAction<bool> PressedUI;
 
         public Vector3 ArrowSpawnPosition { get; private set; }
         public bool CanShoot { get; private set; } = false;
@@ -53,22 +51,22 @@ namespace Archer.Model
 
                 if (isActivatedSkill)
                 {
-                    ActivatedSkill?.Invoke();
+                    ActivatingSkill?.Invoke();
                 }
             }
 
             Arrow arrow = GetArrow(accumulatedVelocity, isActivatedSkill);
-            Shoted?.Invoke(arrow);
+            Shooting?.Invoke(arrow);
 
             CanShoot = false;
         }
 
         public void GetUIPressStatus(bool isCanNot)
         {
-            PressedUI?.Invoke(isCanNot);
+            PressingUI?.Invoke(isCanNot);
         }
 
-        public void Update(float deltaTime)
+        public void Tick(float deltaTime)
         {
             Reload(deltaTime);
             MoveTo(Position);

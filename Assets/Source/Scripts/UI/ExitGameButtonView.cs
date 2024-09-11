@@ -1,6 +1,7 @@
 using Archer.Utils;
 using IJunior.TypedScenes;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Archer.UI
@@ -8,7 +9,7 @@ namespace Archer.UI
     public class ExitGameButtonView : MonoBehaviour
     {
         [SerializeField] private Button _exitGameButton;
-        [SerializeField] private Root _root;
+        [FormerlySerializedAs("_root")] [SerializeField] private Bootstrap _bootstrap;
 
         [SerializeField] private TimeScaleSetter _timeScaleSetter;
 
@@ -31,7 +32,7 @@ namespace Archer.UI
 
         private void LoadMeinMenuScene()
         {
-            _root.OnExitGame();
+            _bootstrap.OnExitGame();
             _settingWindowView.SetTimeScale(false);
 
             Menu.Load();
