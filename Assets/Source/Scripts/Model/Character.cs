@@ -6,10 +6,9 @@ namespace Archer.Model
 {
     public class Character : Transformable, IUpdatetable
     {
-        private DamageProvider _damageProvider;
+        private readonly DamageProvider _damageProvider;
 
         public readonly Health Health;
-        public bool IsSkillImpact { get; private set; }
 
         public Character(Vector3 position, Quaternion rotation, Health health) : base(position, rotation)
         {

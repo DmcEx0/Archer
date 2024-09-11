@@ -6,11 +6,12 @@ namespace Archer.Input
 {
     public class EnemyInputRouter : IInputRouter
     {
-        private EnemyAI _enemyAI;
+        private const float MaxPower = 3f;
+        
+        private readonly EnemyAI _enemyAI;
+        private readonly AnimationController _animationController;
+        
         private Weapon _weapon;
-        private AnimationController _animationController;
-
-        private float _maxPower = 3f;
 
         public EnemyInputRouter(EnemyAI enemyAI, AnimationController animationController)
         {
@@ -18,13 +19,11 @@ namespace Archer.Input
             _animationController = animationController;
         }
 
-        public IInputRouter BindWeapon(Weapon weapon)
+        public void BindWeapon(Weapon weapon)
         {
             _weapon = weapon;
 
-            _enemyAI.SetStartVelocityOfFirstShoot(_maxPower * _weapon.StartedPowerOfShot);
-
-            return this;
+            _enemyAI.SetStartVelocityOfFirstShoot(MaxPower * _weapon.StartedPowerOfShot);
         }
 
         public void CanGainingPower(bool isCanNot)
@@ -49,7 +48,7 @@ namespace Archer.Input
 
         private void Shoot()
         {
-            TryShoot(_weapon, _maxPower);
+            TryShoot(_weapon, MaxPower);
         }
 
         private void TryShoot(Weapon weapon, float power)

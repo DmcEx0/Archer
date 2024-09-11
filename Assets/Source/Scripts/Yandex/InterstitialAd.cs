@@ -20,7 +20,7 @@ namespace Archer.Yandex
             _timeScaleSetter.SetGamePause(true, this);
         }
 
-        private void OnCloseCallback(bool isClose)
+        private void OnCloseCallback(bool _)
         {
             _audioData.UnPause(this);
             _timeScaleSetter.SetGamePause(false, this);

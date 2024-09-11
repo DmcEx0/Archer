@@ -25,7 +25,7 @@ public class CharacterPresenter : Presenter, IGeneratable
 
     public event UnityAction HitInHead;
 
-    private Character _model => Model is Character ? Model as Character : null;
+    private Character CharacterModel => Model is Character ? Model as Character : null;
     public Transform GeneratingPoint => _weaponPosition;
     public AnimationController AnimationController => _animationController;
 
@@ -57,7 +57,7 @@ public class CharacterPresenter : Presenter, IGeneratable
 
         _hitBodyDetector.Hit += OnHitInBody;
         _hitHeadDetector.Hit += OnHitInHead;
-        _model.SkillImpacted += OnActivateSkillImpact;
+        CharacterModel.SkillImpacted += OnActivateSkillImpact;
     }
 
     protected override void OnDestroying()
@@ -66,14 +66,14 @@ public class CharacterPresenter : Presenter, IGeneratable
 
         _hitBodyDetector.Hit -= OnHitInBody;
         _hitHeadDetector.Hit -= OnHitInHead;
-        _model.SkillImpacted -= OnActivateSkillImpact;
+        CharacterModel.SkillImpacted -= OnActivateSkillImpact;
     }
 
     private void OnHitInBody(int mainDamage, int additionalDamage, ArrowSkillType skillType)
     {
         _animationController.PlayerHitA();
 
-        _model.TakeDamage(mainDamage, additionalDamage, skillType);
+        CharacterModel.TakeDamage(mainDamage, additionalDamage, skillType);
     }
 
     private void OnHitInHead(int damage, int additionalDamage, ArrowSkillType skillType)
@@ -81,7 +81,7 @@ public class CharacterPresenter : Presenter, IGeneratable
         HitInHead?.Invoke();
         _animationController.PlayerHitB();
 
-        _model.TakeDamage(damage, additionalDamage, skillType);
+        CharacterModel.TakeDamage(damage, additionalDamage, skillType);
     }
 
     private void OnActivateSkillImpact(float playingEffectTime, ArrowSkillType skillType)

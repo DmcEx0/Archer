@@ -6,9 +6,9 @@ namespace Archer.Utils
 {
     public class ObjectPool<T> where T : MonoBehaviour
     {
-        private T _prefab;
-        private bool _isAutoExpand = true;
-        private Transform _container;
+        private readonly T _prefab;
+        private readonly bool _isAutoExpand = true;
+        private readonly Transform _container;
     
         private Queue<T> _pool;
     

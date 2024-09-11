@@ -11,9 +11,8 @@ namespace Archer.Presenters
         [SerializeField] private Presenter _playerTempalte;
         [SerializeField] private List<Presenter> _enemiesTemplates;
 
+        private readonly List<ObjectPool<Presenter>> _pools = new List<ObjectPool<Presenter>>();
         private readonly int _poolCount = 30;
-
-        private List<ObjectPool<Presenter>> _pools = new List<ObjectPool<Presenter>>();
 
         public Presenter CreatePlayer(Character player)
         {
@@ -32,9 +31,9 @@ namespace Archer.Presenters
             return CreatePresenter(weaponTemplate, weapon);
         }
 
-        public Presenter CreateArrow(Presenter arrowPresenter, Arrow arrow)
+        public void CreateArrow(Presenter arrowPresenter, Arrow arrow)
         {
-            return GetPresenterInPool(arrowPresenter, arrow);
+            GetPresenterInPool(arrowPresenter, arrow);
         }
 
         public void CreatePoolOfPresenters(Presenter template)
@@ -54,14 +53,12 @@ namespace Archer.Presenters
             return presenter;
         }
 
-        private Presenter GetPresenterInPool(Presenter template, Transformable model)
+        private void GetPresenterInPool(Presenter template, Transformable model)
         {
             ObjectPool<Presenter> currentPool = _pools.FirstOrDefault(pool => pool.FirstElement == template);
             Presenter presenter = currentPool.GetFreeElement();
 
             presenter.Init(model);
-
-            return presenter;
         }
     }
 }

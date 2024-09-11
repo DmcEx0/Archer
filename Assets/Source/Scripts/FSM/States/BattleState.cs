@@ -60,28 +60,9 @@ namespace Archer.Model.FSM
         private void Initialized(IInputRouter inputRouter)
         {
             _isInitialized = true;
-
-            //_stateMachine.Character.Value.Rotate(_stateMachine.EndPoint.rotation);
-
-            //IGeneratable characterGeneratable = _stateMachine.Character.Key;
-
-            //_stateMachine.Weapon.Key.gameObject.SetActive(true);
-            //_stateMachine.Weapon.Value.MoveTo(characterGeneratable.GeneratingPoint.position);
-            //_stateMachine.Weapon.Value.Rotate(characterGeneratable.GeneratingPoint.rotation);
-
             _inputRouter = inputRouter;
-
             _inputRouter.BindWeapon(_stateMachine.Weapon.Value);
-
-            _stateMachine.Weapon.Value.isUIPressed += _inputRouter.CanGainingPower;
-
-            //_stateMachine.Weapon.Value.Shoted += _stateMachine.CharactersSpawner.OnShot;
-
-            //_inputRouter.OnEnable();
-
-            //_stateMachine.Character.Key.GetComponentInChildren<HealthBarView>(true).gameObject.SetActive(true);
-
-            //_stateMachine.Character.Value.Died += OnDied;
+            _stateMachine.Weapon.Value.PressedUI += _inputRouter.CanGainingPower;
         }
 
         private void Activate()
@@ -136,7 +117,7 @@ namespace Archer.Model.FSM
         {
             if (_isInitialized)
             {
-                _stateMachine.Weapon.Value.isUIPressed -= _inputRouter.CanGainingPower;
+                _stateMachine.Weapon.Value.PressedUI -= _inputRouter.CanGainingPower;
                 _inputRouter.OnDisable();
 
                 if (_stateMachine.Character.Key is PlayerPresenter)

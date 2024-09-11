@@ -31,7 +31,7 @@ namespace Archer.Model
         public event UnityAction ActivatedSkill;
         public event Func<bool> GetActivatedSkillStatus;
 
-        public event UnityAction<bool> isUIPressed;
+        public event UnityAction<bool> PressedUI;
 
         public Vector3 ArrowSpawnPosition { get; private set; }
         public bool CanShoot { get; private set; } = false;
@@ -65,7 +65,7 @@ namespace Archer.Model
 
         public void GetUIPressStatus(bool isCanNot)
         {
-            isUIPressed?.Invoke(isCanNot);
+            PressedUI?.Invoke(isCanNot);
         }
 
         public void Update(float deltaTime)
@@ -84,8 +84,7 @@ namespace Archer.Model
             {
                 if ((int)Rotation.eulerAngles.x == 360 - Mathf.Abs((int)_upAngle))
                     _changedUp = false;
-
-
+                
                 ChangeAngle(deltaTime, _upAngle);
             }
         }

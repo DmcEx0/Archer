@@ -19,9 +19,8 @@ namespace Archer.UI
         [SerializeField] private LeaderboardView _leaderboardView;
         [SerializeField] private Button _showLeaderboard;
 
-        private List<LeaderboardPlayer> _leaderboardPlayers = new();
+        private readonly List<LeaderboardPlayer> _leaderboardPlayers = new();
         private readonly int _numberOfPlayerInLeaderboard = 4;
-
 
         private void OnEnable()
         {

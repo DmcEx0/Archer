@@ -16,7 +16,7 @@ namespace Archer.Model
         private const float DelayPoisonTypeMillisecons = 0.3f;
         private const int NumberOfIterationPoisonType = 6;
 
-        private Character _character;
+        private readonly Character _character;
 
         private bool _isSkillImpact;
 

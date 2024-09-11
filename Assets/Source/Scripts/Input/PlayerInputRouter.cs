@@ -9,7 +9,7 @@ namespace Archer.Input
 {
     public class PlayerInputRouter : IInputRouter
     {
-        private AnimationController _animationController;
+        private readonly AnimationController _animationController;
 
         private readonly PlayerInput _input;
 
@@ -29,10 +29,9 @@ namespace Archer.Input
 
         public event UnityAction<float, float> PowerChanged;
 
-        public IInputRouter BindWeapon(Weapon weapon)
+        public void BindWeapon(Weapon weapon)
         {
             _weapon = weapon;
-            return this;
         }
 
         public void CanGainingPower(bool isCanNot)
@@ -46,7 +45,6 @@ namespace Archer.Input
         {
             if (_isUIPressed == true)
             {
-                Debug.Log("is UI Pressed");
                 return;
             }
 

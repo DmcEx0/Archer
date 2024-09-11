@@ -10,15 +10,14 @@ namespace Archer.Utils
     {
         private const int FirstLevelKey = 0;
     
-        private static List<int> _levelsKeys = new();
+        private static readonly List<int> _levelsKeys = new();
         private static int _currentIndexLevelKey = FirstLevelKey;
     
-        private static Dictionary<int, UnityAction> _levels = new Dictionary<int, UnityAction>
+        private static readonly Dictionary<int, UnityAction> _levels = new Dictionary<int, UnityAction>
         {
             { 1, () => Level1.Load() },
             { 2, () => Level2.Load() },
             { 3, () => Level3.Load() },
-            //{ 4, () => Level4.Load() },
             { 4, () => Level5.Load() },
         };
     

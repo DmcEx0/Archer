@@ -55,7 +55,6 @@ namespace Archer.Animations
 
             AnimatorStateInfo currentStateInfo = _animator.GetCurrentAnimatorStateInfo(0);
 
-
             if (currentStateInfo.IsName(_currentAnimationName) && currentStateInfo.normalizedTime >= 0.95f)
             {
                 PlayNext(_nextAnimationName);

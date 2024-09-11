@@ -9,13 +9,14 @@ namespace Archer.Model
 {
     public abstract class CharactersSpawner
     {
+        private readonly AudioDataSO _audioData;
+        
         private Weapon _weaponModel;
         private Character _characterModel;
         private CharacterPresenter _characterTemplate;
         private WeaponPresenter _weaponTemplate;
 
         private ArrowDataSO _arrowData;
-        private AudioDataSO _audioData;
 
         protected CharactersSpawner(PresenterFactory factory, AudioDataSO audioData)
         {
@@ -33,22 +34,27 @@ namespace Archer.Model
             _characterModel = new Character(characterSpawnPoint.position, characterSpawnPoint.rotation, health);
             _characterTemplate = CreateCharacter(_characterModel) as CharacterPresenter;
 
-            KeyValuePair<CharacterPresenter, Character> character = new KeyValuePair<CharacterPresenter, Character>(_characterTemplate, _characterModel);
+            KeyValuePair<CharacterPresenter, Character> character =
+                new KeyValuePair<CharacterPresenter, Character>(_characterTemplate, _characterModel);
 
             return character;
         }
 
-        public KeyValuePair<WeaponPresenter, Weapon> SpawnWeapon(Presenter tempalte, WeaponDataSO weaponData, ArrowDataSO arrowData)
+        public KeyValuePair<WeaponPresenter, Weapon> SpawnWeapon(Presenter tempalte, WeaponDataSO weaponData,
+            ArrowDataSO arrowData)
         {
             _arrowData = arrowData;
 
             Factory.CreatePoolOfPresenters(arrowData.Presenter);
 
-            _weaponModel = new Weapon(CastToGeneratable(tempalte).GeneratingPoint.position, CastToGeneratable(tempalte).GeneratingPoint.rotation, weaponData.SpeedChangedAngle, weaponData.ShotPower, weaponData.Cooldown);
+            _weaponModel = new Weapon(CastToGeneratable(tempalte).GeneratingPoint.position,
+                CastToGeneratable(tempalte).GeneratingPoint.rotation, weaponData.SpeedChangedAngle,
+                weaponData.ShotPower, weaponData.Cooldown);
             _weaponTemplate = CreateWeapon(weaponData.Presenter as WeaponPresenter, _weaponModel);
             _weaponTemplate.transform.SetParent(CastToGeneratable(tempalte).GeneratingPoint);
 
-            KeyValuePair<WeaponPresenter, Weapon> weapon = new KeyValuePair<WeaponPresenter, Weapon>(_weaponTemplate, _weaponModel);
+            KeyValuePair<WeaponPresenter, Weapon> weapon =
+                new KeyValuePair<WeaponPresenter, Weapon>(_weaponTemplate, _weaponModel);
 
             return weapon;
         }
@@ -60,7 +66,9 @@ namespace Archer.Model
                 return presenter as IGeneratable;
             }
             else
+            {
                 throw new InvalidOperationException(nameof(presenter));
+            }
         }
 
         public void OnShot(Arrow arrow)
