@@ -63,7 +63,7 @@ namespace Archer.Model.FSM
             _isInitialized = true;
             _inputRouter = inputRouter;
             _inputRouter.BindWeapon(_stateMachine.Weapon.Value);
-            _stateMachine.Weapon.Value.PressingUI += _inputRouter.SetGainingPowerState;
+            _stateMachine.Weapon.Value.IsUiPressing += _inputRouter.SetGainingPowerState;
         }
 
         private void StartBattle()
@@ -120,7 +120,7 @@ namespace Archer.Model.FSM
         {
             if (_isInitialized)
             {
-                _stateMachine.Weapon.Value.PressingUI -= _inputRouter.SetGainingPowerState;
+                _stateMachine.Weapon.Value.IsUiPressing -= _inputRouter.SetGainingPowerState;
                 _inputRouter.OnDisable();
 
                 if (_stateMachine.Character.Key is PlayerPresenter)

@@ -28,7 +28,7 @@ namespace Archer.Model
 
         public event Action<Arrow> Shooting;
         public event Action ActivatingSkill;
-        public event Action<bool> PressingUI;
+        public event Action<bool> IsUiPressing;
         public event Func<bool> GetActivatedSkillStatus;
 
         public Vector3 ArrowSpawnPosition { get; private set; }
@@ -63,7 +63,7 @@ namespace Archer.Model
 
         public void GetUIPressStatus(bool isCanNot)
         {
-            PressingUI?.Invoke(isCanNot);
+            IsUiPressing?.Invoke(isCanNot);
         }
 
         public void Tick(float deltaTime)
