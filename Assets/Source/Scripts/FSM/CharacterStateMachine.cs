@@ -11,7 +11,7 @@ namespace Archer.Model.FSM
         private IState _currentState;
 
         public CharacterStateMachine(KeyValuePair<CharacterPresenter, Character> character,
-            KeyValuePair<WeaponPresenter, Weapon> weapon, CharacterSpawner characterSpawner, Vector3 startPosition,
+            KeyValuePair<WeaponPresenter, Weapon> weapon, CharacterFactory characterFactory, Vector3 startPosition,
             Transform endPoint)
         {
             _states = new Dictionary<StatesType, IState>()
@@ -21,7 +21,7 @@ namespace Archer.Model.FSM
                 [StatesType.Die] = new DieState(this),
             };
 
-            CharacterSpawner = characterSpawner;
+            CharacterFactory = characterFactory;
             Character = character;
             Weapon = weapon;
             StartPosition = startPosition;
@@ -32,7 +32,7 @@ namespace Archer.Model.FSM
 
         public Vector3 StartPosition { get; private set; }
         public Transform EndPoint { get; private set; }
-        public CharacterSpawner CharacterSpawner { get; private set; }
+        public CharacterFactory CharacterFactory { get; private set; }
         public KeyValuePair<CharacterPresenter, Character> Character { get; private set; }
         public KeyValuePair<WeaponPresenter, Weapon> Weapon { get; private set; }
 

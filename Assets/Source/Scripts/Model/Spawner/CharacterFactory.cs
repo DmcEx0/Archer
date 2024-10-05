@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Archer.Model
 {
-    public abstract class CharacterSpawner
+    public abstract class CharacterFactory
     {
         private readonly AudioDataConfig _audioData;
         
@@ -18,7 +18,7 @@ namespace Archer.Model
 
         private ArrowDataConfig _arrowData;
 
-        protected CharacterSpawner(PresenterFactory factory, AudioDataConfig audioData)
+        protected CharacterFactory(PresenterFactory factory, AudioDataConfig audioData)
         {
             Factory = factory;
             _audioData = audioData;

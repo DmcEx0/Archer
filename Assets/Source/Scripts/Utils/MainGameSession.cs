@@ -26,14 +26,14 @@ public class MainGameSession : BaseGameSession
             Health health = new(healthValue);
 
             KeyValuePair<CharacterPresenter, Character> newEnemy =
-                Enemy.SpawnCharacter(health, EnemiesSpawnPoints[i]);
+                EnemyFactory.SpawnCharacter(health, EnemiesSpawnPoints[i]);
             newEnemy.Key.GettingHitInHead += OnGettingHitInHead;
 
-            KeyValuePair<WeaponPresenter, Weapon> weapon = Enemy.SpawnWeapon(newEnemy.Key,
+            KeyValuePair<WeaponPresenter, Weapon> weapon = EnemyFactory.SpawnWeapon(newEnemy.Key,
                 EquipmentListData.WeaponsData[randomIndexWeapon], EquipmentListData.ArrowsData[randomIndexArrow]);
             weapon.Key.gameObject.SetActive(false);
 
-            CharacterStateMachine newStateMachine = new CharacterStateMachine(newEnemy, weapon, Enemy,
+            CharacterStateMachine newStateMachine = new CharacterStateMachine(newEnemy, weapon, EnemyFactory,
                 newEnemy.Value.Position, MainEnemyPosition);
             newStateMachine.Died += OnEnemyDied;
 

@@ -8,7 +8,6 @@ using Archer.UI;
 using Archer.Yandex;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.Serialization;
 
 namespace Archer.Utils
 {

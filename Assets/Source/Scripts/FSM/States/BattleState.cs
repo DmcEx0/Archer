@@ -76,7 +76,7 @@ namespace Archer.Model.FSM
             _stateMachine.Weapon.Value.MoveTo(characterGeneratable.GeneratingPoint.position);
             _stateMachine.Weapon.Value.Rotate(characterGeneratable.GeneratingPoint.rotation);
 
-            _stateMachine.Weapon.Value.Shooting += _stateMachine.CharacterSpawner.OnShot;
+            _stateMachine.Weapon.Value.Shooting += _stateMachine.CharacterFactory.OnShot;
             _inputRouter.OnEnable();
 
             _stateMachine.Character.Key.GetComponentInChildren<HealthBarView>(true).gameObject.SetActive(true);
@@ -90,10 +90,10 @@ namespace Archer.Model.FSM
 
             _stateMachine.Character.Key.AnimationHandler.PlaySitIdle();
 
-            if (_stateMachine.CharacterSpawner is Player)
+            if (_stateMachine.CharacterFactory is PlayerFactory)
                 InitPlayer();
 
-            if (_stateMachine.CharacterSpawner is Enemy)
+            if (_stateMachine.CharacterFactory is EnemyFactory)
                 InitEnemy();
 
             while (_stateMachine.Character.Key.AnimationHandler.IsTakenPosition == false)
@@ -127,7 +127,7 @@ namespace Archer.Model.FSM
                     _powerShotBarView.gameObject.SetActive(false);
             }
 
-            _stateMachine.Weapon.Value.Shooting -= _stateMachine.CharacterSpawner.OnShot;
+            _stateMachine.Weapon.Value.Shooting -= _stateMachine.CharacterFactory.OnShot;
             _stateMachine.Weapon.Value.Destroy();
         }
     }

@@ -22,7 +22,7 @@ namespace Archer.Utils
 
         private readonly SkillButtonView _skillButtonView;
 
-        private CharacterSpawner _player;
+        private CharacterFactory _playerFactory;
 
         private Weapon _playerWeapon;
 
@@ -39,7 +39,7 @@ namespace Archer.Utils
         }
 
         protected CharacterStateMachine EnemyStateMachine { get; set; }
-        protected CharacterSpawner Enemy { get; private set; }
+        protected CharacterFactory EnemyFactory { get; private set; }
         protected bool IsPlayerVictory { get; set; }
 
         public Action<bool> LevelCompeted { get; set; }
@@ -64,8 +64,8 @@ namespace Archer.Utils
         {
             Enemies = new();
 
-            _player = new Player(_presenterFactory, _audioData);
-            Enemy = new Enemy(_presenterFactory, _audioData);
+            _playerFactory = new PlayerFactory(_presenterFactory, _audioData);
+            EnemyFactory = new EnemyFactory(_presenterFactory, _audioData);
 
             ConfigurePlayer();
             ConfigureEnemies();
@@ -126,10 +126,10 @@ namespace Archer.Utils
             _presenterFactory.CreatePoolOfPresenters(arrowData.Presenter);
 
             KeyValuePair<CharacterPresenter, Character> player =
-                _player.SpawnCharacter(health, _startPlayerPosition);
+                _playerFactory.SpawnCharacter(health, _startPlayerPosition);
 
             KeyValuePair<WeaponPresenter, Weapon>
-                weapon = _player.SpawnWeapon(player.Key, weaponData, arrowData);
+                weapon = _playerFactory.SpawnWeapon(player.Key, weaponData, arrowData);
             weapon.Key.gameObject.SetActive(false);
 
             _playerWeapon = weapon.Value;
@@ -138,7 +138,7 @@ namespace Archer.Utils
 
             _skillButtonView.OnUIPressing += _playerWeapon.GetUIPressStatus;
 
-            PlayerStateMachine = new CharacterStateMachine(player, weapon, _player,
+            PlayerStateMachine = new CharacterStateMachine(player, weapon, _playerFactory,
                 _startPlayerPosition.position, _mainPlayerPosition);
             PlayerStateMachine.Died += OnPlayerDied;
             PlayerStateMachine.EnterIn(StatesType.Idle);
@@ -157,14 +157,14 @@ namespace Archer.Utils
                 Health health = new(healthValue);
 
                 KeyValuePair<CharacterPresenter, Character> newEnemy =
-                    Enemy.SpawnCharacter(health, EnemiesSpawnPoints[i]);
+                    EnemyFactory.SpawnCharacter(health, EnemiesSpawnPoints[i]);
                 newEnemy.Key.GettingHitInHead += OnGettingHitInHead;
 
-                KeyValuePair<WeaponPresenter, Weapon> weapon = Enemy.SpawnWeapon(newEnemy.Key,
+                KeyValuePair<WeaponPresenter, Weapon> weapon = EnemyFactory.SpawnWeapon(newEnemy.Key,
                     EquipmentListData.WeaponsData[randomIndexWeapon], EquipmentListData.ArrowsData[randomIndexArrow]);
                 weapon.Key.gameObject.SetActive(false);
 
-                CharacterStateMachine newStateMachine = new CharacterStateMachine(newEnemy, weapon, Enemy,
+                CharacterStateMachine newStateMachine = new CharacterStateMachine(newEnemy, weapon, EnemyFactory,
                     newEnemy.Value.Position, MainEnemyPosition);
                 newStateMachine.Died += OnEnemyDied;
 

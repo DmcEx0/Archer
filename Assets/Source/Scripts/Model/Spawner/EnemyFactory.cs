@@ -3,9 +3,9 @@ using Archer.Presenters;
 
 namespace Archer.Model
 {
-    public class Enemy : CharacterSpawner
+    public class EnemyFactory : CharacterFactory
     {
-        public Enemy(PresenterFactory factory, AudioDataConfig audioData) : base(factory, audioData)
+        public EnemyFactory(PresenterFactory factory, AudioDataConfig audioData) : base(factory, audioData)
         {
         }
 
