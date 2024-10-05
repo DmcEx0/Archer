@@ -9,6 +9,6 @@ namespace  Archer.Utils
         public void OnExitGame();
 
         public event Action EnemyDied;
-        public event Action<bool> LevelCompeted;
+        public Action<bool> LevelCompeted { get; set; }
     }
 }

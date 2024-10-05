@@ -47,7 +47,7 @@ namespace Archer.Utils
             }
             else
             {
-                _gameSession = new GameSession(_factory, _audioData, _startPlayerPosition, _mainPlayerPosition,
+                _gameSession = new MainGameSession(_factory, _audioData, _startPlayerPosition, _mainPlayerPosition,
                     _enemiesSpawnPoints, _mainEnemyPosition, _equipmentListData, _skillButtonView, _currentLevelConfig);
             }
 
