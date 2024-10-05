@@ -17,7 +17,8 @@ namespace Archer.UI
         [Space] [SerializeField] private Toggle _sfxToggle;
         [SerializeField] private Toggle _musicToggle;
 
-        public event Action<bool> Opening;
+        public event Action Opening;
+        public event Action Closing;
 
         private void OnEnable()
         {
@@ -29,7 +30,7 @@ namespace Archer.UI
             _sfxToggle.onValueChanged.AddListener(OnChangeStatusSfx);
             _musicToggle.onValueChanged.AddListener(OnChangeStatusMusic);
 
-            Opening?.Invoke(false);
+            Closing?.Invoke();
         }
 
         private void OnDisable()
@@ -47,7 +48,7 @@ namespace Archer.UI
 
         private void OnClose()
         {
-            Opening?.Invoke(true);
+            Opening?.Invoke();
 
             gameObject.SetActive(false);
 

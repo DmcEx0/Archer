@@ -24,9 +24,9 @@ namespace Archer.Model
             _audioData = audioData;
         }
 
-        public PresenterFactory Factory { get; private set; }
+        protected PresenterFactory Factory { get; private set; }
 
-        protected abstract Presenter CreateCharacter(Character caharacterModel);
+        protected abstract Presenter CreateCharacter(Character characterModel);
         protected abstract WeaponPresenter CreateWeapon(WeaponPresenter weaponTemplate, Weapon weaponModel);
 
         public KeyValuePair<CharacterPresenter, Character> SpawnCharacter(Health health, Transform characterSpawnPoint)

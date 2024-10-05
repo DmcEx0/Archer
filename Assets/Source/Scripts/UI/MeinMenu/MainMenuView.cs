@@ -60,9 +60,14 @@ namespace Archer.UI
 
             _equipmentBigIcon.EquipmentSelected += OnEquipmentSelected;
 
-            _equipmentBigIcon.Opening += OnEnabledUIElements;
-            _menuSettingsWindowView.Opening += OnEnabledUIElements;
-            _leaderboardView.Opening += OnEnabledUIElements;
+            _equipmentBigIcon.Opening += OnEnabledUiElements;
+            _equipmentBigIcon.Closing += OnDisableUiElements;
+            
+            _menuSettingsWindowView.Opening += OnEnabledUiElements;
+            _menuSettingsWindowView.Closing += OnDisableUiElements;
+            
+            _leaderboardView.Opening += OnEnabledUiElements;
+            _leaderboardView.Closing += OnDisableUiElements;
         }
 
         private void OnDisable()
@@ -76,8 +81,14 @@ namespace Archer.UI
 
             _equipmentBigIcon.EquipmentSelected -= OnEquipmentSelected;
 
-            _equipmentBigIcon.Opening -= OnEnabledUIElements;
-            _menuSettingsWindowView.Opening -= OnEnabledUIElements;
+            _equipmentBigIcon.Opening -= OnEnabledUiElements;
+            _equipmentBigIcon.Closing -= OnDisableUiElements;
+            
+            _menuSettingsWindowView.Opening -= OnEnabledUiElements;
+            _menuSettingsWindowView.Closing -= OnDisableUiElements;
+            
+            _leaderboardView.Opening -= OnEnabledUiElements;
+            _leaderboardView.Closing -= OnDisableUiElements;
         }
 
         private void Start()
@@ -102,20 +113,30 @@ namespace Archer.UI
             RenderEquipment(_currentArrowData);
         }
 
-        public void OnEnabledUIElements(bool enabled)
+        public void OnEnabledUiElements()
         {
-            if (enabled == false)
+            SetUIElementsState(true);
+        }
+
+        public void OnDisableUiElements()
+        {
+            SetUIElementsState(false);
+        }
+        
+        private void SetUIElementsState(bool state)
+        {
+            if (state == false)
             {
-                _arrowScrollView.gameObject.SetActive(enabled);
-                _weaponScrollView.gameObject.SetActive(enabled);
+                _arrowScrollView.gameObject.SetActive(state);
+                _weaponScrollView.gameObject.SetActive(state);
             }
 
-            _selectArrowButton.gameObject.SetActive(enabled);
-            _selectWeaponButton.gameObject.SetActive(enabled);
+            _selectArrowButton.gameObject.SetActive(state);
+            _selectWeaponButton.gameObject.SetActive(state);
 
-            _startButton.gameObject.SetActive(enabled);
-            _settingsButton.gameObject.SetActive(enabled);
-            _leaderboardButton.gameObject.SetActive(enabled);
+            _startButton.gameObject.SetActive(state);
+            _settingsButton.gameObject.SetActive(state);
+            _leaderboardButton.gameObject.SetActive(state);
         }
 
         private void RenderEquipment(EquipmentDataConfig equipmentData)

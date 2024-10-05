@@ -15,14 +15,14 @@ namespace Archer.UI
         {
             _exitButton.onClick.AddListener(CloseWindow);
             _authorizeButton.onClick.AddListener(Authorize);
-            _mainMenuView.OnEnabledUIElements(false);
+            _mainMenuView.OnDisableUiElements();
         }
 
         private void OnDisable()
         {
             _exitButton.onClick.RemoveListener(CloseWindow);
             _authorizeButton.onClick.RemoveListener(Authorize);
-            _mainMenuView.OnEnabledUIElements(true);
+            _mainMenuView.OnEnabledUiElements();
         }
 
         private void CloseWindow()

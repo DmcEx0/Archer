@@ -15,22 +15,23 @@ namespace Archer.UI
 
         private List<LeaderboardElement> _spawnedElements = new();
 
-        public event Action<bool> Opening;
+        public event Action Opening;
+        public event Action Closing;
 
         private void OnEnable()
         {
             _exitButton.onClick.AddListener(Close);
-            _mainMenuView.OnEnabledUIElements(false);
+            _mainMenuView.OnDisableUiElements();
 
-            Opening?.Invoke(false);
+            Closing?.Invoke();
         }
 
         private void OnDisable()
         {
             _exitButton.onClick.RemoveListener(Close);
-            _mainMenuView.OnEnabledUIElements(true);
+            _mainMenuView.OnEnabledUiElements();
 
-            Opening?.Invoke(true);
+            Opening?.Invoke();
         }
 
         public void ConstructLeaderboard(List<LeaderboardPlayer> leaderboardPlayers)

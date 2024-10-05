@@ -23,7 +23,8 @@ namespace Archer.UI
         private EquipmentDataConfig _equipmentData;
 
         public event Action<EquipmentDataConfig> EquipmentSelected;
-        public event Action<bool> Opening;
+        public event Action Opening;
+        public event Action Closing;
 
         private void OnEnable()
         {
@@ -31,7 +32,7 @@ namespace Archer.UI
             _buyButton.onClick.AddListener(OnTryBuy);
 
             _closeButton.onClick.AddListener(OnClose);
-            Opening?.Invoke(false);
+            Closing?.Invoke();
         }
 
         private void OnDisable()
@@ -78,7 +79,7 @@ namespace Archer.UI
         private void OnClose()
         {
             gameObject.SetActive(false);
-            Opening?.Invoke(true);
+            Opening?.Invoke();
         }
 
         private void OnEquipmentSelected()
