@@ -167,43 +167,48 @@ namespace Archer.Data
 
         private void SaveMoney()
         {
-            PlayerPrefs.SetInt(CoinKey, _coins);
-            PlayerPrefs.Save();
+            SaveIntData(CoinKey, _coins);
         }
 
         private void SaveScore()
         {
-            PlayerPrefs.SetInt(ScoreKey, _score);
-            PlayerPrefs.Save();
+            SaveIntData(ScoreKey, _score);
         }
 
         private void SaveLevel()
         {
-            PlayerPrefs.SetInt(LevelKey, _level);
-            PlayerPrefs.Save();
+            SaveIntData(LevelKey, _level);
         }
 
         private void SaveArrow()
         {
-            PlayerPrefs.SetInt(ArrowIDKey, _arrowID);
-            PlayerPrefs.Save();
+            SaveIntData(ArrowIDKey, _arrowID);
         }
 
         private void SaveCrossbow()
         {
-            PlayerPrefs.SetInt(CrossbowIDKey, _crossbowID);
-            PlayerPrefs.Save();
+            SaveIntData(CrossbowIDKey, _crossbowID);
         }
 
         private void SaveLanguage()
         {
-            PlayerPrefs.SetString(LanguageKey, _language);
-            PlayerPrefs.Save();
+            SaveStringData(LanguageKey, _language);
         }
 
         private void SaveTutorialState()
         {
-            PlayerPrefs.SetInt(TutorialIsCompleteKey, _tutorialIsComplete);
+            SaveIntData(TutorialIsCompleteKey, _tutorialIsComplete);
+        }
+        
+        private void SaveIntData(string key, int value)
+        {
+            PlayerPrefs.SetInt(key, value);
+            PlayerPrefs.Save();
+        }
+        
+        private void SaveStringData(string key, string value)
+        {
+            PlayerPrefs.SetString(key, value);
             PlayerPrefs.Save();
         }
     }
