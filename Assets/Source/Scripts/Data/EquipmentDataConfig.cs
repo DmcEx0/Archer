@@ -28,7 +28,8 @@ namespace Archer.Data
             if (PlayerData.Instance.Coins >= _price)
             {
                 _wasBought = true;
-                PlayerData.Instance.Coins -= _price;
+                var currentCoins = PlayerData.Instance.Coins - _price;
+                PlayerData.Instance.SetCoins(currentCoins);
             }
 
             return _wasBought;

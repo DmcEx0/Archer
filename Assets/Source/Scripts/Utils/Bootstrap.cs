@@ -112,12 +112,14 @@ namespace Archer.Utils
 
         private void AddCoins()
         {
-            PlayerData.Instance.Coins += _rewardSystem.AmountCoins;
+            var currentCoins = PlayerData.Instance.Coins + _rewardSystem.AmountCoins;
+            PlayerData.Instance.SetCoins(currentCoins);
         }
 
         private void AddScore()
         {
-            PlayerData.Instance.Score += _rewardSystem.AmountScore;
+            var currentScore = PlayerData.Instance.Score + _rewardSystem.AmountScore;
+            PlayerData.Instance.SetScore(currentScore);
         }
     }
 }

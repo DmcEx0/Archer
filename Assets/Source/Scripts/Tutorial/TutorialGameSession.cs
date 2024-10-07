@@ -14,7 +14,11 @@ namespace Archer.Tutor
 {
     public class TutorialGameSession : BaseGameSession
     {
-        public TutorialGameSession(PresenterFactory presenterFactory, AudioDataConfig audioData, Transform startPlayerPos, Transform mainPlayerPos, List<Transform> enemySpawnPoints, Transform mainEnemyPos, EquipmentListSO equipmentListData, SkillButtonView skillButtonView, CurrentLevelConfig currentLevelConfig) : base(presenterFactory, audioData, startPlayerPos, mainPlayerPos, enemySpawnPoints, mainEnemyPos, equipmentListData, skillButtonView, currentLevelConfig)
+        public TutorialGameSession(PresenterFactory presenterFactory, AudioDataConfig audioData,
+            Transform startPlayerPos, Transform mainPlayerPos, List<Transform> enemySpawnPoints, Transform mainEnemyPos,
+            EquipmentListSO equipmentListData, SkillButtonView skillButtonView,
+            CurrentLevelConfig currentLevelConfig) : base(presenterFactory, audioData, startPlayerPos, mainPlayerPos,
+            enemySpawnPoints, mainEnemyPos, equipmentListData, skillButtonView, currentLevelConfig)
         {
         }
 
@@ -45,7 +49,7 @@ namespace Archer.Tutor
                 Enemies.Add(newEnemy, newStateMachine);
             }
         }
-        
+
         protected override void ActiveEnem()
         {
             if (Enemies.Count == 0)
@@ -55,7 +59,7 @@ namespace Archer.Tutor
                 Unsubscribe();
 
                 PlayerStateMachine.EnterIn(StatesType.Idle);
-                PlayerData.Instance.TutorialIsComplete = true;
+                PlayerData.Instance.SetTutorialIsComplete(true);
                 LevelCompeted?.Invoke(IsPlayerVictory);
                 return;
             }
@@ -76,7 +80,7 @@ namespace Archer.Tutor
             EnemyStateMachine.EnterIn(StatesType.Idle);
             LevelCompeted?.Invoke(IsPlayerVictory);
 
-            PlayerData.Instance.TutorialIsComplete = false;
+            PlayerData.Instance.SetTutorialIsComplete(false);
         }
     }
 }

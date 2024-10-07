@@ -43,7 +43,7 @@ namespace Archer.UI
 
         private void SetLanguage(string language)
         {
-            PlayerData.Instance.CurrentLanguage = language;
+            PlayerData.Instance.SetCurrentLanguage(language);
             LeanLocalization.SetCurrentLanguageAll(language);
         }
     }

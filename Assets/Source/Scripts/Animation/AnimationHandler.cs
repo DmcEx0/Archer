@@ -105,24 +105,24 @@ namespace Archer.Animations
 
         public void PlayHitA()
         {
-            PlayCurrentAnimation(AnimationHashNames.HitAString, HitSpeed, AnimationHashNames.AimString);
+            PlayCurrentAnimation(AnimationConstants.HitAString, HitSpeed, AnimationConstants.AimString);
         }
 
         public void PlayHitB()
         {
-            PlayCurrentAnimation(AnimationHashNames.HitBString, HitSpeed, AnimationHashNames.AimString);
+            PlayCurrentAnimation(AnimationConstants.HitBString, HitSpeed, AnimationConstants.AimString);
         }
 
         public void PlayDeath()
         {
-            PlayCurrentAnimation(AnimationHashNames.DeathString, DeathSpeed, AnimationHashNames.DeathString, true);
+            PlayCurrentAnimation(AnimationConstants.DeathString, DeathSpeed, AnimationConstants.DeathString, true);
         }
 
         public void PlayShoot(float durationReload)
         {
             _reloadSpeed = durationReload;
 
-            PlayCurrentAnimation(AnimationHashNames.ShootString, ShootSpeed, AnimationHashNames.ReloadString);
+            PlayCurrentAnimation(AnimationConstants.ShootString, ShootSpeed, AnimationConstants.ReloadString);
         }
 
         public void PlaySitIdle()
@@ -130,26 +130,26 @@ namespace Archer.Animations
             float offsetTime = 0.3f;
             float speed = (_animationClipData.SitIdleLength / _takenPositionTime) + offsetTime;
 
-            PlayCurrentAnimation(AnimationHashNames.SitIdleString, speed, AnimationHashNames.SitStandUpString);
+            PlayCurrentAnimation(AnimationConstants.SitIdleString, speed, AnimationConstants.SitStandUpString);
         }
 
         private void PlayNext(string animationName)
         {
             switch (animationName)
             {
-                case AnimationHashNames.ReloadString:
+                case AnimationConstants.ReloadString:
                     PlayReload();
                     break;
 
-                case AnimationHashNames.AimString:
+                case AnimationConstants.AimString:
                     PlayAim();
                     break;
 
-                case AnimationHashNames.SitIdleString:
+                case AnimationConstants.SitIdleString:
                     PlaySitIdle();
                     break;
 
-                case AnimationHashNames.SitStandUpString:
+                case AnimationConstants.SitStandUpString:
                     PlaySitStandUp();
                     break;
             }
@@ -157,19 +157,19 @@ namespace Archer.Animations
 
         private void PlaySitStandUp()
         {
-            PlayCurrentAnimation(AnimationHashNames.SitStandUpString, SitIdleSpeed, AnimationHashNames.AimString);
+            PlayCurrentAnimation(AnimationConstants.SitStandUpString, SitIdleSpeed, AnimationConstants.AimString);
         }
 
         private void PlayReload()
         {
             float speed = ((_reloadSpeed - _animationClipData.ReloadLength) / _animationClipData.ReloadLength) + 1;
 
-            PlayCurrentAnimation(AnimationHashNames.ReloadString, speed, AnimationHashNames.AimString);
+            PlayCurrentAnimation(AnimationConstants.ReloadString, speed, AnimationConstants.AimString);
         }
 
         private void PlayAim()
         {
-            PlayCurrentAnimation(AnimationHashNames.AimString, AimSpeed, AnimationHashNames.AimString);
+            PlayCurrentAnimation(AnimationConstants.AimString, AimSpeed, AnimationConstants.AimString);
         }
 
         private void PlayCurrentAnimation(string animationName, float animationSpeed, string nextAnimationName,

@@ -1,6 +1,6 @@
 namespace Archer.Animations
 {
-    public static class AnimationHashNames
+    public static class AnimationConstants
     {
         public const string AimString = "Aim";
         public const string ReloadString = "Reload";

@@ -28,110 +28,15 @@ namespace Archer.Data
 
         private const int MaxCountLevel = 4;
 
-        private string _language;
-
         private int _tutorialIsComplete;
 
-        private int _coins;
-        private int _score;
-        private int _level;
-        private int _arrowID;
-        private int _crossbowID;
-
-        public int Coins
-        {
-            get { return _coins; }
-            set
-            {
-                if (value < 0)
-                    throw new ArgumentOutOfRangeException(nameof(value));
-
-                _coins = value;
-                CoinChanged?.Invoke(_coins);
-                SaveMoney();
-            }
-        }
-
-        public int Score
-        {
-            get { return _score; }
-            set
-            {
-                if (value < 0)
-                    throw new ArgumentOutOfRangeException(nameof(value));
-
-                _score = value;
-                SaveScore();
-            }
-        }
-
-        public int Level
-        {
-            get { return _level; }
-        }
-
-        public int ArrowID
-        {
-            get => _arrowID;
-            set
-            {
-                _arrowID = value;
-                SaveArrow();
-            }
-        }
-
-        public int CrossbowID
-        {
-            get => _crossbowID;
-            set
-            {
-                _crossbowID = value;
-                SaveCrossbow();
-            }
-        }
-
-        public string CurrentLanguage
-        {
-            get => _language;
-            set
-            {
-                _language = value;
-                SaveLanguage();
-            }
-        }
-
-        public bool TutorialIsComplete
-        {
-            get
-            {
-                if (_tutorialIsComplete == 0)
-                    return false;
-                if (_tutorialIsComplete == 1)
-                    return true;
-
-                return false;
-            }
-            set
-            {
-                if (value == false)
-                    _tutorialIsComplete = 0;
-                if (value == true)
-                    _tutorialIsComplete = 1;
-
-                SaveTutorialState();
-            }
-        }
-
-        public static PlayerData Instance
-        {
-            get
-            {
-                if (_instance == null)
-                    Initialize();
-
-                return _instance;
-            }
-        }
+        public string CurrentLanguage{ get; private set; }
+        public int Coins { get; private set; }
+        public int Score { get; private set; }
+        public int Level{ get; private set; }
+        public int ArrowID{ get; private set; }
+        public int CrossbowID{ get; private set; }
+        public bool TutorialIsComplete => GetTutorialIsCompleteState();
 
         public event Action<int> CoinChanged;
 
@@ -143,63 +48,97 @@ namespace Archer.Data
             _instance.LoadData();
         }
 
-        public void CompleteLevel()
-        {
-            if (_level > MaxCountLevel)
-                return;
-
-            _level += 1;
-            SaveLevel();
-        }
-
         private void LoadData()
         {
-            _coins = PlayerPrefs.HasKey(CoinKey) ? PlayerPrefs.GetInt(CoinKey) : DefaultCountCoins;
-            _score = PlayerPrefs.HasKey(ScoreKey) ? PlayerPrefs.GetInt(ScoreKey) : DefaultScore;
-            _level = PlayerPrefs.HasKey(LevelKey) ? PlayerPrefs.GetInt(LevelKey) : DefaultLevel;
-            _arrowID = PlayerPrefs.HasKey(ArrowIDKey) ? PlayerPrefs.GetInt(ArrowIDKey) : DefaultArrowID;
-            _crossbowID = PlayerPrefs.HasKey(CrossbowIDKey) ? PlayerPrefs.GetInt(CrossbowIDKey) : DefaultCrossbowID;
-            _language = PlayerPrefs.HasKey(LanguageKey) ? PlayerPrefs.GetString(LanguageKey) : DefaultLanguage;
+            Coins = PlayerPrefs.HasKey(CoinKey) ? PlayerPrefs.GetInt(CoinKey) : DefaultCountCoins;
+            Score = PlayerPrefs.HasKey(ScoreKey) ? PlayerPrefs.GetInt(ScoreKey) : DefaultScore;
+            Level = PlayerPrefs.HasKey(LevelKey) ? PlayerPrefs.GetInt(LevelKey) : DefaultLevel;
+            ArrowID = PlayerPrefs.HasKey(ArrowIDKey) ? PlayerPrefs.GetInt(ArrowIDKey) : DefaultArrowID;
+            CrossbowID = PlayerPrefs.HasKey(CrossbowIDKey) ? PlayerPrefs.GetInt(CrossbowIDKey) : DefaultCrossbowID;
+            CurrentLanguage = PlayerPrefs.HasKey(LanguageKey) ? PlayerPrefs.GetString(LanguageKey) : DefaultLanguage;
             _tutorialIsComplete = PlayerPrefs.HasKey(TutorialIsCompleteKey)
                 ? PlayerPrefs.GetInt(TutorialIsCompleteKey)
                 : DefaultTutorialState;
         }
-
-        private void SaveMoney()
+        
+        public void CompleteLevel()
         {
-            SaveIntData(CoinKey, _coins);
+            if (Level > MaxCountLevel)
+                return;
+
+            Level += 1;
+            SaveIntData(LevelKey, Level);
+        }
+        
+        public void SetCoins(int value)
+        {
+            if (value < 0)
+                throw new ArgumentOutOfRangeException(nameof(value));
+
+            Coins = value;
+            CoinChanged?.Invoke(Coins);
+            SaveIntData(CoinKey, Coins);
+        }
+        
+        public void SetScore(int value)
+        {
+            if (value < 0)
+                throw new ArgumentOutOfRangeException(nameof(value));
+
+            Score = value;
+            SaveIntData(ScoreKey, Score);
+        }
+        
+        public void SetArrowID(int value)
+        {
+            ArrowID = value;
+            SaveIntData(ArrowIDKey, ArrowID);
         }
 
-        private void SaveScore()
+        public void SetCrossbowID(int value)
         {
-            SaveIntData(ScoreKey, _score);
-        }
+            CrossbowID = value;
+            SaveIntData(CrossbowIDKey, CrossbowID);
 
-        private void SaveLevel()
-        {
-            SaveIntData(LevelKey, _level);
         }
-
-        private void SaveArrow()
+        
+        public void SetCurrentLanguage(string value)
         {
-            SaveIntData(ArrowIDKey, _arrowID);
+            CurrentLanguage = value;
+            SaveStringData(LanguageKey, CurrentLanguage);
         }
-
-        private void SaveCrossbow()
+        
+        public void SetTutorialIsComplete(bool value)
         {
-            SaveIntData(CrossbowIDKey, _crossbowID);
-        }
+            if (value == false)
+                _tutorialIsComplete = 0;
+            if (value == true)
+                _tutorialIsComplete = 1;
 
-        private void SaveLanguage()
-        {
-            SaveStringData(LanguageKey, _language);
-        }
-
-        private void SaveTutorialState()
-        {
             SaveIntData(TutorialIsCompleteKey, _tutorialIsComplete);
         }
         
+        public static PlayerData Instance
+        {
+            get
+            {
+                if (_instance == null)
+                    Initialize();
+
+                return _instance;
+            }
+        }
+        
+        private bool GetTutorialIsCompleteState()
+        {
+            if (_tutorialIsComplete == 0)
+                return false;
+            if (_tutorialIsComplete == 1)
+                return true;
+
+            return false;
+        }
+
         private void SaveIntData(string key, int value)
         {
             PlayerPrefs.SetInt(key, value);

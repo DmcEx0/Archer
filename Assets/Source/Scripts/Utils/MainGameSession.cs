@@ -11,7 +11,11 @@ using UnityEngine;
 
 public class MainGameSession : BaseGameSession
 {
-    public MainGameSession(PresenterFactory presenterFactory, AudioDataConfig audioData, Transform startPlayerPos, Transform mainPlayerPos, List<Transform> enemySpawnPoints, Transform mainEnemyPos, EquipmentListSO equipmentListData, SkillButtonView skillButtonView, CurrentLevelConfig currentLevelConfig) : base(presenterFactory, audioData, startPlayerPos, mainPlayerPos, enemySpawnPoints, mainEnemyPos, equipmentListData, skillButtonView, currentLevelConfig)
+    public MainGameSession(PresenterFactory presenterFactory, AudioDataConfig audioData, Transform startPlayerPos,
+        Transform mainPlayerPos, List<Transform> enemySpawnPoints, Transform mainEnemyPos,
+        EquipmentListSO equipmentListData, SkillButtonView skillButtonView,
+        CurrentLevelConfig currentLevelConfig) : base(presenterFactory, audioData, startPlayerPos, mainPlayerPos,
+        enemySpawnPoints, mainEnemyPos, equipmentListData, skillButtonView, currentLevelConfig)
     {
     }
 

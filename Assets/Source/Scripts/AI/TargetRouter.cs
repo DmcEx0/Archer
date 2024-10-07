@@ -6,7 +6,7 @@ namespace Archer.AI
 {
     public class TargetRouter
     {
-        private Dictionary<Collider, float> _targets;
+        private readonly Dictionary<Collider, float> _targets;
 
         public TargetRouter()
         {
@@ -14,7 +14,6 @@ namespace Archer.AI
         }
 
         public KeyValuePair<Collider, float> Target => _targets.ElementAt(Random.Range(0, _targets.Count));
-
 
         public int CurrentNumberOfTargets => _targets.Count;
 

@@ -16,11 +16,12 @@ namespace Archer.UI
         [SerializeField] private Leaderboard _leaderboard;
         [SerializeField] private EquipmentListSO _equipmentsData;
 
-        [Space] [SerializeField] private TMP_Text _textCoin;
+        [Space]
+        [SerializeField] private TMP_Text _textCoin;
         [SerializeField] private Button _startButton;
 
-        [Space, Header("Equipment")] [SerializeField]
-        private EquipmentBigIconView _equipmentBigIcon;
+        [Space, Header("Equipment")] 
+        [SerializeField] private EquipmentBigIconView _equipmentBigIcon;
 
         [SerializeField] private EquipmentSmallIconView _selectArrowButton;
         [SerializeField] private EquipmentSmallIconView _selectWeaponButton;
@@ -29,12 +30,13 @@ namespace Archer.UI
         [SerializeField] private Transform _arrowContainerScrollView;
         [SerializeField] private Transform _weaponContainerScrollView;
 
-        [Space, Header("Settings")] [SerializeField]
-        private Button _settingsButton;
+        [Space, Header("Settings")] 
+        [SerializeField] private Button _settingsButton;
 
         [SerializeField] private SettingsWindowView _menuSettingsWindowView;
 
-        [Space] [SerializeField] private LeaderboardView _leaderboardView;
+        [Space]
+        [SerializeField] private LeaderboardView _leaderboardView;
         [SerializeField] private Button _leaderboardButton;
 
         private EquipmentListView _equipmentListView;
@@ -127,8 +129,8 @@ namespace Archer.UI
         {
             if (state == false)
             {
-                _arrowScrollView.gameObject.SetActive(state);
-                _weaponScrollView.gameObject.SetActive(state);
+                _arrowScrollView.gameObject.SetActive(false);
+                _weaponScrollView.gameObject.SetActive(false);
             }
 
             _selectArrowButton.gameObject.SetActive(state);
@@ -202,7 +204,7 @@ namespace Archer.UI
             if (equipmentData is WeaponDataConfig)
             {
                 _currentWeaponData = equipmentData as WeaponDataConfig;
-                PlayerData.Instance.CrossbowID = _currentWeaponData.ID;
+                PlayerData.Instance.SetCrossbowID(_currentWeaponData.ID);
 
                 RenderSelectedEquipment(equipmentData, _weaponScrollView);
             }
@@ -210,7 +212,7 @@ namespace Archer.UI
             else if (equipmentData is ArrowDataConfig)
             {
                 _currentArrowData = equipmentData as ArrowDataConfig;
-                PlayerData.Instance.ArrowID = _currentArrowData.ID;
+                PlayerData.Instance.SetArrowID(_currentWeaponData.ID);
 
                 RenderSelectedEquipment(equipmentData, _arrowScrollView);
             }

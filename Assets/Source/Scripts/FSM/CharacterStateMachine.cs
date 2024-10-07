@@ -7,7 +7,7 @@ namespace Archer.Model.FSM
 {
     public class CharacterStateMachine
     {
-        private Dictionary<StatesType, IState> _states;
+        private readonly Dictionary<StatesType, IState> _states;
         private IState _currentState;
 
         public CharacterStateMachine(KeyValuePair<CharacterPresenter, Character> character,

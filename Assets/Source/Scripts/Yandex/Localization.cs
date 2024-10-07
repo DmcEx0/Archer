@@ -11,10 +11,10 @@ namespace Archer.Yandex
 
         public void ChangeLanguage()
         {
-            PlayerData.Instance.CurrentLanguage = IdentifyLanguage();
+            PlayerData.Instance.SetCurrentLanguage(GetIdentifyLanguage());
         }
 
-        private string IdentifyLanguage()
+        private string GetIdentifyLanguage()
         {
             string languageCode = YandexGamesSdk.Environment.i18n.lang;
 
