@@ -91,10 +91,18 @@ namespace Archer.UI
 
         private void OnTryBuy()
         {
-            if (_equipmentData.WasBought == false)
+            if (_equipmentData.WasBought == true)
             {
-                if (_equipmentData.TryBuy())
-                    OnClose();
+                return;
+            }
+            
+            if (PlayerData.Instance.Coins >= _equipmentData.Price)
+            {
+                _equipmentData.SetWasBoughtState();
+                var currentCoins = PlayerData.Instance.Coins - _equipmentData.Price;
+                PlayerData.Instance.SetCoins(currentCoins);
+                
+                OnClose();
             }
         }
     }

@@ -78,9 +78,9 @@ namespace Archer.Model
             arrow.SetDamage(_arrowData.MainDamage, _arrowData.AdditionalDamage, _arrowData.SkillType);
 
             if (arrow.SkillType == ArrowSkillType.None)
-                _audioData.Play(Sounds.Shot1);
+                AudioHandler.Instance.Play(Sounds.Shot1);
             else
-                _audioData.Play(Sounds.Shot2);
+                AudioHandler.Instance.Play(Sounds.Shot2);
         }
     }
 }

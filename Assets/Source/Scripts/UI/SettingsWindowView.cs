@@ -22,8 +22,8 @@ namespace Archer.UI
 
         private void OnEnable()
         {
-            _sfxToggle.isOn = _audioData.SfxIsOn;
-            _musicToggle.isOn = _audioData.MusicIsOn;
+            _sfxToggle.isOn = AudioHandler.Instance.SfxIsOn;
+            _musicToggle.isOn = AudioHandler.Instance.MusicIsOn;
 
             _closeButton.onClick.AddListener(OnClose);
 
@@ -57,12 +57,12 @@ namespace Archer.UI
 
         private void OnChangeStatusSfx(bool isSfxOn)
         {
-            _audioData.SetActiveSfx(isSfxOn);
+            AudioHandler.Instance.SetActiveSfx(isSfxOn);
         }
 
         private void OnChangeStatusMusic(bool isMusicOn)
         {
-            _audioData.SetActiveMusic(isMusicOn);
+            AudioHandler.Instance.SetActiveMusic(isMusicOn);
         }
     }
 }

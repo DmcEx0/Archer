@@ -23,16 +23,9 @@ namespace Archer.Data
         public int ID => _id;
         public int Price => _price;
 
-        public bool TryBuy()
+        public void SetWasBoughtState()
         {
-            if (PlayerData.Instance.Coins >= _price)
-            {
-                _wasBought = true;
-                var currentCoins = PlayerData.Instance.Coins - _price;
-                PlayerData.Instance.SetCoins(currentCoins);
-            }
-
-            return _wasBought;
+            _wasBought = true;
         }
     }
 }

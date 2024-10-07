@@ -16,13 +16,13 @@ namespace Archer.Yandex
 
         private void OnOpenCallback()
         {
-            _audioData.Pause(this);
+            AudioHandler.Instance.Pause(this);
             _timeScaleSetter.SetGamePause(true, this);
         }
 
         private void OnCloseCallback(bool _)
         {
-            _audioData.UnPause(this);
+            AudioHandler.Instance.UnPause(this);
             _timeScaleSetter.SetGamePause(false, this);
         }
     }

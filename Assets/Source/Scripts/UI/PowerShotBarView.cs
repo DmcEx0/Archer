@@ -1,5 +1,4 @@
 using Archer.Input;
-using Archer.Model;
 using UnityEngine;
 using UnityEngine.UI;
 

@@ -34,8 +34,8 @@ namespace Archer.Utils
         [SerializeField] private AudioDataConfig _audioData;
 
         private IGameSession _gameSession;
-
         private RewardSystem _rewardSystem;
+        private AudioHandler _audioHandler;
 
         private void Awake()
         {
@@ -51,8 +51,8 @@ namespace Archer.Utils
             }
 
             _rewardSystem = new RewardSystem();
-
-            _audioData.Init(_sfxAudioSource, _musicAudioSource);
+            
+            _audioHandler.Init(_sfxAudioSource, _musicAudioSource, _audioData);
         }
 
         private void OnEnable()
@@ -69,7 +69,7 @@ namespace Archer.Utils
 
         private void Start()
         {
-            _audioData.Play(Sounds.Game);
+            AudioHandler.Instance.Play(Sounds.Game);
             _gameSession.Init();
         }
 

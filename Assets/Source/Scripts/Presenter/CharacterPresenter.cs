@@ -17,8 +17,7 @@ public class CharacterPresenter : Presenter, IGeneratable
 
     private AnimationHandler _animationHandler;
 
-    private HitBodyDetector _hitBodyDetector;
-    private HitHeadDetector _hitHeadDetector;
+    private HitBodyPartDetector _hitBodyPartDetector;
 
     private float _playingEffectTime = 0;
     private float _accumulatedTime;
@@ -32,8 +31,7 @@ public class CharacterPresenter : Presenter, IGeneratable
     private void Awake()
     {
         _animationHandler = GetComponent<AnimationHandler>();
-        _hitBodyDetector = GetComponentInChildren<HitBodyDetector>();
-        _hitHeadDetector = GetComponentInChildren<HitHeadDetector>();
+        _hitBodyPartDetector = GetComponentInChildren<HitBodyPartDetector>();
     }
 
     private void Update()
@@ -55,8 +53,7 @@ public class CharacterPresenter : Presenter, IGeneratable
     {
         base.OnInitialized();
 
-        _hitBodyDetector.GettingHit += OnGettingHitInBody;
-        _hitHeadDetector.GettingHit += OnGettingHitInHead;
+        _hitBodyPartDetector.GettingHit += OnGettingHit;
         CharacterModel.SkillImpacted += OnActivateSkillImpact;
     }
 
@@ -64,24 +61,35 @@ public class CharacterPresenter : Presenter, IGeneratable
     {
         base.OnDestroying();
 
-        _hitBodyDetector.GettingHit -= OnGettingHitInBody;
-        _hitHeadDetector.GettingHit -= OnGettingHitInHead;
+        _hitBodyPartDetector.GettingHit -= OnGettingHit;
         CharacterModel.SkillImpacted -= OnActivateSkillImpact;
     }
+    
+    private void OnGettingHit(int damage, int additionalDamage, ArrowSkillType skillType, BodyParts bodyPart)
+    {
+        switch (bodyPart)
+        {
+            case BodyParts.Body:
+                OnGettingHitInBody();
+                break;
+            case BodyParts.Head:
+                OnGettingHitInHead();
+                break;
+        }
+        
+        CharacterModel.TakeDamage(damage, additionalDamage, skillType);
+    }
 
-    private void OnGettingHitInBody(int mainDamage, int additionalDamage, ArrowSkillType skillType)
+    private void OnGettingHitInBody()
     {
         _animationHandler.PlayHitA();
 
-        CharacterModel.TakeDamage(mainDamage, additionalDamage, skillType);
     }
 
-    private void OnGettingHitInHead(int damage, int additionalDamage, ArrowSkillType skillType)
+    private void OnGettingHitInHead()
     {
         GettingHitInHead?.Invoke();
         _animationHandler.PlayHitB();
-
-        CharacterModel.TakeDamage(damage, additionalDamage, skillType);
     }
 
     private void OnActivateSkillImpact(float playingEffectTime, ArrowSkillType skillType)

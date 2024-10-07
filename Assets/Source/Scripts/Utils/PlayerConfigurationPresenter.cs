@@ -3,7 +3,6 @@ using Archer.Data;
 using Archer.Presenters;
 using Archer.UI;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Archer.Utils
 {
@@ -24,8 +23,8 @@ namespace Archer.Utils
 
         private WeaponPresenter _currentWeaponTemplate;
         private ArrowPresenter _currentArrowTemplate;
-
         private Vector3 _startPlayerPosition;
+        private AudioHandler _audioHandler;
 
         private void OnEnable()
         {
@@ -49,8 +48,8 @@ namespace Archer.Utils
             _startPlayerPosition = _playerPresenter.transform.position;
             _playerPresenter.AnimationHandler.PlaySitIdle();
 
-            _audioData.Init(_sfxAudioSource, _musicAudioSource);
-            _audioData.Play(Sounds.MeinMenu);
+            _audioHandler.Init(_sfxAudioSource, _musicAudioSource, _audioData);
+            AudioHandler.Instance.Play(Sounds.MeinMenu);
         }
 
         private void Update()

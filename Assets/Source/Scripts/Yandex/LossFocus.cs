@@ -27,9 +27,9 @@ namespace Archer.Yandex
             PauseGame(!inApp);
             
             if (inApp)
-                _audioData.UnPause(this);
+                AudioHandler.Instance.UnPause(this); 
             else
-                _audioData.Pause(this);
+                AudioHandler.Instance.Pause(this);
         }
 
         private void OnInBackgroundChangeWeb(bool isBackground)
@@ -37,9 +37,9 @@ namespace Archer.Yandex
             PauseGame(isBackground);
 
             if (isBackground)
-                _audioData.Pause(this);
+                AudioHandler.Instance.Pause(this);
             else
-                _audioData.UnPause(this);
+                AudioHandler.Instance.UnPause(this);
         }
 
         private void PauseGame(bool value)

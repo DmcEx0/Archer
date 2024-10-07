@@ -25,8 +25,8 @@ namespace Archer.UI
 
         [SerializeField] private EquipmentSmallIconView _selectArrowButton;
         [SerializeField] private EquipmentSmallIconView _selectWeaponButton;
-        [SerializeField] private GameObject _weaponScrollView;
-        [SerializeField] private GameObject _arrowScrollView;
+        [SerializeField] private ScrollRect _weaponScrollView;
+        [SerializeField] private ScrollRect _arrowScrollView;
         [SerializeField] private Transform _arrowContainerScrollView;
         [SerializeField] private Transform _weaponContainerScrollView;
 
@@ -174,21 +174,21 @@ namespace Archer.UI
             }
         }
 
-        private void EnabledSelectedScrollView(GameObject selectedScrollView, GameObject secondScrollView)
+        private void EnabledSelectedScrollView(ScrollRect selectedScrollView, ScrollRect secondScrollView)
         {
-            if (selectedScrollView.activeSelf == true)
+            if (selectedScrollView.gameObject.activeSelf == true)
             {
-                selectedScrollView.SetActive(false);
+                selectedScrollView.gameObject.SetActive(false);
 
                 return;
             }
 
-            if (secondScrollView.activeSelf == true)
+            if (secondScrollView.gameObject.activeSelf == true)
             {
-                secondScrollView.SetActive(false);
+                secondScrollView.gameObject.SetActive(false);
             }
 
-            selectedScrollView.SetActive(true);
+            selectedScrollView.gameObject.SetActive(true);
         }
 
         private void OnShowBigIconEquipment(EquipmentDataConfig equipmentData)
@@ -196,7 +196,7 @@ namespace Archer.UI
             _equipmentBigIcon.gameObject.SetActive(true);
             _equipmentBigIcon.Render(equipmentData);
 
-            _arrowScrollView.SetActive(false);
+            _arrowScrollView.gameObject.SetActive(false);
         }
 
         private void OnEquipmentSelected(EquipmentDataConfig equipmentData)
@@ -218,7 +218,7 @@ namespace Archer.UI
             }
         }
 
-        private void RenderSelectedEquipment(EquipmentDataConfig equipmentData, GameObject scrollView)
+        private void RenderSelectedEquipment(EquipmentDataConfig equipmentData, ScrollRect scrollView)
         {
             if (equipmentData.WasBought)
             {
@@ -226,7 +226,7 @@ namespace Archer.UI
 
                 RenderEquipment(equipmentData);
 
-                scrollView.SetActive(false);
+                scrollView.gameObject.SetActive(false);
             }
         }
     }
